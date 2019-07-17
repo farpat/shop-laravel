@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  chrome:
+    build: ${DOCKER_PATH}/chrome
+  nginx:
+    build: ${DOCKER_PATH}/nginx
+    volumes:
+      - .:${PROJECT_PATH}
+      - ${DOCKER_PATH}/nginx/nginx.sh:/var/nginx.sh
+      - ${DOCKER_PATH}/nginx/sites-enabled:/var/sites-enabled
+      - ${DOCKER_PATH}/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - php
+    environment:
+      - PROJECT_PATH=${PROJECT_PATH}
+    command: ./var/nginx.sh
+  php:
+    build: ${DOCKER_PATH}/php
+    volumes:
+      - .:${PROJECT_PATH}
+      - ~/.cache/composer:/.cache/composer
+    working_dir: ${PROJECT_PATH}
+    depends_on:
+      - chrome
+      - mariadb
+      - maildev
+      - redis
+  redis:
+    build: ${DOCKER_PATH}/redis
+  mariadb:
+    build: ${DOCKER_PATH}/mariadb
+    volumes:
+      - /var/data:/var/lib/mysql
+  maildev:
+    image: djfarrelly/maildev
+  localhost: # Hack for broadcast.js (it's in reality laravel-echo-server service)
+    build: ${DOCKER_PATH}/node
+    volumes:
+      - .:${PROJECT_PATH}
+    working_dir: ${PROJECT_PATH}
+    depends_on:
+      - redis
+      - nginx
+    command: "laravel-echo-server start --force"
