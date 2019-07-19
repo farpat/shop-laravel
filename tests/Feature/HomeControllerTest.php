@@ -20,8 +20,6 @@ class HomeControllerTest extends TestCase
     /** @test */
     public function get_four_products_in_home ()
     {
-        $this->withoutExceptionHandling();
-
         $this->moduleRepository->createParameter('home', 'products', [1, 2, 3, 4]);
         factory(Product::class, 14)->create();
 

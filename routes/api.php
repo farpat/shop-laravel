@@ -19,5 +19,3 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
 });
-
-Route::get('/users', 'UserController@api_getUsers')->name('users.api.index');

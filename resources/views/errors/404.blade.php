@@ -1,4 +1,4 @@
-@extends('_layouts.error')
+@extends('_layouts.app')
 
 @section('title')
     {{ __('Resource not found') }}
