@@ -14,3 +14,4 @@
 
 require 'web/auth.php';
 require 'web/home.php';
+require 'web/category.php';

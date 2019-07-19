@@ -42,7 +42,7 @@ clean: ## Remove composer dependencies (vendor folder) and npm dependencies (nod
 help:
 	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 
-test: install stop-dev stop-dusk ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
+test: install ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
 	@docker-compose up -d --no-deps mariadb
 	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
 	@sleep 1
