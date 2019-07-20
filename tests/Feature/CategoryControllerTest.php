@@ -76,7 +76,6 @@ class CategoryControllerTest extends TestCase
         $category = factory(Category::class)->create();
 
         $response = $this->get($category->url);
-
         $crawler = $this->getCrawler($response);
 
         $productsElement = $crawler->filter('.products');
@@ -91,17 +90,19 @@ class CategoryControllerTest extends TestCase
         $productsCount = Category::PRODUCTS_PER_PAGE - 1;
         /** @var Category $category */
         $category = factory(Category::class)->create();
-        factory(Product::class, $productsCount)->create([
-            'category_id' => $category->id
-        ]);
+        $this->makeProducts($category, $productsCount);
 
         $response = $this->get($category->url);
-
         $crawler = $this->getCrawler($response);
 
         $productsElement = $crawler->filter('.products');
         $this->assertCount(1, $productsElement);
         $this->assertCount(0, $productsElement->filter('.pagination'));
+    }
+
+    private function makeProducts (Category $category, int $count = 1)
+    {
+        factory(Product::class, $count)->create(['category_id' => $category->id]);
     }
 
     /** @test */
@@ -111,12 +112,9 @@ class CategoryControllerTest extends TestCase
         $category = factory(Category::class)->create();
         $pagesCount = 5;
         $productsCount = Category::PRODUCTS_PER_PAGE * ($pagesCount - 1) + (Category::PRODUCTS_PER_PAGE - 1);
-        factory(Product::class, $productsCount)->create([
-            'category_id' => $category->id
-        ]);
+        $this->makeProducts($category, $productsCount);
 
         $response = $this->get($category->url);
-
         $crawler = $this->getCrawler($response);
 
         $productsElement = $crawler->filter('.products');
@@ -132,17 +130,33 @@ class CategoryControllerTest extends TestCase
         $category = factory(Category::class)->create();
         $pagesCount = 5;
         $productsCount = Category::PRODUCTS_PER_PAGE * ($pagesCount - 1) + (Category::PRODUCTS_PER_PAGE - 1);
-        factory(Product::class, $productsCount)->create([
-            'category_id' => $category->id
-        ]);
+        $this->makeProducts($category, $productsCount);
 
         $response = $this->get($category->url);
-
         $crawler = $this->getCrawler($response);
 
         $productsElement = $crawler->filter('.products');
         $this->assertCount(Category::PRODUCTS_PER_PAGE - 1, $productsElement->filter('.product'));
         $this->assertCount($pagesCount, $productsElement->filter('.page-item.active'));
+    }
+
+    /** @test */
+    public function get_page_with_parent_category ()
+    {
+        /** @var Category $parentCategory */
+        $parentCategory = factory(Category::class)->create();
+        $this->makeProducts($parentCategory, Category::PRODUCTS_PER_PAGE / 2);
+
+        $childCategory = factory(Category::class)->create([
+            'nomenclature' => $parentCategory->nomenclature . '.CHILD',
+            'is_last'      => true
+        ]);
+        $this->makeProducts($childCategory, Category::PRODUCTS_PER_PAGE / 2);
+
+        $response = $this->get($parentCategory->url);
+        $crawler = $this->getCrawler($response);
+
+        $this->assertCount(Category::PRODUCTS_PER_PAGE, $crawler->filter('.product'));
     }
 
     protected function setUp (): void
