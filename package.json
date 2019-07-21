@@ -3,6 +3,7 @@
     "description": "shop",
     "repository": "git@github.com:farpat/shop.git",
     "private": false,
+    "license": "ISC",
     "scripts": {
         "clean": "rm -rf node_modules package-lock.json && npm i",
         "build": "NODE_ENV=production webpack --progress --hide-modules --config resources/build/webpack.config.js",
