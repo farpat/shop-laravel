@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Repositories\CategoryRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -11,6 +12,10 @@ use Tests\TestCase;
 class CategoryControllerTest extends TestCase
 {
     use RefreshDatabase;
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
 
     /** @test */
     public function get_success_when_category_slug_is_ok ()
@@ -159,8 +164,47 @@ class CategoryControllerTest extends TestCase
         $this->assertCount(Category::PRODUCTS_PER_PAGE, $crawler->filter('.product'));
     }
 
+    /** @test */
+    public function get_all_categories_when_not_categories ()
+    {
+        $response = $this->get(route('categories.index'));
+        $crawler = $this->getCrawler($response);
+
+        $this->assertCount(0, $crawler->filter('.list-item'));
+    }
+
+    /** @test */
+    public function get_all_categories ()
+    {
+        $i = 0;
+        foreach ($categories1 = factory(Category::class, 5)->create() as $category1) {
+            $j = 0;
+            foreach (factory(Category::class, 5)->create(['nomenclature' => $category1->nomenclature . 'CHILD' . ++$i]) as $category2) {
+                factory(Category::class, 5)->create(['nomenclature' => $category2->nomenclature . 'LITTLE-CHILD' . ++$j]);
+            }
+        }
+
+        $response = $this->get(route('categories.index'));
+        $crawler = $this->getCrawler($response);
+
+        $listItems = $crawler->filter('.list-item');
+        $this->assertCount(125, $listItems);
+
+        $i = -1;
+        foreach ($categories1 as $category1) {
+            $this->assertText($category1->label, $listItems->eq(++$i)->text());
+            foreach ($this->categoryRepository->getChildren($category1) as $category2) {
+                $this->assertText($category2->label, $listItems->eq(++$i)->text());
+                foreach ($this->categoryRepository->getChildren($category2) as $category3) {
+                    $this->assertText($category3->label, $listItems->eq(++$i)->text());
+                }
+            }
+        }
+    }
+
     protected function setUp (): void
     {
         parent::setUp();
+        $this->categoryRepository = app(CategoryRepository::class);
     }
 }
