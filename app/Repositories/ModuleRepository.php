@@ -6,6 +6,7 @@ namespace App\Repositories;
 use App\Models\Module;
 use App\Models\ModuleParameter;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class ModuleRepository
@@ -25,24 +26,19 @@ class ModuleRepository
 
     public function getParameter (string $moduleLabel, string $parameterLabel): ?ModuleParameter
     {
-        $module = $this->getModule($moduleLabel);
 
         /** @var ModuleParameter $moduleParameter */
-        $moduleParameter = $module->parameters()->where('label', $parameterLabel)->first();
+        $moduleParameter = ModuleParameter::query()
+            ->whereHas('module', function (Builder $query) use ($moduleLabel) {
+                $query->where('label', $moduleLabel);
+            })
+            ->where('label', $parameterLabel)
+            ->first();
         if ($moduleParameter) {
             $this->transformValue($moduleParameter);
         }
 
         return $moduleParameter;
-    }
-
-    public function getModule (string $moduleLabel): Module
-    {
-        if (!$module = Module::where('label', $moduleLabel)->first()) {
-            throw new Exception("The module << $moduleLabel >> doesn't exist!");
-        }
-
-        return $module;
     }
 
     private function transformValue (ModuleParameter $moduleParameter)
@@ -70,6 +66,15 @@ class ModuleRepository
             'value'       => $value,
             'description' => $description
         ]);
+    }
+
+    public function getModule (string $moduleLabel): Module
+    {
+        if (!$module = Module::where('label', $moduleLabel)->first()) {
+            throw new Exception("The module << $moduleLabel >> doesn't exist!");
+        }
+
+        return $module;
     }
 
     public function isActive (string $moduleLabel): bool

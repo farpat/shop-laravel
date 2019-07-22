@@ -12,13 +12,13 @@ use Illuminate\Support\Str;
  * @property string $nomenclature
  * @property string $slug
  * @property string $description
- * @property-read string $url
- * @property-read string $meta_description
- * @property-read int $level
  * @property boolean $is_last
  * @property int|null $image_id
  * @property Image|null $image
  * @property Product[]|Collection $products
+ * @property-read string $url
+ * @property-read string $meta_description
+ * @property-read int $level
  */
 class Category extends Model
 {

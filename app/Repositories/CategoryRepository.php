@@ -33,22 +33,17 @@ class CategoryRepository
     public function getChildren (Category $category): Collection
     {
         if ($category->is_last) {
-            return null;
+            return collect();
         }
-
-        /*
-         ROUND (
-        (
-            LENGTH(description)
-            - LENGTH( REPLACE ( description, "value", "") )
-        ) / LENGTH("value")
-        */
-
-        //TOTO.TUTU
 
         return Category::query()
             ->where('nomenclature', 'LIKE', $category->nomenclature . '.%')
             ->whereRaw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature, ".", "")) = :level', [$category->level])
             ->get();
+    }
+
+    public function getFilters (): Collection
+    {
+        return collect();
     }
 }

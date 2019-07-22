@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Category|null $category
  * @property Tag[] $tags
  * @property Tax[] $taxes
+ * @property-read string $url
  */
 class Product extends Model
 {
@@ -23,6 +24,11 @@ class Product extends Model
         'label', 'slug', 'excerpt', 'description', 'category_id'
     ];
 
+    public function category ()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public function tags ()
     {
         $this->belongsToMany(Tag::class);
@@ -31,5 +37,20 @@ class Product extends Model
     public function taxes ()
     {
         $this->belongsToMany(Tax::class);
+    }
+
+    public function getUrlAttribute ()
+    {
+        return route('products.show', [
+            'categorySlug' => $this->category->slug,
+            'category'     => $this->category,
+            'id'           => $this->id,
+            'slug'         => $this->slug
+        ]);
+    }
+
+    public function getMetaDescriptionAttribute ()
+    {
+        return $this->excerpt;
     }
 }

@@ -77,6 +77,8 @@ class CategoryControllerTest extends TestCase
     /** @test */
     public function get_page_with_zero_products ()
     {
+        $this->withoutExceptionHandling();
+
         /** @var Category $category */
         $category = factory(Category::class)->create();
 
@@ -84,7 +86,7 @@ class CategoryControllerTest extends TestCase
         $crawler = $this->getCrawler($response);
 
         $productsElement = $crawler->filter('.products');
-        $this->assertCount(1, $productsElement);
+        $this->assertCount(0, $productsElement);
         $this->assertCount(0, $productsElement->filter('.product'));
         $this->assertText(__('This category has no products.'), $productsElement->text());
     }

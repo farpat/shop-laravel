@@ -15,3 +15,4 @@
 require 'web/auth.php';
 require 'web/home.php';
 require 'web/category.php';
+require 'web/product.php';

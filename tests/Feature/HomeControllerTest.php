@@ -133,7 +133,7 @@ class HomeControllerTest extends TestCase
         $response = $this->get(route('home.index'));
         $response->assertSuccessful();
         $crawler = $this->getCrawler($response);
-        $this->assertCount(1, $crawler->filter('.carousel'));
+        $this->assertCount(1, $crawler->filter('.slides'));
         $this->assertCount(count($slides), $crawler->filter('.carousel-item'));
     }
 

@@ -8,9 +8,9 @@
 
 @section('content')
     @if($products->isNotEmpty())
-        <section class="products">
+        <section class="home-section products">
             <h2>{{ __('Products in the spotlight') }}</h2>
-            <div class="card-group">
+            <div class="card-deck">
                 @foreach($products as $product)
                     @include('_partials.product')
                 @endforeach
@@ -19,9 +19,9 @@
     @endif
 
     @if($categories->isNotEmpty())
-        <section class="categories">
+        <section class="home-section categories">
             <h2>{{ __('Categories in the spotlight') }}</h2>
-            <div class="card-group">
+            <div class="card-deck">
                 @foreach($categories as $category)
                     @include('_partials.category')
                 @endforeach
@@ -30,9 +30,9 @@
     @endif
 
     @if($elements->isNotEmpty())
-        <section class="elements row">
+        <section class="home-section elements row">
             @foreach($elements as $element)
-                <div class="col element">
+                <div class="col">
                     @include('_partials.element')
                 </div>
             @endforeach
@@ -40,6 +40,8 @@
     @endif
 
     @if($slides->isNotEmpty())
-        @include('_partials.carousel')
+        <section class="home-section slides">
+            @include('_partials.carousel')
+        </section>
     @endif
 @endsection

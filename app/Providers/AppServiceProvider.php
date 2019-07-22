@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\NavigationRepository;
 use App\ViewComposers\UsersList;
 use Illuminate\Support\Facades\{DB, Schema, View};
 use Illuminate\Support\ServiceProvider;
@@ -18,8 +19,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         Schema::enableForeignKeyConstraints();
-
-        View::composer('_partials.users', UsersList::class);
     }
 
     /**
@@ -29,6 +28,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register ()
     {
-        Passport::ignoreMigrations();
+//        Passport::ignoreMigrations();
     }
 }

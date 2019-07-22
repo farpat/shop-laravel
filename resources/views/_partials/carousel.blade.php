@@ -1,6 +1,6 @@
 @php($carouselId = 'carouselExampleCaptions')
 
-<section id="{{ $carouselId }}" class="carousel slide" data-ride="carousel">
+<div id="{{ $carouselId }}" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
         @for($i=0; $i < $slides->count(); $i++)
             <li data-target="#{{ $carouselId }}" data-slide-to="{{ $i }}" class="{{ $i === 0 ? 'active' : '' }}"></li>
@@ -26,4 +26,4 @@
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">{{ __('Next') }}</span>
     </a>
-</section>
+</div>
