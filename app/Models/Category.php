@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
- * @property-read int $id
+ * @property int $id
  * @property string $label
  * @property string $nomenclature
  * @property string $slug
@@ -43,7 +43,7 @@ class Category extends Model
 
     public function getLevelAttribute ()
     {
-        return substr_count($this->nomenclature, '.') + 1;
+        return substr_count($this->nomenclature, Category::BREAKING_POINT) + 1;
     }
 
     public function getUrlAttribute ()

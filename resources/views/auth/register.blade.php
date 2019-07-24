@@ -4,8 +4,6 @@
 
 @section('description'){{ __('Register') }}@endsection
 
-@section('js-require', 'registerForm')
-
 @push('scripts')
     <script>
         {!! get_form_store($errors, old()) !!}

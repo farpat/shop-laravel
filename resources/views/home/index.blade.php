@@ -4,8 +4,6 @@
 
 @section('description'){{ __('Welcome') }}@endsection
 
-@section('js-require', 'home')
-
 @section('content')
     @if($products->isNotEmpty())
         <section class="home-section products">

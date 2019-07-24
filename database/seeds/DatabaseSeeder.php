@@ -2,7 +2,7 @@
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\User;
+use App\Repositories\CategoryRepository;
 use App\Repositories\ModuleRepository;
 use Illuminate\Database\Seeder;
 
@@ -13,10 +13,20 @@ class DatabaseSeeder extends Seeder
      * @var ModuleRepository
      */
     private $moduleRepository;
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+    /**
+     * @var \Faker\Generator
+     */
+    private $faker;
 
-    public function __construct (ModuleRepository $moduleRepository)
+    public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository)
     {
         $this->moduleRepository = $moduleRepository;
+        $this->categoryRepository = $categoryRepository;
+        $this->faker = Faker\Factory::create('fr_FR');
     }
 
     /**
@@ -27,12 +37,36 @@ class DatabaseSeeder extends Seeder
     public function run ()
     {
         foreach(factory(Category::class, 30)->create() as $category) {
-            factory(Product::class, 3)->create([
-                'category_id' => $category->id
-            ]);
+            $this->createProductfield($category);
+            $this->createProduct($category);
         }
 
         $this->createHomeModule();
+    }
+
+    private function createProductfield (Category $category)
+    {
+        if (($count = random_int(0, 4)) > 0) {
+            $productFieldsRequestData = [];
+
+            for ($i = 0; $i < $count; $i++) {
+                static $types = ['number', 'string'];
+
+                $productFieldsRequestData[] = [
+                    'type'        => $types[array_rand($types)],
+                    'label'       => $this->faker->unique()->words(2, true),
+                    'is_required' => true,
+                ];
+            }
+            $this->categoryRepository->setProductFields($category, $productFieldsRequestData);
+        }
+    }
+
+    private function createProduct (Category $category)
+    {
+        return factory(Product::class, random_int(1, 10))->create([
+            'category_id' => $category->id
+        ]);
     }
 
     private function createHomeModule ()

@@ -4,8 +4,6 @@
 
 @section('description', __('Reset Password'))
 
-@section('js-require', 'sendTokenPasswordForm')
-
 @push('scripts')
     <script>
         {!! get_form_store($errors, old()) !!}

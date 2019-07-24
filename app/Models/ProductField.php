@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read int $id
+ * @property int $id
  * @property string $type
  * @property string $label
  * @property boolean $is_required
@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProductField extends Model
 {
+    public $timestamps = false;
+    
     protected $fillable = [
         'type', 'label', 'is_required', 'category_id'
     ];

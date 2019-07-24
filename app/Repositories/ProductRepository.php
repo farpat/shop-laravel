@@ -28,13 +28,4 @@ class ProductRepository
 
         return collect();
     }
-
-    public function getProductsForCategory (Category $category): Builder
-    {
-        return Product::query()->whereHas('category', function (Builder $query) use ($category) {
-            $query
-                ->where('nomenclature', 'like', $category->nomenclature . '.%')
-                ->orWhere('nomenclature', $category->nomenclature);
-        });
-    }
 }
