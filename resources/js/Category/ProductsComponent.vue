@@ -2,7 +2,7 @@
     <div class="products-component">
         <h1>Products</h1>
         <ul>
-            <li v-for="product in currentProducts">
+            <li v-for="product in getCurrentProducts">
                 {{ product.label }}
             </li>
         </ul>
@@ -35,12 +35,11 @@
             }
         },
         computed: {
-            currentProducts: function () {
+            getCurrentProducts: function () {
                 const start = ((this.state.currentPage - 1) * this.state.perPage);
                 return this.products.slice(start, start + this.state.perPage);
             },
             getTotalPages: function () {
-                console.log(Math.ceil(this.products.length / this.state.perPage));
                 return Math.ceil(this.products.length / this.state.perPage);
             },
             getPages: function () {
@@ -58,23 +57,24 @@
                 return {'page-item': true, 'active': page === this.state.currentPage};
             },
             setCurrentPage: function (currentPage) {
-                this.$set(this.state, 'currentPage', currentPage);
-                window.history.replaceState({}, '', '?page=' + currentPage);
+                categoryStore.setCurrentPage(currentPage);
             },
             setPage: function (currentPage, event) {
                 event.preventDefault();
-                this.setCurrentPage(currentPage);
+                if (currentPage !== this.state.currentPage) {
+                    categoryStore.setCurrentPage(currentPage);
+                }
             },
             setPreviousPage: function (event) {
+                event.preventDefault();
                 if (!this.isFirstPage) {
-                    event.preventDefault();
-                    this.setCurrentPage(this.state.currentPage - 1);
+                    categoryStore.setCurrentPage(this.state.currentPage - 1);
                 }
             },
             setNextPage: function (event) {
+                event.preventDefault();
                 if (!this.isLastPage) {
-                    event.preventDefault();
-                    this.setCurrentPage(this.state.currentPage + 1);
+                    categoryStore.setCurrentPage(this.state.currentPage + 1);
                 }
             },
         },

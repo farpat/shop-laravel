@@ -55,7 +55,8 @@ class CategoryRepository
 
         return ProductField::query()
             ->whereIn('category_id', $ids)
-            ->get();
+            ->get()
+            ->keyBy('id');
     }
 
     private function getParents (Category $category): ?Builder

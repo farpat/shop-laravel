@@ -14,12 +14,15 @@ class CategoryController extends Controller
             return redirect($category->url);
         }
 
+        $products = $categoryRepository->getProductsFor($category)->get();
+
+        $filters = $products->isNotEmpty() ? $categoryRepository->getProductFields($category) : collect();
+        $filterValues = $request->get('f');
+
         $currentPage = (int)$request->get('page', 1);
         $perPage = Category::PRODUCTS_PER_PAGE;
-        $products = $categoryRepository->getProductsFor($category)->get();
-        $filters = $products->isNotEmpty() ? $categoryRepository->getProductFields($category) : collect();
 
-        return view('categories.show', compact('category', 'products', 'filters', 'currentPage', 'perPage'));
+        return view('categories.show', compact('category', 'products', 'filters', 'filterValues', 'currentPage', 'perPage'));
     }
 
     public function index ()

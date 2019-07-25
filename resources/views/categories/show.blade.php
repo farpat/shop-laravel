@@ -21,6 +21,7 @@
         <script>
             window.categoryStore = {
                 filters: @json($filters),
+                filterValues: @json($filterValues, JSON_FORCE_OBJECT),
                 perPage: {{ $perPage }},
                 currentPage: {{ $currentPage }}
             }
