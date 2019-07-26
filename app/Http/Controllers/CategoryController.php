@@ -17,7 +17,7 @@ class CategoryController extends Controller
         $products = $categoryRepository->getProductsFor($category)->get();
 
         $filters = $products->isNotEmpty() ? $categoryRepository->getProductFields($category) : collect();
-        $filterValues = $request->get('f');
+        $filterValues = $request->get('f', []);
 
         $currentPage = (int)$request->get('page', 1);
         $perPage = Category::PRODUCTS_PER_PAGE;

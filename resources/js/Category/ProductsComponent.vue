@@ -25,10 +25,16 @@
 
 
 <script>
-    import categoryStore from './categoryStore'
-    import range from 'lodash/range'
+    import categoryStore from './categoryStore';
+    import {range} from 'lodash';
 
     export default {
+        props: {
+            products: {
+                type: Array,
+                required: true
+            }
+        },
         data: function () {
             return {
                 state: categoryStore.state
@@ -77,12 +83,6 @@
                     categoryStore.setCurrentPage(this.state.currentPage + 1);
                 }
             },
-        },
-        props: {
-            products: {
-                type: Array,
-                required: true
-            }
         }
     }
 </script>

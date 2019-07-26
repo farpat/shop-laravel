@@ -3,6 +3,6 @@ import ProductsComponent from '../Category/ProductsComponent';
 import Vue from 'vue';
 
 new Vue({
-    'el': '#category-show',
+    el: '#category-show',
     components: {FilterComponent, ProductsComponent}
 });

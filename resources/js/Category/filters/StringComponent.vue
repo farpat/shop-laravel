@@ -4,7 +4,7 @@
             {{ filter.label }}
         </div>
         <div class="col">
-            <input type="text" class="form-control" :placeholder="filter.label" :value="getValue"
+            <input type="text" class="form-control" :placeholder="filter.label" :value="getFilterValue"
                    @input="(e) => setFilterValue(filter.id, e.currentTarget.value)">
         </div>
     </div>
@@ -14,25 +14,25 @@
     import categoryStore from "../categoryStore";
 
     export default {
+        props: {
+            'filter': {
+                'type': Object,
+                'required': true,
+            }
+        },
         data: function () {
             return {
                 state: categoryStore.state
             };
         },
         computed: {
-            'getValue': function () {
-                return this.state.filterValues[this.filter.id] || '';
+            'getFilterValue': function () {
+                return categoryStore.getFilterValue(this.filter.id);
             },
         },
         methods: {
             'setFilterValue': function (filterId, value) {
-                this.$set(this.state.filterValues, filterId, value);
-            }
-        },
-        props: {
-            'filter': {
-                'type': Object,
-                'required': true,
+                categoryStore.setFilterValue(filterId, value);
             }
         }
     }

@@ -24,7 +24,9 @@
                 filterValues: @json($filterValues, JSON_FORCE_OBJECT),
                 perPage: {{ $perPage }},
                 currentPage: {{ $currentPage }}
-            }
+            };
+
+            window.baseUrl = '{{ url()->current() }}';
         </script>
     @endpush
 @endif
