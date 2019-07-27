@@ -35,19 +35,20 @@ class CategoryRepository
 
     public function getProductsFor (Category $category): Builder
     {
-        return Product::query()->whereHas('category', function (Builder $query) use ($category) {
-            $query
-                ->where('nomenclature', 'like', $category->nomenclature . '.%')
-                ->orWhere('nomenclature', $category->nomenclature);
-        });
+        return Product::query()
+            ->with(['references'])
+            ->whereHas('category', function (Builder $query) use ($category) {
+                $query
+                    ->where('nomenclature', 'like', $category->nomenclature . '.%')
+                    ->orWhere('nomenclature', $category->nomenclature);
+            });
     }
 
     public function getProductFields (Category $category): Collection
     {
         if ($parentsBuilder = $this->getParents($category)) {
             $ids = $parentsBuilder->pluck('id');
-        }
-        else {
+        } else {
             $ids = collect();
         }
 

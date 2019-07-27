@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
  */
 class Category extends Model
 {
-    const PRODUCTS_PER_PAGE = 8;
+    const PRODUCTS_PER_PAGE = 1;
     const BREAKING_POINT = '.';
 
     public $timestamps = false;

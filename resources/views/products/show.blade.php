@@ -1,8 +1,8 @@
 @extends('_layouts.app')
 
-@section('title'){{ $product->label }}@endsection
+@section('title', $product->label)
 
-@section('description'){{ $product->meta_description }}@endsection
+@section('description', $product->meta_description)
 
 @section('content')
     <section>

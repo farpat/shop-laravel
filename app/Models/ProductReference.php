@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProductReference extends Model
 {
+    public $timestamps = false;
+
     protected $casts = [
         'filled_product_fields' => 'array',
     ];

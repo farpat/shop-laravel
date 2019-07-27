@@ -7,7 +7,7 @@
             </li>
         </ul>
 
-        <nav aria-label="Products pagination">
+        <nav aria-label="Products pagination" v-show="state.currentProducts.length > 1">
             <ul class="pagination">
                 <li :class="{'page-item':true, 'disabled':isFirstPage}">
                     <a class="page-link" href="#" aria-disabled="true" @click="(e) => setPreviousPage(e)">Previous</a>
@@ -29,12 +29,6 @@
     import {range} from 'lodash';
 
     export default {
-        props: {
-            products: {
-                type: Array,
-                required: true
-            }
-        },
         data: function () {
             return {
                 state: categoryStore.state
@@ -43,10 +37,10 @@
         computed: {
             getCurrentProducts: function () {
                 const start = ((this.state.currentPage - 1) * this.state.perPage);
-                return this.products.slice(start, start + this.state.perPage);
+                return this.state.currentProducts.slice(start, start + this.state.perPage);
             },
             getTotalPages: function () {
-                return Math.ceil(this.products.length / this.state.perPage);
+                return Math.ceil(this.state.currentProducts.length / this.state.perPage);
             },
             getPages: function () {
                 return range(1, this.getTotalPages + 1);

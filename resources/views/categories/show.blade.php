@@ -1,8 +1,8 @@
 @extends('_layouts.app')
 
-@section('title'){{ $category->label }}@endsection
+@section('title',$category->label)
 
-@section('description'){{ $category->meta_description }}@endsection
+@section('description', $category->meta_description)
 
 @section('content')
     <h1>{{ __('Category') }} : {{ $category->label }}</h1>
@@ -10,7 +10,7 @@
     @if($products->isNotEmpty())
         <section id="category-show">
             <filter-component></filter-component>
-            <products-component :products='@json($products)'></products-component>
+            <products-component></products-component>
         </section>
     @endif
 @endsection
@@ -20,6 +20,8 @@
     @push('scripts')
         <script>
             window.categoryStore = {
+                allProducts: @json($products),
+                currentProducts: [],
                 filters: @json($filters),
                 filterValues: @json($filterValues, JSON_FORCE_OBJECT),
                 perPage: {{ $perPage }},

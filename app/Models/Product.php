@@ -31,12 +31,17 @@ class Product extends Model
 
     public function tags ()
     {
-        $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class);
     }
 
     public function taxes ()
     {
-        $this->belongsToMany(Tax::class);
+        return $this->belongsToMany(Tax::class);
+    }
+
+    public function references ()
+    {
+        return $this->hasMany(ProductReference::class);
     }
 
     public function getUrlAttribute ()

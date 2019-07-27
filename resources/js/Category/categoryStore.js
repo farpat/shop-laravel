@@ -3,10 +3,12 @@ class CategoryStore {
         this.state = window.categoryStore;
         this.baseUrl = window.baseUrl;
         this.currentQueryString = '';
+        this.refreshProducts();
     }
 
     setCurrentPage(currentPage) {
-        this.state = Object.assign({}, this.state, {currentPage});
+        console.log('icii')
+        this.state.currentPage = currentPage;
         this.refreshUrl();
     }
 
@@ -19,10 +21,7 @@ class CategoryStore {
         this.currentQueryString = '';
 
         for (const filterId in this.state.filterValues) {
-            const value = this.getFilterValue(filterId);
-            if (value !== '') {
-                this.addQueryString('f[' + filterId + ']', value);
-            }
+            this.addQueryString('f[' + filterId + ']', this.getFilterValue(filterId));
         }
 
         if (this.state.currentPage > 1) {
@@ -37,9 +36,50 @@ class CategoryStore {
     }
 
     setFilterValue(filterId, value) {
-        this.state.filterValues[filterId] = value;
-        this.state = Object.assign({}, this.state, {filterValues: this.state.filterValues});
+        if (value !== '') {
+            this.state.filterValues[filterId] = value;
+        } else {
+            delete this.state.filterValues[filterId];
+        }
+
         this.refreshUrl();
+        this.refreshProducts();
+    }
+
+    refreshProducts() {
+        this.state.currentProducts = this.state.allProducts.filter((product) => this.filterProduct(product));
+    }
+
+    returnObject(object) {
+        return JSON.parse(JSON.stringify(object));
+    }
+
+    filterProduct(product) {
+        if (JSON.stringify(this.state.filterValues) === '{}') {
+            return true;
+        }
+
+        for (const filterId in this.state.filterValues) {
+            let value = this.state.filterValues[filterId];
+
+            if (filterId.endsWith('-max')) {
+                let realFilterId = filterId.substring(0, filterId.length - 4);
+                if (product.references.find((reference) => reference.filled_product_fields[realFilterId] <= value)) {
+                    return true;
+                }
+            } else if (filterId.endsWith('-min')) {
+                let realFilterId = filterId.substring(0, filterId.length - 4);
+                if (product.references.find((reference) => reference.filled_product_fields[realFilterId] >= value)) {
+                    return true;
+                }
+            } else {
+                if (product.references.find((reference) => reference.filled_product_fields[filterId].includes(value))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
 

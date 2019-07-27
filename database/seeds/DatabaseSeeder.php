@@ -1,10 +1,9 @@
 <?php
 
-use App\Models\Category;
-use App\Models\Product;
-use App\Repositories\CategoryRepository;
-use App\Repositories\ModuleRepository;
+use App\Models\{Category, Product, ProductReference};
+use App\Repositories\{CategoryRepository, ModuleRepository};
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,15 +35,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run ()
     {
-        foreach(factory(Category::class, 30)->create() as $category) {
-            $this->createProductfield($category);
-            $this->createProduct($category);
+        $categories = factory(Category::class, 30)->create();
+        foreach ($categories as $category) {
+            $productfields = $this->createProductfields($category);
+            $products = $this->createProducts($category);
+
+            foreach ($products as $product) {
+                $this->createProductReferences($product, $productfields);
+            }
         }
 
         $this->createHomeModule();
     }
 
-    private function createProductfield (Category $category)
+    private function createProductfields (Category $category)
     {
         if (($count = random_int(0, 4)) > 0) {
             $productFieldsRequestData = [];
@@ -58,15 +62,40 @@ class DatabaseSeeder extends Seeder
                     'is_required' => true,
                 ];
             }
-            $this->categoryRepository->setProductFields($category, $productFieldsRequestData);
+            return $this->categoryRepository->setProductFields($category, $productFieldsRequestData);
         }
+
+        return null;
     }
 
-    private function createProduct (Category $category)
+    private function createProducts (Category $category)
     {
-        return factory(Product::class, random_int(1, 10))->create([
+        return factory(Product::class, random_int(2, 10))->create([
             'category_id' => $category->id
         ]);
+    }
+
+    private function createProductReferences (Product $product, ?Collection $productFields)
+    {
+        $count = random_int(1, 4);
+
+        for ($i = 0; $i < $count; $i++) {
+            $filledProductfields = [];
+
+            if ($productFields) {
+                foreach ($productFields as $productField) {
+                    $filledProductfields[$productField->id] = ($productField->type === 'number') ?
+                        random_int(1, 10) :
+                        $this->faker->words(2, true);
+                }
+            }
+
+            ProductReference::query()->create([
+                'product_id'                 => $product->id,
+                'unit_price_excluding_taxes' => pow(10, random_int(1, 5)),
+                'filled_product_fields'      => $filledProductfields
+            ]);
+        }
     }
 
     private function createHomeModule ()
