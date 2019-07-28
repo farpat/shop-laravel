@@ -3,11 +3,14 @@ class CategoryStore {
         this.state = window.categoryStore;
         this.baseUrl = window.baseUrl;
         this.currentQueryString = '';
+
         this.refreshProducts();
+        if (this.getLastPage() < this.state.currentPage) {
+            this.setCurrentPage(this.getLastPage());
+        }
     }
 
     setCurrentPage(currentPage) {
-        console.log('icii')
         this.state.currentPage = currentPage;
         this.refreshUrl();
     }
@@ -80,6 +83,10 @@ class CategoryStore {
         }
 
         return false;
+    }
+
+    getLastPage() {
+        return Math.ceil(this.state.currentProducts.length / this.state.perPage);
     }
 }
 

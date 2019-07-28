@@ -9,7 +9,7 @@
 
     @if($products->isNotEmpty())
         <section id="category-show">
-            <filter-component></filter-component>
+            <filter-component :filters='@json($filters)'></filter-component>
             <products-component></products-component>
         </section>
     @endif
@@ -22,7 +22,6 @@
             window.categoryStore = {
                 allProducts: @json($products),
                 currentProducts: [],
-                filters: @json($filters),
                 filterValues: @json($filterValues, JSON_FORCE_OBJECT),
                 perPage: {{ $perPage }},
                 currentPage: {{ $currentPage }}
