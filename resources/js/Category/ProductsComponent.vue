@@ -1,24 +1,24 @@
 <template>
     <div class="products-component">
-        <h1>Products</h1>
+        <h1>{{ translate('Products') }}</h1>
         <ul v-if="state.currentProducts.length > 1">
             <ProductComponent v-for="product in getCurrentProducts" :product="product"/>
         </ul>
 
         <p v-else>
-            Sorry no products found!
+            {{ translate('Sorry, no products found!') }}
         </p>
 
         <nav aria-label="Products pagination" v-show="state.currentProducts.length > 1">
             <ul class="pagination">
                 <li :class="firstPageItemClass">
-                    <a class="page-link" href="#" aria-disabled="true" @click="(e) => setPreviousPage(e)">Previous</a>
+                    <a class="page-link" href="#" aria-disabled="true" @click="(e) => setPreviousPage(e)" v-html="translate('pagination.previous')"></a>
                 </li>
                 <li :class="pageItemClass(page)" v-for="page in getPages">
                     <a class="page-link" href="#" @click="(e) => setPage(page, e)">{{ page }}</a>
                 </li>
                 <li :class="lastPageItemClass">
-                    <a class="page-link" href="#" aria-disabled="true" @click="(e) => setNextPage(e)">Next</a>
+                    <a class="page-link" href="#" aria-disabled="true" @click="(e) => setNextPage(e)" v-html="translate('pagination.next')"></a>
                 </li>
             </ul>
         </nav>
@@ -30,8 +30,10 @@
     import categoryStore from './categoryStore';
     import {range} from 'lodash';
     import ProductComponent from "./ProductComponent";
+    import TranslationMixin from "../Utilities/Translation/TranslationMixin";
 
     export default {
+        mixins: [TranslationMixin],
         components: {ProductComponent},
         data: function () {
             return {
