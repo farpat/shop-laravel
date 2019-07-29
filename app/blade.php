@@ -18,6 +18,36 @@ function is_active (string $prefixPath, string $echo): string
     return '';
 }
 
+function breadcrumb (array $links): string
+{
+    $linksCount = count($links);
+
+    if ($linksCount === 0) {
+        return '';
+    }
+
+    $liHtml = '';
+    for ($i = 0; $i < $linksCount; $i++) {
+        if ($i + 1 < $linksCount) {
+            $liHtml .= <<<HTML
+            <li class="breadcrumb-item"><a href="{$links[$i]['url']}">{$links[$i]['label']}</a></li>
+HTML;
+        } else {
+            $liHtml .= <<<HTML
+            <li class="breadcrumb-item active" aria-current="page">{$links[$i]['label']}</li>
+HTML;
+        }
+    }
+
+    return <<<HTML
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            $liHtml
+        </ol>
+    </nav>
+HTML;
+}
+
 /**
  * @param ViewErrorBag $errorBag
  * @param array $old

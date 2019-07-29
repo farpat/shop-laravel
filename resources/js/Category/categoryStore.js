@@ -1,13 +1,10 @@
 class CategoryStore {
     constructor() {
-        this.state = window.categoryStore;
-        this.baseUrl = window.baseUrl;
+        this.state = window.categoryStore.state;
+        this.data = window.categoryStore.data;
         this.currentQueryString = '';
 
         this.refreshProducts();
-        if (this.getLastPage() < this.state.currentPage) {
-            this.setCurrentPage(this.getLastPage());
-        }
     }
 
     setCurrentPage(currentPage) {
@@ -31,7 +28,7 @@ class CategoryStore {
             this.addQueryString('page', this.state.currentPage);
         }
 
-        window.history.replaceState({}, '', this.baseUrl + this.currentQueryString);
+        window.history.replaceState({}, '', this.data.baseUrl + this.currentQueryString);
     }
 
     getFilterValue(filterId) {
@@ -50,11 +47,11 @@ class CategoryStore {
     }
 
     refreshProducts() {
-        this.state.currentProducts = this.state.allProducts.filter((product) => this.filterProduct(product));
-    }
+        this.state.currentProducts = this.data.allProducts.filter((product) => this.filterProduct(product));
 
-    returnObject(object) {
-        return JSON.parse(JSON.stringify(object));
+        if (this.getLastPage() < this.state.currentPage) {
+            this.setCurrentPage(this.getLastPage());
+        }
     }
 
     filterProduct(product) {

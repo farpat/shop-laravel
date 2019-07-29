@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read int $id
+ * @property int $id
  * @property string $label
  * @property string $slug
  * @property string $excerpt
@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Category|null $category
  * @property Tag[] $tags
  * @property Tax[] $taxes
+ * @property ProductReference[] $references
  * @property-read string $url
  */
 class Product extends Model
@@ -23,6 +24,8 @@ class Product extends Model
     protected $fillable = [
         'label', 'slug', 'excerpt', 'description', 'category_id'
     ];
+
+    protected $appends = ['url'];
 
     public function category ()
     {

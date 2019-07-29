@@ -7,6 +7,8 @@
 @section('content')
     <h1>{{ __('Category') }} : {{ $category->label }}</h1>
 
+    {!!  breadcrumb($breadcrumb) !!}
+
     @if($products->isNotEmpty())
         <section id="category-show">
             <filter-component :filters='@json($filters)'></filter-component>
@@ -20,14 +22,17 @@
     @push('scripts')
         <script>
             window.categoryStore = {
-                allProducts: @json($products),
-                currentProducts: [],
-                filterValues: @json($filterValues, JSON_FORCE_OBJECT),
-                perPage: {{ $perPage }},
-                currentPage: {{ $currentPage }}
+                state: {
+                    currentProducts: [],
+                    filterValues: @json($filterValues, JSON_FORCE_OBJECT),
+                    perPage: {{ $perPage }},
+                    currentPage: {{ $currentPage }}
+                },
+                data: {
+                    allProducts: @json($products),
+                    baseUrl: '{{ url()->current() }}'
+                }
             };
-
-            window.baseUrl = '{{ url()->current() }}';
         </script>
     @endpush
 @endif

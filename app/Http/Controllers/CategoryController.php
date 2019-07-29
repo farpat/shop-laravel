@@ -15,18 +15,25 @@ class CategoryController extends Controller
             return redirect($category->url);
         }
 
+        $breadcrumb = [
+            ['label' => __('Categories'), 'url' => route('categories.index')],
+            ['label' => $category->label]
+        ];
+
+
         $products = $categoryRepository->getProductsFor($category)->get();
-        $currentPage = $currentPage ?? 1;
+
         $filters = $products->isNotEmpty() ? $categoryRepository->getProductFields($category) : collect();
         $filterValues = $request->get('f', []);
 
         $perPage = Category::PRODUCTS_PER_PAGE;
+        $currentPage = $currentPage ?? 1;
 
-        return view('categories.show', compact('category', 'products', 'filters', 'filterValues', 'currentPage', 'perPage'));
+        return view('categories.show', compact('category', 'products', 'filters', 'filterValues', 'currentPage', 'perPage', 'breadcrumb'));
     }
 
     public function index ()
     {
-
+        return view('categories.index');
     }
 }

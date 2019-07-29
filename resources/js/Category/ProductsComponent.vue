@@ -1,15 +1,8 @@
 <template>
     <div class="products-component">
         <h1>{{ translate('Products') }}</h1>
-        <ul v-if="state.currentProducts.length > 1">
-            <ProductComponent v-for="product in getCurrentProducts" :product="product"/>
-        </ul>
 
-        <p v-else>
-            {{ translate('Sorry, no products found!') }}
-        </p>
-
-        <nav aria-label="Products pagination" v-show="state.currentProducts.length > 1">
+        <nav :aria-label="translate('Products pagination')" class="mt-2" v-show="state.currentProducts.length > 1">
             <ul class="pagination">
                 <li :class="firstPageItemClass">
                     <a class="page-link" href="#" aria-disabled="true" @click="(e) => setPreviousPage(e)" v-html="translate('pagination.previous')"></a>
@@ -22,6 +15,14 @@
                 </li>
             </ul>
         </nav>
+
+        <div class="row" v-if="state.currentProducts.length > 1">
+            <ProductComponent v-for="product in getCurrentProducts" :product="product"/>
+        </div>
+
+        <p v-else>
+            {{ translate('Sorry, no products found!') }}
+        </p>
     </div>
 </template>
 

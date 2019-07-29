@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Category, Product, ProductReference};
+use App\Models\{Category, Image, Product, ProductReference};
 use App\Repositories\{CategoryRepository, ModuleRepository};
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      *
      * @return void
+     * @throws Exception
      */
     public function run ()
     {
@@ -41,7 +42,8 @@ class DatabaseSeeder extends Seeder
             $products = $this->createProducts($category);
 
             foreach ($products as $product) {
-                $this->createProductReferences($product, $productfields);
+                $productReferences = $this->createProductReferences($product, $productfields);
+                $this->createImages($productReferences);
             }
         }
 
@@ -75,9 +77,18 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 
-    private function createProductReferences (Product $product, ?Collection $productFields)
+    /**
+     * @param Product $product
+     * @param Collection|null $productFields
+     *
+     * @return ProductReference[]|Collection
+     * @throws Exception
+     */
+    private function createProductReferences (Product $product, ?Collection $productFields): Collection
     {
         $count = random_int(1, 4);
+
+        $productReferences = collect();
 
         for ($i = 0; $i < $count; $i++) {
             $filledProductfields = [];
@@ -90,12 +101,17 @@ class DatabaseSeeder extends Seeder
                 }
             }
 
-            ProductReference::query()->create([
+            $productReference = ProductReference::query()->create([
+                'label'                      => $this->faker->sentence,
                 'product_id'                 => $product->id,
                 'unit_price_excluding_taxes' => pow(10, random_int(1, 5)),
                 'filled_product_fields'      => $filledProductfields
             ]);
+
+            $productReferences->push($productReference);
         }
+
+        return $productReferences;
     }
 
     private function createHomeModule ()
@@ -137,5 +153,26 @@ class DatabaseSeeder extends Seeder
         $this->moduleRepository->createParameter('home', 'carousel', $slides);
         $this->moduleRepository->createParameter('home', 'elements', $elements);
         $this->moduleRepository->createParameter('home', 'navigation', $navigation);
+    }
+
+    private function createImages (Collection $productReferences): void
+    {
+        $count = random_int(0, 5);
+
+
+        if ($count === 0) {
+            return;
+        }
+
+        /** @var ProductReference $productReference */
+        foreach ($productReferences as $productReference) {
+            $images = [];
+            for ($i = 0; $i < $count; $i++) {
+                $images[] = factory(Image::class)->make()->toArray();
+            }
+
+            $images = $productReference->images()->createMany($images);
+            $productReference->update(['main_image_id' => $images[0]->id]);
+        }
     }
 }

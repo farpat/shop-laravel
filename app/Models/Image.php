@@ -13,9 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Image extends Model
 {
-    public $timestamps = [
-        'created_at'
-    ];
+    public $timestamps = false;
 
     protected $fillable = [
         'url', 'alt', 'url_thumbnail', 'alt_thumbnail'
