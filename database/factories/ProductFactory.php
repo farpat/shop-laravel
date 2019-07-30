@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 $factory->define(Product::class, function (Faker $faker) {
     $label = $faker->unique()->words(3, true);
     $slug = Str::slug($label);
-    $excerpt = $faker->boolean() ? $faker->paragraph : null;
+    $excerpt = $faker->boolean(75) ? $faker->paragraph : null;
     $description = $excerpt ? $faker->paragraphs(5, true) : null;
 
 

@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ModuleParameter;
 use App\Models\Product;
+use App\Models\ProductField;
+use App\Models\ProductReference;
+use App\Repositories\ModuleRepository;
+use App\Repositories\ProductRepository;
 
 class ProductController extends Controller
 {
-    public function show (string $categorySlug, int $categoryId, string $slug, Product $product)
+    public function show (string $categorySlug, int $categoryId, string $slug, Product $product, ProductRepository $productRepository, ModuleRepository $moduleRepository)
     {
-        $product->load(['category:id,slug,label', 'references.images', 'references.main_image']);
+        $product->load(['category:id,slug,label', 'references.images', 'references.main_image', 'taxes']);
 
         if ($categorySlug !== $product->category->slug || $slug !== $product->slug || $categoryId !== $product->category->id) {
             return redirect($product->url);
         }
+
+        $productFields = $productRepository->getProductFields($product);
 
         $breadcrumb = [
             ['label' => __('Categories'), 'url' => route('categories.index')],
@@ -20,6 +27,8 @@ class ProductController extends Controller
             ['label' => $product->label]
         ];
 
-        return view('products.show', compact('product', 'breadcrumb'));
+        $currency = $moduleRepository->getParameter('home', 'currency')->value;
+
+        return view('products.show', compact('product', 'breadcrumb', 'productFields', 'currency'));
     }
 }

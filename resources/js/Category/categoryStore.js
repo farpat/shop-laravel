@@ -1,8 +1,11 @@
 class CategoryStore {
     constructor() {
         this.state = window.categoryStore.state;
-        this.data = window.categoryStore.data;
-        this.currentQueryString = '';
+
+        this.data = {
+            ...window.categoryStore.data,
+            currentQueryString: ''
+        };
 
         this.refreshProducts();
     }
@@ -13,12 +16,12 @@ class CategoryStore {
     }
 
     addQueryString(key, value) {
-        let prefix = this.currentQueryString.length === 0 ? '?' : '&';
-        this.currentQueryString += prefix + key + '=' + value;
+        let prefix = this.data.currentQueryString.length === 0 ? '?' : '&';
+        this.data.currentQueryString += prefix + key + '=' + value;
     }
 
     refreshUrl() {
-        this.currentQueryString = '';
+        this.data.currentQueryString = '';
 
         for (const filterId in this.state.filterValues) {
             this.addQueryString('f[' + filterId + ']', this.getFilterValue(filterId));
@@ -28,7 +31,7 @@ class CategoryStore {
             this.addQueryString('page', this.state.currentPage);
         }
 
-        window.history.replaceState({}, '', this.data.baseUrl + this.currentQueryString);
+        window.history.replaceState({}, '', this.data.baseUrl + this.data.currentQueryString);
     }
 
     getFilterValue(filterId) {

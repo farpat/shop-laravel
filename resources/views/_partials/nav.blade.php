@@ -7,7 +7,7 @@
 
     <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav">
-            {!! app(\App\Repositories\NavigationRepository::class)->toHtml() !!}
+            {{ navigation() }}
         </ul>
     </div>
 </nav>

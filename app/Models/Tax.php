@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Tax extends Model
 {
-    const PERCENTAGE_TYPE = '%';
+    const PERCENTAGE_TYPE = 'PERCENTAGE';
     const UNITY_TYPE = 'UNITY';
 
     public $timestamps = false;
@@ -23,6 +23,6 @@ class Tax extends Model
 
     public function products ()
     {
-        $this->belongsToMany(Product::class);
+        $this->belongsToMany(Product::class, 'products_taxes');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Category, Image, Product, ProductReference};
+use App\Models\{Category, Image, Product, ProductReference, Tax};
 use App\Repositories\{CategoryRepository, ModuleRepository};
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -20,6 +20,14 @@ class DatabaseSeeder extends Seeder
      * @var \Faker\Generator
      */
     private $faker;
+    /**
+     * @var Tax
+     */
+    private $ecoTax5Cents;
+    /**
+     * @var Tax
+     */
+    private $tax20Percent;
 
     public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository)
     {
@@ -36,18 +44,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run ()
     {
-        $categories = factory(Category::class, 30)->create();
-        foreach ($categories as $category) {
+        $this->createTaxes();
+
+        foreach (factory(Category::class, 30)->create() as $category) {
             $productfields = $this->createProductfields($category);
             $products = $this->createProducts($category);
 
             foreach ($products as $product) {
                 $productReferences = $this->createProductReferences($product, $productfields);
                 $this->createImages($productReferences);
+                $this->attachTaxes($product);
             }
         }
 
         $this->createHomeModule();
+    }
+
+    private function attachTaxes (Product $product)
+    {
+        $attachments = [$this->tax20Percent->id];
+        if ($this->faker->boolean(25)) {
+            $attachments[] = $this->ecoTax5Cents->id;
+        }
+        $product->taxes()->attach($attachments);
+        $product->save();
     }
 
     private function createProductfields (Category $category)
@@ -70,6 +90,12 @@ class DatabaseSeeder extends Seeder
         return null;
     }
 
+    /**
+     * @param Category $category
+     *
+     * @return Collection|Product[]
+     * @throws Exception
+     */
     private function createProducts (Category $category)
     {
         return factory(Product::class, random_int(2, 10))->create([
@@ -102,7 +128,7 @@ class DatabaseSeeder extends Seeder
             }
 
             $productReference = ProductReference::query()->create([
-                'label'                      => $this->faker->sentence,
+                'label'                      => $this->faker->words(3, true),
                 'product_id'                 => $product->id,
                 'unit_price_excluding_taxes' => pow(10, random_int(1, 5)),
                 'filled_product_fields'      => $filledProductfields
@@ -153,6 +179,7 @@ class DatabaseSeeder extends Seeder
         $this->moduleRepository->createParameter('home', 'carousel', $slides);
         $this->moduleRepository->createParameter('home', 'elements', $elements);
         $this->moduleRepository->createParameter('home', 'navigation', $navigation);
+        $this->moduleRepository->createParameter('home', 'currency', 'EUR');
     }
 
     private function createImages (Collection $productReferences): void
@@ -174,5 +201,20 @@ class DatabaseSeeder extends Seeder
             $images = $productReference->images()->createMany($images);
             $productReference->update(['main_image_id' => $images[0]->id]);
         }
+    }
+
+    private function createTaxes ()
+    {
+        $this->tax20Percent = Tax::query()->create([
+            'label' => 'VAT 20%',
+            'type'  => Tax::PERCENTAGE_TYPE,
+            'value' => 20
+        ]);
+
+        $this->ecoTax5Cents = Tax::query()->create([
+            'label' => 'Eco tax',
+            'type'  => Tax::UNITY_TYPE,
+            'value' => 0.05,
+        ]);
     }
 }

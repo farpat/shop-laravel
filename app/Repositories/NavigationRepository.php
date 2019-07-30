@@ -5,11 +5,12 @@ namespace App\Repositories;
 use App\Models\Category;
 use App\Models\Product;
 use Exception;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Arr;
 
-class NavigationRepository
+class NavigationRepository implements Htmlable
 {
     /**
      * @var ModuleRepository
@@ -91,9 +92,7 @@ class NavigationRepository
 
         $activeClass = $resource->url === $this->currentUrl ? ' active' : '';
 
-        return <<<HTML
-        <li class="nav-item"><a class="nav-link{$activeClass}" href="{$resource->url}">{$resource->label}</a></li>
-HTML;
+        return "<li class=\"nav-item\"><a class=\"nav-link{$activeClass}\" href=\"{$resource->url}\">{$resource->label}</a></li>";
 
     }
 
@@ -119,21 +118,14 @@ HTML;
         $resource = $this->getResource($link);
 
 
-        $begin = <<<HTML
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown-{$resource->slug}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{$resource->label}</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown-{$resource->slug}">
-HTML;
+        $begin = "<li class=\"nav-item dropdown\"><a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"dropdown-{$resource->slug}\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">{$resource->label}</a><div class=\"dropdown-menu\" aria-labelledby=\"dropdown-{$resource->slug}\">";
 
         $itemsHtml = array_reduce($links, function ($acc, $link) {
             $acc .= $this->renderLink2($link);
             return $acc;
         });
 
-        $end = <<<HTML
-            </div>
-      </li>
-HTML;
+        $end = "</div></li>";
 
         return $begin . $itemsHtml . $end;
     }
@@ -144,8 +136,6 @@ HTML;
 
         $activeClass = $resource->url === $this->currentUrl ? ' active' : '';
 
-        return <<<HTML
-        <a class="dropdown-item{$activeClass}" href="{$resource->url}">{$resource->label}</a>
-HTML;
+        return "<a class=\"dropdown-item{$activeClass}\" href=\"{$resource->url}\">{$resource->label}</a>";
     }
 }

@@ -1,60 +1,34 @@
 <?php
 
-use Illuminate\Support\{Str, ViewErrorBag};
+use App\Repositories\NavigationRepository;
+use Illuminate\Support\{HtmlString, ViewErrorBag};
 
-/**
- * @param string $prefixPath Nom de la route
- *
- * @param string $echo
- *
- * @return string
- */
-function is_active (string $prefixPath, string $echo): string
+function navigation ()
 {
-    if (Str::startsWith(request()->path(), $prefixPath)) {
-        return $echo;
-    }
-
-    return '';
+    return app(NavigationRepository::class);
 }
 
-function breadcrumb (array $links): string
+function breadcrumb (array $links): HtmlString
 {
     $linksCount = count($links);
 
     if ($linksCount === 0) {
-        return '';
+        return new HtmlString('');
     }
 
     $liHtml = '';
     for ($i = 0; $i < $linksCount; $i++) {
         if ($i + 1 < $linksCount) {
-            $liHtml .= <<<HTML
-            <li class="breadcrumb-item"><a href="{$links[$i]['url']}">{$links[$i]['label']}</a></li>
-HTML;
+            $liHtml .= "<li class=\"breadcrumb-item\"><a href=\"{$links[$i]['url']}\">{$links[$i]['label']}</a></li>";
         } else {
-            $liHtml .= <<<HTML
-            <li class="breadcrumb-item active" aria-current="page">{$links[$i]['label']}</li>
-HTML;
+            $liHtml .= "<li class=\"breadcrumb-item active\" aria-current=\"page\">{$links[$i]['label']}</li>";
         }
     }
 
-    return <<<HTML
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            $liHtml
-        </ol>
-    </nav>
-HTML;
+    return new HtmlString("<nav aria-label=\"breadcrumb\"><ol class=\"breadcrumb\">$liHtml</ol></nav>");
 }
 
-/**
- * @param ViewErrorBag $errorBag
- * @param array $old
- *
- * @return string
- */
-function get_form_store (ViewErrorBag $errorBag, array $old): string
+function get_form_store (ViewErrorBag $errorBag, array $old): HtmlString
 {
     $errors = json_encode(array_map(function ($errors) {
         return $errors[0];
@@ -63,14 +37,9 @@ function get_form_store (ViewErrorBag $errorBag, array $old): string
     unset($old['_token']);
     $datas = json_encode($old);
 
-    return "window.formStore = { errors : $errors, datas : $datas}";
+    return new HtmlString("window.formStore = { errors : $errors, datas : $datas}");
 }
 
-/**
- * @param string $asset
- *
- * @return string
- */
 function get_asset (string $asset): string
 {
     static $json;

@@ -2,19 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
  * @property string $label
  * @property string $slug
- * @property string $excerpt
- * @property string $description
+ * @property string|null $excerpt
+ * @property string|null $description
  * @property int $category_id
  * @property Category|null $category
- * @property Tag[] $tags
- * @property Tax[] $taxes
- * @property ProductReference[] $references
+ * @property Tag[]|Collection $tags
+ * @property Tax[]|Collection $taxes
+ * @property ProductReference[]|Collection $references
  * @property-read string $url
  */
 class Product extends Model
@@ -34,12 +35,12 @@ class Product extends Model
 
     public function tags ()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class, 'products_tags');
     }
 
     public function taxes ()
     {
-        return $this->belongsToMany(Tax::class);
+        return $this->belongsToMany(Tax::class, 'products_taxes');
     }
 
     public function references ()

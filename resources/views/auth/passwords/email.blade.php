@@ -6,7 +6,7 @@
 
 @push('scripts')
     <script>
-        {!! get_form_store($errors, old()) !!}
+        {{ get_form_store($errors, old()) }}
     </script>
 @endpush
 

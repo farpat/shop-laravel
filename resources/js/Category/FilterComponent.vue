@@ -14,7 +14,7 @@
 <script>
     import NumberComponent from "./filters/NumberComponent.vue";
     import StringComponent from "./filters/StringComponent.vue";
-    import TranslationMixin from "../Utilities/Translation/TranslationMixin";
+    import TranslationMixin from "../src/Translation/TranslationMixin";
 
     export default {
         mixins: [TranslationMixin],

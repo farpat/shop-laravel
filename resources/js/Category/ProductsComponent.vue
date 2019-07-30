@@ -31,7 +31,7 @@
     import categoryStore from './categoryStore';
     import {range} from 'lodash';
     import ProductComponent from "./ProductComponent";
-    import TranslationMixin from "../Utilities/Translation/TranslationMixin";
+    import TranslationMixin from "../src/Translation/TranslationMixin";
 
     export default {
         mixins: [TranslationMixin],

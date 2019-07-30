@@ -7,7 +7,7 @@
 @section('content')
     <h1>{{ __('Category') }} : {{ $category->label }}</h1>
 
-    {!!  breadcrumb($breadcrumb) !!}
+    {{ breadcrumb($breadcrumb) }}
 
     @if($products->isNotEmpty())
         <section id="category-show">
