@@ -52,7 +52,10 @@ class CategoryStore {
     refreshProducts() {
         this.state.currentProducts = this.data.allProducts.filter((product) => this.filterProduct(product));
 
-        if (this.getLastPage() < this.state.currentPage) {
+        if (this.getLastPage() === 0) { //when not current products found
+            this.setCurrentPage(1);
+        }
+        else if (this.getLastPage() < this.state.currentPage) { //when the last current page is too big with new filters
             this.setCurrentPage(this.getLastPage());
         }
     }
