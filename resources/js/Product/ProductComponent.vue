@@ -2,7 +2,9 @@
     <section>
         <Menu></Menu>
 
-        <ProductReference :key="getCurrentReference.id"></ProductReference>
+        <keep-alive>
+            <ProductReference :key="getCurrentReference.id"></ProductReference>
+        </keep-alive>
     </section>
 </template>
 
@@ -10,7 +12,7 @@
     import Menu from "./Menu/MenuComponent";
     import TranslationMixin from "../src/Translation/TranslationMixin";
     import ProductStore from "./ProductStore";
-    import ProductReference from "./ProductReference/ProductReferenceComponent";
+    import ProductReference from "./ProductReference/Item";
     import CartStore from "../Cart/CartStore";
 
     export default {

@@ -10,10 +10,10 @@
     {{ breadcrumb($breadcrumb) }}
 
     <section id="product-show">
-        <product-references-component></product-references-component>
+        <product-component></product-component>
 
         <section class="mt-5 text-justify">
-            {!!  $product->description !!}
+            {!! $product->description !!}
         </section>
     </section>
 @endsection
