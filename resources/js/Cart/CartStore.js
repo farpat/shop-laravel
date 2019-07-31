@@ -21,7 +21,7 @@ class CartStore {
     }
 
     deleteItem(referenceId) {
-        delete this.state.cart[referenceId];
+        Vue.delete(this.state.cart, referenceId);
     }
 }
 
