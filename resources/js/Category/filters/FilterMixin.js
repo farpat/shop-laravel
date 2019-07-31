@@ -1,4 +1,4 @@
-import categoryStore from "../categoryStore";
+import CategoryStore from "../CategoryStore";
 
 export default {
     props: {
@@ -7,10 +7,10 @@ export default {
     },
     methods: {
         setFilterValue: function (filterId, value) {
-            categoryStore.setFilterValue(filterId, value);
+            CategoryStore.setFilterValue(filterId, value);
         },
         getFilterValue: function (filterId) {
-            return categoryStore.getFilterValue(filterId);
+            return CategoryStore.getFilterValue(filterId);
         }
     }
 }

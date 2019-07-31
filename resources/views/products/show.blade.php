@@ -21,15 +21,21 @@
 
 @push('scripts')
     <script>
-        window.productStore = {
-            state: {
-                currentReference: {}
-            },
+        window.ProductStore = {
+            state: {},
             data: {
-                allReferences: @json($product->references),
                 baseUrl: '{{ url()->current() }}',
                 currency: '{{ $currency }}',
                 productFields: @json($productFields)
+            }
+        };
+
+        window.CartStore = {
+            state: {
+                cart: {}
+            },
+            data: {
+                allReferences: @json($product->references->keyBy('id')),
             }
         };
     </script>

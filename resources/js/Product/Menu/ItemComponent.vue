@@ -12,35 +12,30 @@
 </template>
 
 <script>
-    import productStore from "./productStore";
+    import ProductStore from "../ProductStore";
 
     export default {
         props: {
             reference: {type: Object, required: true}
         },
-        data: function () {
-            return {
-                state: productStore.state
-            }
-        },
         methods: {
             getLiClass: function (reference) {
                 return {
                     'media': true, 'mb-4': true,
-                    'bg-primary': reference === this.state.currentReference
+                    'bg-primary': reference === ProductStore.state.currentReference
                 };
             },
             getTitleClass: function (reference) {
                 return {
                     'mt-0': true, 'mb-1': true,
-                    'text-white': reference === this.state.currentReference
+                    'text-white': reference === ProductStore.state.currentReference
                 }
             },
             setCurrentProductReference: function (reference, event) {
                 event.preventDefault();
 
-                if (reference !== productStore.state.currentReference) {
-                    productStore.setCurrentProductReference(reference);
+                if (reference !== ProductStore.state.currentReference) {
+                    ProductStore.setCurrentReference(reference);
                 }
             }
         }

@@ -17,7 +17,7 @@
         </nav>
 
         <div class="row" v-if="state.currentProducts.length > 1">
-            <ProductComponent v-for="product in getCurrentProducts" :product="product"/>
+            <ProductComponent v-for="product in getCurrentProducts" :product="product" :key="product.id"/>
         </div>
 
         <p v-else>
@@ -28,7 +28,7 @@
 
 
 <script>
-    import categoryStore from './categoryStore';
+    import CategoryStore from './CategoryStore';
     import {range} from 'lodash';
     import ProductComponent from "./ProductComponent";
     import TranslationMixin from "../src/Translation/TranslationMixin";
@@ -38,7 +38,7 @@
         components: {ProductComponent},
         data: function () {
             return {
-                state: categoryStore.state
+                state: CategoryStore.state
             }
         },
         computed: {
@@ -47,13 +47,13 @@
                 return this.state.currentProducts.slice(start, start + this.state.perPage);
             },
             getPages: function () {
-                return range(1, categoryStore.getLastPage() + 1);
+                return range(1, CategoryStore.getLastPage() + 1);
             },
             isFirstPage: function () {
                 return this.state.currentPage === 1;
             },
             isLastPage: function () {
-                return this.state.currentPage === categoryStore.getLastPage()
+                return this.state.currentPage === CategoryStore.getLastPage()
             },
             firstPageItemClass: function () {
                 return {'page-item': true, disabled: this.isFirstPage};
@@ -67,24 +67,24 @@
                 return {'page-item': true, active: page === this.state.currentPage};
             },
             setCurrentPage: function (currentPage) {
-                categoryStore.setCurrentPage(currentPage);
+                CategoryStore.setCurrentPage(currentPage);
             },
             setPage: function (currentPage, event) {
                 event.preventDefault();
                 if (currentPage !== this.state.currentPage) {
-                    categoryStore.setCurrentPage(currentPage);
+                    CategoryStore.setCurrentPage(currentPage);
                 }
             },
             setPreviousPage: function (event) {
                 event.preventDefault();
                 if (!this.isFirstPage) {
-                    categoryStore.setCurrentPage(this.state.currentPage - 1);
+                    CategoryStore.setCurrentPage(this.state.currentPage - 1);
                 }
             },
             setNextPage: function (event) {
                 event.preventDefault();
                 if (!this.isLastPage) {
-                    categoryStore.setCurrentPage(this.state.currentPage + 1);
+                    CategoryStore.setCurrentPage(this.state.currentPage + 1);
                 }
             },
         }
