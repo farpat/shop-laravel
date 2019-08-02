@@ -1,10 +1,12 @@
 <template>
     <div>
-        <div class="row align-items-center" v-if="!getItem">
+        <div class="row align-items-center" v-if="getItem === undefined">
             <div class="col-auto">
                 {{ translate('Quantity') }} :
-                <input class="form-control d-inline-block" min="1" style="max-width: 5rem" type="number"
-                       v-model.number="quantity">
+                <label>
+                    <input class="form-control d-inline-block" min="1" style="max-width: 5rem" type="number"
+                           v-model.number="quantity">
+                </label>
             </div>
             <div class="col-auto">
                 <button @click="() => addInCart()" class="btn btn-sm btn-primary" type="button">
@@ -35,6 +37,7 @@
         },
         computed: {
             getItem: function () {
+                console.log('get item ' + this.reference.id);
                 return CartStore.getItem(this.reference.id);
             }
         },

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Product;
 use App\Models\ProductField;
+use App\Models\ProductReference;
 use Illuminate\Support\Collection;
 
 class ProductRepository
@@ -41,5 +42,13 @@ class ProductRepository
         }
 
         return collect();
+    }
+
+    public function getAllReferences ()
+    {
+        return ProductReference::query()
+            ->with(['images', 'main_image', 'product', 'product.category:id,slug,label', 'product.taxes'])
+            ->get()
+            ->keyBy('id');
     }
 }

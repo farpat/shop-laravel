@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function show (string $categorySlug, int $categoryId, string $slug, Product $product, ProductRepository $productRepository, ModuleRepository $moduleRepository)
     {
-        $product->load(['category:id,slug,label', 'references.images', 'references.main_image', 'taxes']);
+        $product->load(['category:id,slug,label', 'references']);
 
         if ($categorySlug !== $product->category->slug || $slug !== $product->slug || $categoryId !== $product->category->id) {
             return redirect($product->url);

@@ -13,7 +13,6 @@
     import TranslationMixin from "../src/Translation/TranslationMixin";
     import ProductStore from "./ProductStore";
     import ProductReference from "./ProductReference/Item";
-    import CartStore from "../Cart/CartStore";
 
     export default {
         mixins: [TranslationMixin],
@@ -21,7 +20,6 @@
         data: function () {
             return {
                 productState: ProductStore.state,
-                cartState: CartStore.state
             }
         },
         computed: {

@@ -12,16 +12,29 @@ class CartStore {
     }
 
     setItem(referenceId, quantity) {
-        const cartItem = {...this.data.allReferences[referenceId], quantity};
-        Vue.set(this.state.cart, referenceId, cartItem);
+        if (this.state.cartItems[referenceId] === undefined) {
+            this.state.cartItemsLength++;
+        }
+
+        const reference = this.data.allProductReferences[referenceId];
+
+        const cartItem = {
+            ...reference,
+            quantity,
+            amount_including_taxes: quantity * reference.unit_price_including_taxes,
+            amount_excluding_taxes: quantity * reference.unit_price_excluding_taxes,
+        };
+
+        Vue.set(this.state.cartItems, referenceId, cartItem);
     }
 
     getItem(referenceId) {
-        return this.state.cart[referenceId];
+        return this.state.cartItems[referenceId];
     }
 
     deleteItem(referenceId) {
-        Vue.delete(this.state.cart, referenceId);
+        Vue.delete(this.state.cartItems, referenceId);
+        this.state.cartItemsLength--;
     }
 }
 

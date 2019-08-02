@@ -117,8 +117,7 @@ class NavigationRepository implements Htmlable
     {
         $resource = $this->getResource($link);
 
-
-        $begin = "<li class=\"nav-item dropdown\"><a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"dropdown-{$resource->slug}\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">{$resource->label}</a><div class=\"dropdown-menu\" aria-labelledby=\"dropdown-{$resource->slug}\">";
+        $begin = "<li class=\"nav-item dropdown\"><button class=\"nav-link btn btn-link dropdown-toggle\" id=\"dropdown-{$resource->slug}\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">{$resource->label}</button><div class=\"dropdown-menu\" aria-labelledby=\"dropdown-{$resource->slug}\">";
 
         $itemsHtml = array_reduce($links, function ($acc, $link) {
             $acc .= $this->renderLink2($link);

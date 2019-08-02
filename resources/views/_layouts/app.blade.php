@@ -27,6 +27,17 @@
 </div>
 
 @stack('scripts')
+<script>
+    window.CartStore = {
+        state: {
+            cartItems: {},
+            cartItemsLength: 0,
+        },
+        data: {
+            allProductReferences: @json($allProductReferences),
+        }
+    };
+</script>
 <script src="{{ get_asset('app.js') }}"></script>
 </body>
 </html>

@@ -26,16 +26,8 @@
             data: {
                 baseUrl: '{{ url()->current() }}',
                 currency: '{{ $currency }}',
-                productFields: @json($productFields)
-            }
-        };
-
-        window.CartStore = {
-            state: {
-                cart: {}
-            },
-            data: {
-                allReferences: @json($product->references->keyBy('id')),
+                productFields: @json($productFields),
+                productReferenceIds: @json($product->references->pluck('id'))
             }
         };
     </script>

@@ -16,8 +16,8 @@ class ProductStore {
     }
 
     getFirstReference() {
-        const firstKey = Object.keys(CartStore.data.allReferences)[0];
-        return CartStore.data.allReferences[firstKey];
+        const firstKey = this.data.productReferenceIds[0];
+        return CartStore.data.allProductReferences[firstKey];
     }
 
     getFilledProductValue(reference) {

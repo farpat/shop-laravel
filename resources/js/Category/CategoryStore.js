@@ -10,28 +10,28 @@ class CategoryStore {
             currentQueryString: ''
         };
 
-        this.refreshProducts();
+        this._refreshProducts();
     }
 
     setCurrentPage(currentPage) {
         this.state.currentPage = currentPage;
-        this.refreshUrl();
+        this._refreshUrl();
     }
 
-    addQueryString(key, value) {
+    _addQueryString(key, value) {
         let prefix = this.data.currentQueryString.length === 0 ? '?' : '&';
         this.data.currentQueryString += prefix + key + '=' + value;
     }
 
-    refreshUrl() {
+    _refreshUrl() {
         this.data.currentQueryString = '';
 
         for (const filterId in this.state.filterValues) {
-            this.addQueryString('f[' + filterId + ']', this.getFilterValue(filterId));
+            this._addQueryString('f[' + filterId + ']', this.getFilterValue(filterId));
         }
 
         if (this.state.currentPage > 1) {
-            this.addQueryString('page', this.state.currentPage);
+            this._addQueryString('page', this.state.currentPage);
         }
 
         window.history.replaceState({}, '', this.data.baseUrl + this.data.currentQueryString);
@@ -48,22 +48,23 @@ class CategoryStore {
             delete this.state.filterValues[filterId];
         }
 
-        this.refreshUrl();
-        this.refreshProducts();
+        this._refreshUrl();
+        this._refreshProducts();
     }
 
-    refreshProducts() {
-        this.state.currentProducts = this.data.allProducts.filter((product) => this.filterProduct(product));
+    _refreshProducts() {
+        this.state.currentProducts = this.data.allProducts.filter((product) => this._filterProduct(product));
 
-        if (this.getLastPage() === 0) { //when not current products found
+        if (this.getLastPage() === 0) {
+            //when not current products found
             this.setCurrentPage(1);
-        }
-        else if (this.getLastPage() < this.state.currentPage) { //when the last current page is too big with new filters
+        } else if (this.getLastPage() < this.state.currentPage) {
+            //when the last current page is too big with new filters
             this.setCurrentPage(this.getLastPage());
         }
     }
 
-    filterProduct(product) {
+    _filterProduct(product) {
         if (JSON.stringify(this.state.filterValues) === '{}') {
             return true;
         }
