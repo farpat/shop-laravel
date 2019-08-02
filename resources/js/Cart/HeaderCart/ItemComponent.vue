@@ -11,7 +11,7 @@
                 {{ getAmountIncludingTaxes }}
             </div>
             <div class="">
-                <button @click="() => deleteItem()" class="btn btn-sm btn-danger" type="button">
+                <button @click="(e) => deleteItem(e)" class="btn btn-sm btn-danger" type="button">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -37,8 +37,9 @@
             }
         },
         methods: {
-            deleteItem: function () {
+            deleteItem: function (event) {
                 CartStore.deleteItem(this.item.id);
+                event.stopPropagation();
             }
         }
     }

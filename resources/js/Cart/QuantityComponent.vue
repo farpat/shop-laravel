@@ -37,7 +37,6 @@
         },
         computed: {
             getItem: function () {
-                console.log('get item ' + this.reference.id);
                 return CartStore.getItem(this.reference.id);
             }
         },

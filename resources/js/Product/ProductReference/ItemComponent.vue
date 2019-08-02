@@ -1,9 +1,7 @@
 <template>
     <article class="row">
         <div class="col-md-8" v-if="getCurrentReference.main_image">
-            <keep-alive>
-                <Slider :images="getCurrentReference.images" :key="getCurrentReference.id"></Slider>
-            </keep-alive>
+            <Slider :images="getCurrentReference.images" :key="getCurrentReference.id"></Slider>
         </div>
         <div class="col-md">
             <ul>
@@ -12,10 +10,7 @@
                     getUnitPriceIncludingTaxes(getCurrentReference.unit_price_including_taxes) }}
                 </li>
                 <li>
-                    <keep-alive>
-                        <QuantityComponent :key="getCurrentReference.id"
-                                           :reference="getCurrentReference"></QuantityComponent>
-                    </keep-alive>
+                    <QuantityComponent :reference="getCurrentReference"></QuantityComponent>
                 </li>
             </ul>
         </div>
@@ -27,7 +22,7 @@
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import Str from "../../src/String/Str";
     import QuantityComponent from "../../Cart/QuantityComponent";
-    import Slider from "./Slider";
+    import Slider from "./SliderComponent";
 
     export default {
         mixins: [TranslationMixin],
