@@ -1,7 +1,7 @@
 <template>
     <article class="row">
         <div class="col-md-8" v-if="getCurrentReference.main_image">
-            <Slider :images="getCurrentReference.images" :key="getCurrentReference.id"></Slider>
+            <Slider :reference="getCurrentReference"></Slider>
         </div>
         <div class="col-md">
             <ul>

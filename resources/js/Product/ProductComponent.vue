@@ -2,7 +2,9 @@
     <section>
         <Menu></Menu>
 
-        <ProductReference :key="getCurrentReference.id"></ProductReference>
+        <keep-alive>
+            <ProductReference :key="getCurrentReference.id"></ProductReference>
+        </keep-alive>
     </section>
 </template>
 
