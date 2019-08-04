@@ -46,7 +46,7 @@ class ModuleRepository
         $value = $moduleParameter->value;
 
         if (Str::startsWith($value, ['{', '['])) {
-            $newValue = json_decode($value, true);
+            $newValue = json_decode($value);
             if (json_last_error() === JSON_ERROR_NONE) {
                 $value = $newValue;
             }

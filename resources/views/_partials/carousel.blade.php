@@ -1,4 +1,4 @@
-@php($carouselId = 'carouselExampleCaptions')
+@php($carouselId = 'carousel-home')
 
 <div id="{{ $carouselId }}" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
@@ -9,11 +9,11 @@
     <div class="carousel-inner">
         @foreach($slides as $slide)
             <div class="carousel-item{{ $loop->first ? ' active' : '' }}">
-                <img src="{{ $slide['img'] }}" alt="{{ $slide['title'] }}" class="d-block w-100"
+                <img src="{{ $slide->img }}" alt="{{ $slide->title }}" class="d-block w-100"
                      style="max-height: 350px;">
                 <div class="carousel-caption">
-                    <h3>{{ $slide['title'] }}</h3>
-                    <p>{{ $slide['description'] }}</p>
+                    <h3>{{ $slide->title }}</h3>
+                    <p>{{ $slide->description }}</p>
                 </div>
             </div>
         @endforeach

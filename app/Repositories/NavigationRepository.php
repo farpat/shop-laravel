@@ -39,14 +39,17 @@ class NavigationRepository implements Htmlable
             return '';
         }
 
-        $this->setResources($navigation->value);
+        $this->setResources($links = (array)$navigation->value);
 
         $html = '';
 
-        foreach ($navigation->value as $key => $link1) {
+        foreach ($links as $key => $link1) {
             if (is_int($key)) {
                 $html .= $this->renderLink1($link1);
             } else {
+                if (!is_array($link1)) {
+                    dd($link1);
+                }
                 $html .= $this->renderLinks2($key, $link1);
             }
         }
