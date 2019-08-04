@@ -43,6 +43,7 @@
         methods: {
             addInCart: function () {
                 CartStore.setItem(this.reference.id, this.quantity);
+                this.quantity = 1;
             }
         }
     }
