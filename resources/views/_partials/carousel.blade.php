@@ -3,12 +3,12 @@
 <div id="{{ $carouselId }}" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
         @for($i=0; $i < $slides->count(); $i++)
-            <li data-target="#{{ $carouselId }}" data-slide-to="{{ $i }}" class="{{ $i === 0 ? 'active' : '' }}"></li>
+            <li data-target="#{{ $carouselId }}" data-slide-to="{{ $i }}" @if($i === 0) class="active" @endif"></li>
         @endfor
     </ol>
     <div class="carousel-inner">
         @foreach($slides as $slide)
-            <div class="carousel-item{{ $loop->first ? ' active' : '' }}">
+            <div class="carousel-item @if($loop->first)active @endif">
                 <img src="{{ $slide->img }}" alt="{{ $slide->title }}" class="d-block w-100"
                      style="max-height: 350px;">
                 <div class="carousel-caption">

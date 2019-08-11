@@ -1,18 +1,10 @@
 <template>
-    <div :id="getId" class="carousel slide carousel-fade" data-ride="carousel" style="margin-bottom: 45px;">
-        <ol class="carousel-indicators mb-0" style="bottom: -45px;">
-            <li :class="{'active':index === currentIndex}"
-                :data-slide-to="index"
-                :data-target="getTarget"
-                :key="index" v-for="(image, index) in reference.images">
-                <img :alt="image.alt_thumbnail" :src="image.url_thumbnail" class="d-block w-100">
-            </li>
-        </ol>
+    <div :id="getId" class="carousel slide carousel-fade carousel-product" data-ride="carousel">
         <div class="carousel-inner">
             <div :class="{'active':index === currentIndex}" :key="image.id"
                  class="carousel-item"
                  v-for="(image,index) in reference.images">
-                <img :alt="image.alt" :src="image.url" class="d-block w-100">
+                <img :alt="image.alt" :src="image.url">
             </div>
         </div>
         <a :href="getTarget" class="carousel-control-prev" data-slide="prev" role="button">
@@ -23,6 +15,15 @@
             <span aria-hidden="true" class="carousel-control-next-icon"></span>
             <span class="sr-only">{{ translate('pagination.next') }}</span>
         </a>
+
+        <ol class="carousel-indicators">
+            <li :class="{'active':index === currentIndex}"
+                :data-slide-to="index"
+                :data-target="getTarget"
+                :key="index" v-for="(image, index) in reference.images">
+                <img :alt="image.alt_thumbnail" :src="image.url_thumbnail" class="d-block w-100">
+            </li>
+        </ol>
     </div>
 </template>
 

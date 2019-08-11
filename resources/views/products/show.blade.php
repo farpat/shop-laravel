@@ -12,7 +12,7 @@
     <section id="product-show">
         <product-component></product-component>
 
-        <section class="mt-5 text-justify">
+        <section class="mt-2 text-justify">
             {!! $product->description !!}
         </section>
     </section>
