@@ -31,6 +31,7 @@
         "barryvdh/laravel-ide-helper": "^2.6",
         "beyondcode/laravel-dump-server": "^1.2",
         "codedungeon/phpunit-result-printer": "^0.22",
+        "doctrine/dbal": "^2.9",
         "filp/whoops": "^2.4",
         "fzaninotto/faker": "^1.8",
         "laravel/dusk": "^5.3",

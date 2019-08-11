@@ -5,16 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read int $id
- * @property int $product_id
+ * App\Models\ProductReference
+ *
+ * @property int $id
  * @property string $label
- * @property int $main_image_id
- * @property Product $product
- * @property Image[] $image
- * @property Image $main_image
+ * @property int $product_id
+ * @property int|null $main_image_id
  * @property float $unit_price_excluding_taxes
  * @property array $filled_product_fields
- * @property-read float $unit_price_including_taxes
+ * @property-read mixed $unit_price_including_taxes
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Image[] $images
+ * @property-read \App\Models\Image|null $main_image
+ * @property-read \App\Models\Product $product
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference whereFilledProductFields($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference whereMainImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference whereUnitPriceExcludingTaxes($value)
+ * @mixin \Eloquent
  */
 class ProductReference extends Model
 {

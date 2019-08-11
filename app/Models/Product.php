@@ -6,17 +6,30 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * App\Models\Product
+ *
  * @property int $id
  * @property string $label
  * @property string $slug
+ * @property int|null $category_id
  * @property string|null $excerpt
  * @property string|null $description
- * @property int $category_id
- * @property Category|null $category
- * @property Tag[]|Collection $tags
- * @property Tax[]|Collection $taxes
- * @property ProductReference[]|Collection $references
- * @property-read string $url
+ * @property-read \App\Models\Category|null $category
+ * @property-read mixed $meta_description
+ * @property-read mixed $url
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProductReference[] $references
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tax[] $taxes
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereExcerpt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereSlug($value)
+ * @mixin \Eloquent
  */
 class Product extends Model
 {

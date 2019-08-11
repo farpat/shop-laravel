@@ -7,18 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
+ * App\Models\Category
+ *
  * @property int $id
  * @property string $label
  * @property string $nomenclature
  * @property string $slug
  * @property string $description
- * @property boolean $is_last
+ * @property int $is_last
  * @property int|null $image_id
- * @property Image|null $image
- * @property Product[]|Collection $products
- * @property-read string $url
- * @property-read string $meta_description
- * @property-read int $level
+ * @property-read mixed $level
+ * @property-read mixed $meta_description
+ * @property-read mixed $url
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category whereImageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category whereIsLast($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category whereNomenclature($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category whereSlug($value)
+ * @mixin \Eloquent
  */
 class Category extends Model
 {

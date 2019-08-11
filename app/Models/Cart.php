@@ -6,17 +6,35 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read int $id
+ * App\Models\Cart
+ *
+ * @property int $id
  * @property int $items_count
  * @property float $total_amount_excluding_taxes
  * @property float $total_amount_including_taxes
  * @property string $status
  * @property string $comment
  * @property int $user_id
- * @property User $user
  * @property int|null $address_id
- * @property Address|null $address
- * @property CartItem[]|Collection $items
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Address|null $address
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CartItem[] $items
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereAddressId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereItemsCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereTotalAmountExcludingTaxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereTotalAmountIncludingTaxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Cart whereUserId($value)
+ * @mixin \Eloquent
  */
 class Cart extends Model
 {

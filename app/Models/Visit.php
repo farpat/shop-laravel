@@ -5,13 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read int $id
+ * App\Models\Visit
+ *
+ * @property int $id
  * @property string $ip_address
- * @property int $user_id
- * @property User|null $user
- * @property string $visible_type
- * @property int $visible_id
- * @property Product|Category $visitable
+ * @property int|null $user_id
+ * @property string $visitable_type
+ * @property int $visitable_id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $visitable
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit whereVisitableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Visit whereVisitableType($value)
+ * @mixin \Eloquent
  */
 class Visit extends Model
 {
