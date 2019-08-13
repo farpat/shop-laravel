@@ -1,6 +1,11 @@
 .product {
     max-width: 15rem;
-    height: 100%;
+}
+
+.products-component {
+    .product {
+        height: 100%;
+    }
 }
 
 
