@@ -47,9 +47,6 @@ class NavigationRepository implements Htmlable
             if (is_int($key)) {
                 $html .= $this->renderLink1($link1);
             } else {
-                if (!is_array($link1)) {
-                    dd($link1);
-                }
                 $html .= $this->renderLinks2($key, $link1);
             }
         }

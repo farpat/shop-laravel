@@ -38,7 +38,7 @@
         },
         computed: {
             getCurrentReference: function () {
-                return ProductStore.state.currentReference;
+                return ProductStore.state.currentProductReference;
             }
         }
     }

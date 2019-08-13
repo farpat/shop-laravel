@@ -33,6 +33,7 @@
         data: function () {
             return {
                 quantity: 1,
+                state: CartStore.state
             };
         },
         computed: {
@@ -42,8 +43,8 @@
         },
         methods: {
             addInCart: function () {
-                CartStore.setItem(this.reference.id, this.quantity);
-                this.quantity = 1;
+                CartStore.addItem(this.reference.id, this.quantity);
+                window.setTimeout(() => this.quantity = 1, 500);
             }
         }
     }

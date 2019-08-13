@@ -1,11 +1,11 @@
 <template>
     <section>
         <div class="row text-right">
-            <div class="offset-6 col-3">{{ translate('Total price') }} :</div>
+            <div class="offset-5 col-4">{{ translate('Total price') }} :</div>
             <div class="col-3 text-left">{{ getFormattedAmountIncludingTaxes }}</div>
         </div>
         <div class="row text-right">
-            <div class="offset-6 col-3">{{ translate('Including VAT') }} :</div>
+            <div class="offset-5 col-4">{{ translate('Including VAT') }} :</div>
             <div class="col-3 text-left">{{ getFormattedIncludingVat }}</div>
         </div>
     </section>
@@ -26,8 +26,8 @@
             getAmountIncludingTaxes: function () {
                 let totalPriceIncludingVat = 0;
 
-                for (let referenceId in this.items) {
-                    totalPriceIncludingVat += this.items[referenceId]['amount_including_taxes'];
+                for (let productReferenceId in this.items) {
+                    totalPriceIncludingVat += this.items[productReferenceId]['amount_including_taxes'];
                 }
                 return totalPriceIncludingVat;
             },
@@ -37,8 +37,8 @@
             getAmountExcludingTaxes: function () {
                 let totalPriceExcludingVat = 0;
 
-                for (let referenceId in this.items) {
-                    totalPriceExcludingVat += this.items[referenceId]['amount_excluding_taxes'];
+                for (let productReferenceId in this.items) {
+                    totalPriceExcludingVat += this.items[productReferenceId]['amount_excluding_taxes'];
                 }
                 return totalPriceExcludingVat;
             },

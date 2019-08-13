@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import Requestor from "../src/Request/Requestor";
 
 class CartStore {
     constructor() {
@@ -7,34 +8,49 @@ class CartStore {
         };
 
         this.data = {
-            ...window.CartStore.data
+            ...window.CartStore.data,
+            endPoint: '/api/cart-items'
         };
     }
 
-    setItem(referenceId, quantity) {
-        if (this.state.cartItems[referenceId] === undefined) {
-            this.state.cartItemsLength++;
-        }
-
-        const reference = this.data.allProductReferences[referenceId];
-
-        const cartItem = {
-            ...reference,
-            quantity,
-            amount_including_taxes: quantity * reference.unit_price_including_taxes,
-            amount_excluding_taxes: quantity * reference.unit_price_excluding_taxes,
-        };
-
-        Vue.set(this.state.cartItems, referenceId, cartItem);
+    updateItem(productReferenceId, quantity) {
+        const request = Requestor.newRequest();
+        request
+            .patch(this.data.endPoint + '/' + productReferenceId, {
+                quantity
+            })
+            .then(cartItem => {
+                console.log('update item response', cartItem);
+                Vue.set(this.state.cartItems, productReferenceId, cartItem)
+            });
     }
 
-    getItem(referenceId) {
-        return this.state.cartItems[referenceId];
+    deleteItem(productReferenceId) {
+
+        const request = Requestor.newRequest();
+        request
+            .delete(this.data.endPoint + '/' + productReferenceId)
+            .then(() => {
+                this.state.cartItemsLength--;
+                Vue.delete(this.state.cartItems, productReferenceId)
+            });
     }
 
-    deleteItem(referenceId) {
-        Vue.delete(this.state.cartItems, referenceId);
-        this.state.cartItemsLength--;
+    addItem(productReferenceId, quantity) {
+        const request = Requestor.newRequest();
+        request
+            .post(this.data.endPoint, {
+                product_reference_id: productReferenceId,
+                quantity
+            })
+            .then(cartItem => {
+                this.state.cartItemsLength++;
+                Vue.set(this.state.cartItems, productReferenceId, cartItem)
+            });
+    }
+
+    getItem(productReferenceId) {
+        return this.state.cartItems[productReferenceId];
     }
 }
 

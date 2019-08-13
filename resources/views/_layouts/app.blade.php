@@ -30,12 +30,11 @@
 <script>
     window.CartStore = {
         state: {
-            cartItems: {},
-            cartItemsLength: 0,
+            cartItems: @json($cartItems, JSON_FORCE_OBJECT),
+            cartItemsLength: {{ count($cartItems) }},
         },
         data: {
             currency: '{{ $currency }}',
-            allProductReferences: @json($allProductReferences),
         }
     };
 </script>

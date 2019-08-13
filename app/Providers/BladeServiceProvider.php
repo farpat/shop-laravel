@@ -34,9 +34,8 @@ class BladeServiceProvider extends ServiceProvider
     public function boot (ProductRepository $productRepository, CartRepository $cartRepository, ModuleRepository $moduleRepository, View $view)
     {
         $view->share([
-            'allProductReferences' => $productRepository->getAllReferences(),
             'currency'             => $moduleRepository->getParameter('home', 'currency')->value,
-            'cartItems'            => []
+            'cartItems'            => $cartRepository->getItems()->all()
         ]);
     }
 }

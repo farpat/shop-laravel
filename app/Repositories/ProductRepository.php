@@ -30,6 +30,18 @@ class ProductRepository
     }
 
     /**
+     * @param int $productReferenceId
+     *
+     * @return ProductReference
+     */
+    public function getReference (int $productReferenceId)
+    {
+        return ProductReference::query()
+            ->with('product.taxes', 'product.category')
+            ->findOrFail($productReferenceId);
+    }
+
+    /**
      * @param Product $product
      *
      * @return Collection|ProductField[]
@@ -44,11 +56,21 @@ class ProductRepository
         return collect();
     }
 
-    public function getAllReferences ()
+    /**
+     * @param array|null $in
+     *
+     * @return ProductReference[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getReferences (array $in = null)
     {
-        return ProductReference::query()
-            ->with(['images', 'main_image', 'product', 'product.category:id,slug,label', 'product.taxes'])
-            ->get()
-            ->keyBy('id');
+        $query = ProductReference::query()->with(['images', 'main_image', 'product', 'product.category:id,slug,label', 'product.taxes']);
+
+        if ($in) {
+            $query->whereIn('id', $in);
+        }
+
+        return $query->get()->keyBy('id');
+
+
     }
 }

@@ -4,7 +4,7 @@ class ProductStore {
     constructor() {
         this.state = {
             ...window.ProductStore.state,
-            currentReference: {}
+            currentProductReference: {}
         };
 
         this.data = {
@@ -16,8 +16,8 @@ class ProductStore {
     }
 
     getFirstReference() {
-        const firstKey = this.data.productReferenceIds[0];
-        return CartStore.data.allProductReferences[firstKey];
+        const firstKey = Object.keys(this.data.productReferences)[0];
+        return this.data.productReferences[firstKey];
     }
 
     getFilledProductValue(reference) {
@@ -36,7 +36,7 @@ class ProductStore {
     }
 
     setCurrentReference(reference) {
-        this.state.currentReference = reference;
+        this.state.currentProductReference = reference;
     }
 }
 

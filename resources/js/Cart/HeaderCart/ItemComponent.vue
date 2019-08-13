@@ -2,10 +2,10 @@
     <section class="container">
         <div class="row align-items-center mb-4 mb-md-2">
             <div class="col-3 col-md-2">
-                <input :value="item.quantity" class="form-control" type="text">
+                <input :value="quantity" @change="(e) => this.updateItem(e)" class="form-control" type="number">
             </div>
             <div class="col-9 col-md-6">
-                {{ item.label }}
+                {{ item.product_reference.label }}
             </div>
             <div class="col-9 col-md-3 text-right">
                 {{ getAmountIncludingTaxes }}
@@ -27,6 +27,11 @@
 
     export default {
         mixins: [TranslationMixin, StrMixin],
+        data: function () {
+            return {
+                quantity: this.item.quantity
+            }
+        },
         props: {
             item: {type: Object, required: true}
         },
@@ -37,7 +42,12 @@
         },
         methods: {
             deleteItem: function (event) {
-                CartStore.deleteItem(this.item.id);
+                CartStore.deleteItem(this.item.product_reference_id);
+                event.stopPropagation();
+            },
+            updateItem: function (event) {
+                CartStore.updateItem(this.item.product_reference_id, event.target.value);
+                this.quantity = event.target.value;
                 event.stopPropagation();
             }
         }

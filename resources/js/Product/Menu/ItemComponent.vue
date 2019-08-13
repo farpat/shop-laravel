@@ -22,19 +22,19 @@
             getLiClass: function (reference) {
                 return {
                     'media': true, 'mb-4': true,
-                    'bg-primary': reference === ProductStore.state.currentReference
+                    'bg-primary': reference === ProductStore.state.currentProductReference
                 };
             },
             getTitleClass: function (reference) {
                 return {
                     'mt-0': true, 'mb-1': true,
-                    'text-white': reference === ProductStore.state.currentReference
+                    'text-white': reference === ProductStore.state.currentProductReference
                 }
             },
             setCurrentProductReference: function (reference, event) {
                 event.preventDefault();
 
-                if (reference !== ProductStore.state.currentReference) {
+                if (reference !== ProductStore.state.currentProductReference) {
                     ProductStore.setCurrentReference(reference);
                 }
             }

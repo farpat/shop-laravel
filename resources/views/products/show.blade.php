@@ -26,7 +26,7 @@
             data: {
                 baseUrl: '{{ url()->current() }}',
                 productFields: @json($productFields),
-                productReferenceIds: @json($product->references->pluck('id'))
+                productReferences: @json($product->references)
             }
         };
     </script>
