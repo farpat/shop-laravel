@@ -113,7 +113,7 @@ class CartRepository
     }
 
     /**
-     * @return Collection
+     * @return array
      */
     public function getItems ()
     {
@@ -130,7 +130,7 @@ class CartRepository
             $items[$productReferenceId]['amount_including_taxes'] = $quantity * $productReference->unit_price_including_taxes;
         }
 
-        return collect($items);
+        return $items;
     }
 
     private function persist (string $operation, ProductReference $productReference, int $quantity = null): ?CartItem

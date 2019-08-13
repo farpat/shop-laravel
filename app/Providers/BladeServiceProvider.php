@@ -35,7 +35,7 @@ class BladeServiceProvider extends ServiceProvider
     {
         $view->share([
             'currency'             => $moduleRepository->getParameter('home', 'currency')->value,
-            'cartItems'            => $cartRepository->getItems()->all()
+            'cartItems'            => $cartRepository->getItems()
         ]);
     }
 }
