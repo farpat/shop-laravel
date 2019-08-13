@@ -22,7 +22,7 @@
             state: {
                 filterValues: @json($filterValues, JSON_FORCE_OBJECT),
                 perPage: {{ $perPage }},
-                currentPage: {{ $currentPage }}
+                currentPage: {{ $currentPage ?? 1 }}
             },
             data: {
                 allProducts: @json($products),

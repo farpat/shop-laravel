@@ -125,9 +125,6 @@ class BuildTranslations extends Command
         }, scandir($fileOrDirectory)), 2);
     }
 
-    /**
-     * @return string[]
-     */
     private function getPathsInLangDirectory ()
     {
         $files = [];

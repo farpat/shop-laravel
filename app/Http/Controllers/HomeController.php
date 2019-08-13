@@ -6,20 +6,40 @@ use App\Repositories\{CategoryRepository, ModuleRepository, ProductRepository};
 
 class HomeController extends Controller
 {
-    public function index (ProductRepository $productRepository, CategoryRepository $categoryRepository, ModuleRepository $moduleRepository)
-    {
-        $products = $productRepository->getProductsInHome();
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+    /**
+     * @var ModuleRepository
+     */
+    private $moduleRepository;
 
-        $categories = $categoryRepository->getCategoriesInHome();
+    public function __construct (ProductRepository $productRepository, CategoryRepository $categoryRepository, ModuleRepository $moduleRepository)
+    {
+        $this->productRepository = $productRepository;
+        $this->categoryRepository = $categoryRepository;
+        $this->moduleRepository = $moduleRepository;
+    }
+
+    public function index ()
+    {
+        $products = $this->productRepository->getProductsInHome();
+
+        $categories = $this->categoryRepository->getCategoriesInHome();
 
         $slides = collect();
-        if ($carouselParameter = $moduleRepository->getParameter('home', 'carousel')) {
+        if ($carouselParameter = $this->moduleRepository->getParameter('home', 'carousel')) {
             $slides = collect($carouselParameter->value);
         }
 
 
         $elements = collect();
-        if ($elementsParameter = $moduleRepository->getParameter('home', 'elements')) {
+        if ($elementsParameter = $this->moduleRepository->getParameter('home', 'elements')) {
             $elements = collect($elementsParameter->value);
         }
 

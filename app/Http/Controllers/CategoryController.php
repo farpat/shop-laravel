@@ -20,14 +20,12 @@ class CategoryController extends Controller
             ['label' => $category->label]
         ];
 
-
         $products = $categoryRepository->getProductsFor($category)->get();
 
         $filters = $products->isNotEmpty() ? $categoryRepository->getProductFields($category) : collect();
         $filterValues = $request->get('f', []);
 
         $perPage = Category::PRODUCTS_PER_PAGE;
-        $currentPage = $currentPage ?? 1;
 
         return view('categories.show', compact('category', 'products', 'filters', 'filterValues', 'currentPage', 'perPage', 'breadcrumb'));
     }

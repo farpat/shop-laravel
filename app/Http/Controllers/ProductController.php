@@ -11,7 +11,7 @@ use App\Repositories\ProductRepository;
 
 class ProductController extends Controller
 {
-    public function show (string $categorySlug, int $categoryId, string $slug, Product $product, ProductRepository $productRepository, ModuleRepository $moduleRepository)
+    public function show (string $categorySlug, int $categoryId, string $slug, Product $product, ProductRepository $productRepository)
     {
         $product->load(['category:id,slug,label', 'references']);
 
