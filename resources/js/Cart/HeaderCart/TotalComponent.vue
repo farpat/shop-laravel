@@ -15,7 +15,7 @@
 <script>
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import StrMixin from "../../src/String/StrMixin";
-    import ProductStore from "../../Product/ProductStore";
+    import CartStore from "../CartStore";
 
     export default {
         mixins: [TranslationMixin, StrMixin],
@@ -32,7 +32,7 @@
                 return totalPriceIncludingVat;
             },
             getFormattedAmountIncludingTaxes: function () {
-                return this.toLocaleCurrency(this.getAmountIncludingTaxes, ProductStore.data.currency);
+                return this.toLocaleCurrency(this.getAmountIncludingTaxes, CartStore.data.currency);
             },
             getAmountExcludingTaxes: function () {
                 let totalPriceExcludingVat = 0;
@@ -46,7 +46,7 @@
                 return this.getAmountIncludingTaxes - this.getAmountExcludingTaxes;
             },
             getFormattedIncludingVat: function () {
-                return this.toLocaleCurrency(this.getIncludingVat, ProductStore.data.currency);
+                return this.toLocaleCurrency(this.getIncludingVat, CartStore.data.currency);
             }
         }
     }

@@ -19,6 +19,7 @@
 
 <script>
     import ProductStore from "../ProductStore";
+    import CartStore from "../../Cart/CartStore";
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import Str from "../../src/String/Str";
     import QuantityComponent from "../../Cart/QuantityComponent";
@@ -32,7 +33,7 @@
                 return ProductStore.getFilledProductValue(reference)
             },
             getUnitPriceIncludingTaxes: function (amount) {
-                return Str.toLocaleCurrency(amount, ProductStore.data.currency);
+                return Str.toLocaleCurrency(amount, CartStore.data.currency);
             },
         },
         computed: {

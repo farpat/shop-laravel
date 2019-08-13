@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Repositories\CartRepository;
+use App\Repositories\ModuleRepository;
 use App\Repositories\ProductRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Factory as View;
@@ -25,15 +26,17 @@ class BladeServiceProvider extends ServiceProvider
      * @param ProductRepository $productRepository
      *
      * @param CartRepository $cartRepository
+     * @param ModuleRepository $moduleRepository
      * @param View $view
      *
      * @return void
      */
-    public function boot (ProductRepository $productRepository, CartRepository $cartRepository, View $view)
+    public function boot (ProductRepository $productRepository, CartRepository $cartRepository, ModuleRepository $moduleRepository, View $view)
     {
         $view->share([
             'allProductReferences' => $productRepository->getAllReferences(),
-            'cartItems'     => []
+            'currency'             => $moduleRepository->getParameter('home', 'currency')->value,
+            'cartItems'            => []
         ]);
     }
 }

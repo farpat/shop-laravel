@@ -25,7 +25,6 @@
             state: {},
             data: {
                 baseUrl: '{{ url()->current() }}',
-                currency: '{{ $currency }}',
                 productFields: @json($productFields),
                 productReferenceIds: @json($product->references->pluck('id'))
             }

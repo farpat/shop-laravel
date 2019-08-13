@@ -24,7 +24,6 @@
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import CartStore from "../CartStore";
     import StrMixin from "../../src/String/StrMixin";
-    import ProductStore from "../../Product/ProductStore";
 
     export default {
         mixins: [TranslationMixin, StrMixin],
@@ -33,7 +32,7 @@
         },
         computed: {
             getAmountIncludingTaxes: function () {
-                return this.toLocaleCurrency(this.item.amount_including_taxes, ProductStore.data.currency);
+                return this.toLocaleCurrency(this.item.amount_including_taxes, CartStore.data.currency);
             }
         },
         methods: {

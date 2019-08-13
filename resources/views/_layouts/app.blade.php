@@ -34,6 +34,7 @@
             cartItemsLength: 0,
         },
         data: {
+            currency: '{{ $currency }}',
             allProductReferences: @json($allProductReferences),
         }
     };

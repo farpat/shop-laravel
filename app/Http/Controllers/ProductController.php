@@ -27,8 +27,6 @@ class ProductController extends Controller
             ['label' => $product->label]
         ];
 
-        $currency = $moduleRepository->getParameter('home', 'currency')->value;
-
-        return view('products.show', compact('product', 'breadcrumb', 'productFields', 'currency'));
+        return view('products.show', compact('product', 'breadcrumb', 'productFields'));
     }
 }
