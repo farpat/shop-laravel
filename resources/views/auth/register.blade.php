@@ -1,8 +1,10 @@
-@extends('_layouts.app')
+@extends('app')
 
 @section('title'){{ __('Register') }}@endsection
 
 @section('description'){{ __('Register') }}@endsection
+
+@section('js-require', 'registerForm')
 
 @push('scripts')
     <script>

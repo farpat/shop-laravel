@@ -26,6 +26,7 @@ class CategoryRepository
     {
         if ($categoryIds = $this->moduleRepository->getParameter('home', 'categories')) {
             return Category::query()
+                ->with('image')
                 ->whereIn('id', $categoryIds->value)
                 ->get();
         }

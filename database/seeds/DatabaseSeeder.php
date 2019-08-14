@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Category, Image, Product, ProductReference, Tax};
+use App\Models\{Category, Image, Product, ProductReference, Tax, User};
 use App\Repositories\{CategoryRepository, ModuleRepository};
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -46,13 +46,17 @@ class DatabaseSeeder extends Seeder
     {
         $this->createTaxes();
 
+        factory(User::class, 10)->create();
+
         foreach (factory(Category::class, 30)->create() as $category) {
+            $category->update(['image_id' => factory(Image::class)->create()->id]);
+
             $productfields = $this->createProductfields($category);
             $products = $this->createProducts($category);
 
             foreach ($products as $product) {
                 $productReferences = $this->createProductReferences($product, $productfields);
-                $this->createImages($productReferences);
+                $this->createImages($product, $productReferences);
                 $this->attachTaxes($product);
             }
         }
@@ -62,11 +66,11 @@ class DatabaseSeeder extends Seeder
 
     private function attachTaxes (Product $product)
     {
-        $attachments = [$this->tax20Percent->id];
+        $taxIds = [$this->tax20Percent->id];
         if ($this->faker->boolean(25)) {
-            $attachments[] = $this->ecoTax5Cents->id;
+            $taxIds[] = $this->ecoTax5Cents->id;
         }
-        $product->taxes()->attach($attachments);
+        $product->taxes()->attach($taxIds);
         $product->save();
     }
 
@@ -182,7 +186,7 @@ class DatabaseSeeder extends Seeder
         $this->moduleRepository->createParameter('home', 'currency', 'EUR');
     }
 
-    private function createImages (Collection $productReferences): void
+    private function createImages (Product $product, Collection $productReferences): void
     {
         $count = random_int(0, 5);
 
@@ -201,6 +205,8 @@ class DatabaseSeeder extends Seeder
             $images = $productReference->images()->createMany($images);
             $productReference->update(['main_image_id' => $images[0]->id]);
         }
+
+        $product->update(['main_image_id' => $images[0]->id]);
     }
 
     private function createTaxes ()

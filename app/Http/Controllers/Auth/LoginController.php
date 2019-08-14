@@ -45,16 +45,11 @@ class LoginController extends Controller
     /**
      * Show the application's login form.
      *
-     * @param ModuleRepository $userRepository
-     *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm (ModuleRepository $userRepository)
+    public function showLoginForm ()
     {
-        $users = $userRepository->getAll(null);
-        $usersInThreeChunks = $users->chunk($users->count() / 2);
-
-        return view('auth.login', compact('usersInThreeChunks'));
+        return view('auth.login');
     }
 
     /**

@@ -1,14 +1,21 @@
 <template>
-    <section>
-        <div class="row text-right">
-            <div class="offset-5 col-4">{{ translate('Total price') }} :</div>
-            <div class="col-3 text-left">{{ getFormattedAmountIncludingTaxes }}</div>
-        </div>
-        <div class="row text-right">
-            <div class="offset-5 col-4">{{ translate('Including VAT') }} :</div>
-            <div class="col-3 text-left">{{ getFormattedIncludingVat }}</div>
-        </div>
-    </section>
+    <tfoot class="header-cart-total table-sm">
+    <tr>
+        <td colspan="2">{{ translate('Total price') }} :</td>
+        <td>{{ getFormattedAmountIncludingTaxes }}</td>
+        <td></td>
+    </tr>
+    <tr class="header-cart-total-vat">
+        <td colspan="2" class="text-right">{{ translate('Including VAT') }} :</td>
+        <td>{{ getFormattedIncludingVat }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <button class="float-right btn btn-primary">{{ translate('Purchase') }}</button>
+        </td>
+    </tr>
+    </tfoot>
 </template>
 
 

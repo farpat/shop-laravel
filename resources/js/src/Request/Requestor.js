@@ -3,7 +3,7 @@ import Http from './Http';
 
 export default class Requestor {
     constructor() {
-        this.csrfToken = '';
+        Requestor.csrfToken = '';
     }
 
     static setIo() {
@@ -19,10 +19,10 @@ export default class Requestor {
     }
 
     static getCsrfToken() {
-        if (this.csrfToken === '') {
-            this.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        if (Requestor.csrfToken === '') {
+            Requestor.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
         }
 
-        return this.csrfToken;
+        return Requestor.csrfToken;
     }
 }

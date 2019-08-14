@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
+use App\Http\Middleware\MustXmlHttpRequest;
 use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Requests\UpdateCartItemRequest;
-use App\Models\CartItem;
-use App\Models\ProductReference;
 use App\Repositories\CartRepository;
-use App\Http\Controllers\Controller;
 use App\Repositories\ProductRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -22,9 +21,13 @@ class CartController extends Controller
      */
     private $productRepository;
 
-    public function __construct (CartRepository $cartRepository, ProductRepository $productRepository)
+    public function __construct (ProductRepository $productRepository)
     {
-        $this->cartRepository = $cartRepository;
+        $this->middleware(MustXmlHttpRequest::class);
+        $this->middleware(function(Request $request, $next) {
+            $this->cartRepository = app(CartRepository::class);
+            return $next($request);
+        });
         $this->productRepository = $productRepository;
     }
 

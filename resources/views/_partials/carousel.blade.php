@@ -3,7 +3,7 @@
 <div id="{{ $carouselId }}" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
         @for($i=0; $i < $slides->count(); $i++)
-            <li data-target="#{{ $carouselId }}" data-slide-to="{{ $i }}" @if($i === 0) class="active" @endif"></li>
+            <li data-target="#{{ $carouselId }}" data-slide-to="{{ $i }}" @if($i === 0) class="active" @endif></li>
         @endfor
     </ol>
     <div class="carousel-inner">

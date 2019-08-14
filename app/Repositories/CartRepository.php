@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 
 class CartRepository
@@ -32,16 +33,27 @@ class CartRepository
     {
         $this->productRepository = $productRepository;
         $this->currentUser = auth()->user();
-
         $this->setItems();
     }
 
-    /**
-     * @param int $quantity
-     * @param ProductReference $productReference
-     *
-     * @return array
-     */
+    public function returnArray (ProductReference $productReference, int $quantity = null)
+    {
+        $productReferenceArray = $productReference->toArray();
+        unset($productReferenceArray['product']);
+        $data = [
+            'product_reference_id'   => $productReference->id,
+            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
+            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
+            'product_reference'      => $productReferenceArray
+        ];
+
+        if ($quantity !== null) {
+            $data['quantity'] = $quantity;
+        }
+
+        return $data;
+    }
+
     public function addItem (int $quantity, ProductReference $productReference): array
     {
         $this->items->put($productReference->id, [
@@ -49,17 +61,13 @@ class CartRepository
             'product_reference_id' => $productReference->id,
         ]);
 
-        $cartItem = $this->persist('add', $productReference, $quantity);
+        if ($this->currentUser !== null) {
+            $this->addItemOnDatabase($quantity, $productReference);
+        } else {
+            $this->persistCookie();
+        }
 
-        return $this->returnResponseData($cartItem, $productReference);
-    }
-
-    private function returnResponseData (CartItem $cartItem, ProductReference $productReference)
-    {
-        $productReference = $productReference->toArray();
-        unset($productReference['product']);
-
-        return array_merge($cartItem->toArray(), ['product_reference' => $productReference]);
+        return $this->returnArray($productReference, $quantity);
     }
 
     public function updateItem (int $quantity, ProductReference $productReference): array
@@ -69,28 +77,43 @@ class CartRepository
             'product_reference_id' => $productReference->id,
         ]);
 
-        $cartItem = $this->persist('update', $productReference, $quantity);
+        if ($this->currentUser !== null) {
+            $this->updateItemOnDatabase($quantity, $productReference);
+        } else {
+            $this->persistCookie();
+        }
 
-        return $this->returnResponseData($cartItem, $productReference);
+        return $this->returnArray($productReference, $quantity);
     }
 
     public function deleteItem (ProductReference $productReference): array
     {
         $this->items->forget($productReference->id);
 
-        $cartItem = $this->persist('delete', $productReference);
+        if ($this->currentUser !== null) {
+            $this->deleteItemOnDatabase($productReference);
+        } else {
+            $this->persistCookie();
+        }
 
-        return $cartItem->toArray();
+        return $this->returnArray($productReference);
     }
 
-    public function getCart (User $user): Cart
+    public function getCart (User $user, bool $dontCreate = true): ?Cart
     {
+        if ($dontCreate) {
+            return Cart::query()
+                ->where([
+                    'status'  => Cart::ORDERING_STATUS,
+                    'user_id' => $user->id
+                ])
+                ->first();
+        }
+
         return Cart::query()
-            ->whereHas('user', function (Builder $query) use ($user) {
-                $query->where('id', $user->id);
-            })
-            ->firstOrNew([
-                'status', Cart::ORDERING_STATUS
+            ->firstOrCreate([
+                'status'  => Cart::ORDERING_STATUS,
+                'user_id' => $user->id
             ], [
                 'items_count'                  => 0,
                 'total_amount_excluding_taxes' => 0,
@@ -103,7 +126,15 @@ class CartRepository
     private function setItems ()
     {
         if ($this->items === null) {
-            if ($this->currentUser) {
+            if ($this->currentUser !== null) {
+                $this->cart = $this->getCart($this->currentUser);
+
+                $items = $this->cart ? CartItem::query()
+                    ->select(['quantity', 'product_reference_id'])
+                    ->where(['cart_id' => $this->cart->id])
+                    ->get()
+                    ->keyBy('product_reference_id')
+                    ->all() : [];
             } else {
                 $items = json_decode(Cookie::get('cart-items', '{}'), true);
             }
@@ -112,14 +143,11 @@ class CartRepository
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getItems ()
+    public function getItems (): array
     {
         $items = $this->items->all();
 
-        $productReferences = $this->productRepository->getReferences(array_keys($items));
+        $productReferences = $this->productRepository->getReferences(!empty($items) ? array_keys($items) : null);
 
         foreach ($items as $productReferenceId => $item) {
             $quantity = $item['quantity'];
@@ -133,74 +161,73 @@ class CartRepository
         return $items;
     }
 
-    private function persist (string $operation, ProductReference $productReference, int $quantity = null): ?CartItem
+    private function persistCookie ()
     {
-        $cartItem = null;
-        switch ($operation) {
-            case 'add':
-                /*
-                if ($this->currentUser) {
-                    $this->cart->total_amount_excluding_taxes += $cartItem->amount_excluding_taxes;
-                    $this->cart->total_amount_including_taxes += $cartItem->amount_including_taxes;
-                    $this->cart->items_count++;
-
-                    $cartItem->save();
-                    $this->cart->save();
-                }
-                */
-
-                $cartItem = new CartItem([
-                    'quantity'               => $quantity,
-                    'product_reference_id'   => $productReference->id,
-                    'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
-                    'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
-                ]);
-                break;
-            case 'update':
-                /*
-                if ($this->currentUser) {
-                    $cartItem->amount_excluding_taxes = $quantity * $productReference->unit_price_excluding_taxes;
-                    $cartItem->amount_including_taxes = $quantity * $productReference->unit_price_including_taxes;
-
-                    $this->cart->total_amount_excluding_taxes -=
-                        $cartItem->getOriginal('amount_excluding_taxes') + $cartItem->amount_excluding_taxes;
-                    $this->cart->total_amount_including_taxes -=
-                        $cartItem->getOriginal('amount_including_taxes') + $cartItem->amount_including_taxes;
-
-                    $cartItem->save();
-                    $this->cart->save();
-                } */
-
-                $cartItem = new CartItem([
-                    'quantity'               => $quantity,
-                    'product_reference_id'   => $productReference->id,
-                    'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
-                    'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
-                ]);
-
-
-                break;
-            case 'delete':
-                /*
-                if ($this->currentUser) {
-                    $this->cart->total_amount_excluding_taxes -= $cartItem->amount_excluding_taxes;
-                    $this->cart->total_amount_including_taxes -= $cartItem->amount_including_taxes;
-                    $this->cart->items_count--;
-
-                    $cartItem->delete();
-                    if ($this->cart->items_count === 0) {
-                        $this->cart->delete();
-                        $this->cart = null;
-                    }
-                }
-                */
-
-                $cartItem = new CartItem();
-
-                break;
-        }
         Cookie::queue('cart-items', $this->items->toJson());
+    }
 
-        return $cartItem;
+    private function deleteItemOnDatabase (ProductReference $productReference)
+    {
+        $cart = $this->getCart($this->currentUser, false);
+
+        $cartItem = CartItem::query()
+            ->where([
+                'product_reference_id' => $productReference->id,
+                'cart_id'              => $cart->id
+            ])
+            ->firstOrFail();
+
+        $cart->total_amount_excluding_taxes -= $cartItem->amount_excluding_taxes;
+        $cart->total_amount_including_taxes -= $cartItem->amount_including_taxes;
+        $cart->items_count--;
+
+        $cartItem->delete();
+        if ($cart->items_count === 0) {
+            $cart->delete();
+        } else {
+            $cart->save();
+        }
+    }
+
+    private function updateItemOnDatabase (int $quantity, ProductReference $productReference)
+    {
+        $cart = $this->getCart($this->currentUser, false);
+
+        $cartItem = CartItem::query()
+            ->where([
+                'product_reference_id' => $productReference->id,
+                'cart_id'              => $cart->id
+            ])
+            ->firstOrFail();
+
+        $cartItem->amount_excluding_taxes = $quantity * $productReference->unit_price_excluding_taxes;
+        $cartItem->amount_including_taxes = $quantity * $productReference->unit_price_including_taxes;
+        $cartItem->quantity = $quantity;
+
+        $cart->total_amount_excluding_taxes += - $cartItem->getOriginal('amount_excluding_taxes') + $cartItem->amount_excluding_taxes;
+        $cart->total_amount_including_taxes += - $cartItem->getOriginal('amount_including_taxes') + $cartItem->amount_including_taxes;
+
+        $cartItem->save();
+        $cart->save();
+    }
+
+    private function addItemOnDatabase (int $quantity, ProductReference $productReference)
+    {
+        $cart = $this->getCart($this->currentUser, false);
+
+        $cartItem = new CartItem([
+            'quantity'               => $quantity,
+            'product_reference_id'   => $productReference->id,
+            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
+            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
+            'cart_id'                => $cart->id
+        ]);
+
+        $cart->total_amount_excluding_taxes += $cartItem->amount_excluding_taxes;
+        $cart->total_amount_including_taxes += $cartItem->amount_including_taxes;
+        $cart->items_count++;
+
+        $cartItem->save();
+        $cart->save();
     }
 }

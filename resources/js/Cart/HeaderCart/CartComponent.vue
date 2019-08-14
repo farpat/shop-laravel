@@ -1,35 +1,28 @@
 <template>
-    <section v-if="getLength > 0">
-        <button aria-expanded="false" aria-haspopup="true"
-                class="nav-link btn btn-link dropdown-toggle mr-md-2" data-toggle="dropdown" id="button-cart">
-            <i class="fas fa-shopping-cart"></i>
-            - {{ getLength }}
+    <div v-if="getLength > 0">
+        <button aria-expanded="false" aria-haspopup="true" class="nav-link btn btn-link dropdown-toggle mr-md-2"
+                data-toggle="dropdown" id="button-cart">
+            <i class="fas fa-shopping-cart"></i> - {{ getLength }}
         </button>
-        <div aria-labelledby="button-cart" class="dropdown-menu dropdown-menu-right">
-            <div class="container">
-                <div v-show="getLength > 0">
-                    <ItemComponent
-                        :item="item" :key="item.product_reference_id"
-                        v-for="item in cartState.cartItems">
-                    </ItemComponent>
+        <div aria-labelledby="button-cart" class="dropdown-menu dropdown-menu-right header-cart">
+            <table class="table table-borderless">
+                <tbody>
+                <item-component
+                    :item="item" :key="item.product_reference_id"
+                    v-for="item in cartState.cartItems">
+                </item-component>
+                </tbody>
 
-                    <div class="dropdown-divider"></div>
-
-                    <TotalComponent :items="cartState.cartItems"></TotalComponent>
-                </div>
-
-                <div v-show="getLength === 0">
-                    {{ translate('Empty cart') }}
-                </div>
-            </div>
+                <TotalComponent :items="cartState.cartItems"></TotalComponent>
+            </table>
         </div>
-    </section>
+    </div>
 
-    <section v-else>
+    <div v-else>
         <div class="nav-link">
             <i class="fas fa-shopping-cart"></i>
         </div>
-    </section>
+    </div>
 </template>
 
 

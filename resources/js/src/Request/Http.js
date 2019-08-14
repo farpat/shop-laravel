@@ -1,8 +1,14 @@
-import Requestor from "./Requestor";
-
 export default class Http {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
+    }
+
+    static getCsrfToken() {
+        if (Http.csrfToken === undefined) {
+            Http.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        }
+
+        return Http.csrfToken;
     }
 
     async fetch(endPoint, data, headers, config) {
@@ -10,7 +16,7 @@ export default class Http {
         config.headers = {
             ...headers,
             'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': Requestor.getCsrfToken(),
+            'X-CSRF-TOKEN': Http.getCsrfToken(),
             'Content-Type': 'application/json'
         };
 
@@ -24,7 +30,13 @@ export default class Http {
 
         const url = this.baseUrl + endPoint;
         const response = await window.fetch(url, config);
-        return response.json();
+
+        if (response.ok) {
+            return response.json();
+        }
+        else {
+            throw response.json();
+        }
     }
 
     buildQueryString(data) {

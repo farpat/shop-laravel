@@ -19,7 +19,7 @@ class CreateCartsTable extends Migration
             $table->unsignedDecimal('total_amount_excluding_taxes', 10, 2)->default(0);
             $table->unsignedDecimal('total_amount_including_taxes', 10, 2)->default(0);
             $table->enum('status', ['ORDERING', 'ORDERED', 'DELIVRED']);
-            $table->text('comment');
+            $table->text('comment')->nullable();
 
             $table->unsignedBigInteger('user_id');
             //Replicate user informations

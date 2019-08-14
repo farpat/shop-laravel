@@ -34,10 +34,10 @@ class ProductReference extends Model
 
     protected $casts = [
         'filled_product_fields'      => 'array',
-        'unit_price_excluding_taxes' => 'float'
+        'unit_price_excluding_taxes' => 'float',
     ];
 
-    protected $appends = ['unit_price_including_taxes'];
+    protected $appends = ['unit_price_including_taxes', 'url'];
 
     protected $fillable = [
         'product_id', 'label', 'unit_price_excluding_taxes', 'filled_product_fields', 'main_image_id'
@@ -55,6 +55,18 @@ class ProductReference extends Model
     public function main_image ()
     {
         return $this->belongsTo(Image::class, 'main_image_id');
+    }
+
+    public function getUrlAttribute ()
+    {
+        $product = $this->product;
+
+        return route('products.show', [
+            'categorySlug' => $product->category->slug,
+            'category'     => $product->category,
+            'id'           => $product->id,
+            'slug'         => $product->slug
+        ]);
     }
 
     public function getUnitPriceIncludingTaxesAttribute ()

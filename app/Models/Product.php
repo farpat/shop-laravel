@@ -36,7 +36,7 @@ class Product extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'label', 'slug', 'excerpt', 'description', 'category_id'
+        'label', 'slug', 'excerpt', 'description', 'category_id', 'main_image_id'
     ];
 
     protected $appends = ['url'];
@@ -59,6 +59,10 @@ class Product extends Model
     public function references ()
     {
         return $this->hasMany(ProductReference::class);
+    }
+
+    public function main_image() {
+        return $this->belongsTo(Image::class, 'main_image_id');
     }
 
     public function getUrlAttribute ()

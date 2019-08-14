@@ -11,14 +11,23 @@
         </ul>
         <section class="ml-auto">
             <ul class="navbar-nav">
-                <li class="nav-item mr-2">
-                    <a class="btn btn-outline-info" href="{{ route('home.index') }}">{{ __('Login') }}
-                        / {{ __('Register') }}</a>
-                </li>
-                <li class="nav-item js-nav-item-cart">
-                    <div id="cart">
-                        <cart-component></cart-component>
-                    </div>
+                @auth
+                    <li class="navbar-text mr-2 p-0">
+                        <form class="form-inline" action="{{ route('logout') }}" method="post">
+                            @csrf
+                            <span>{{ Auth::user()->name }}</span>
+                            <button class="btn btn-link text-danger">{{ __('Logout') }}</button>
+                        </form>
+                    </li>
+                @endauth
+                @guest
+                    <li class="nav-item mr-2">
+                        <a class="btn btn-outline-info" href="{{ route('register') }}">{{ __('Register') }}</a>
+                        <a class="btn btn-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                    </li>
+                @endguest
+                <li id="cart" class="nav-item js-nav-item-cart">
+                    <cart-component></cart-component>
                 </li>
             </ul>
         </section>

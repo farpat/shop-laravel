@@ -18,5 +18,3 @@ Route::middleware(['auth:api'])->group(function () {
         return $request->user();
     });
 });
-
-require 'api/cart.php';

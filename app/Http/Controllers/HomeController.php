@@ -32,16 +32,11 @@ class HomeController extends Controller
 
         $categories = $this->categoryRepository->getCategoriesInHome();
 
-        $slides = collect();
-        if ($carouselParameter = $this->moduleRepository->getParameter('home', 'carousel')) {
-            $slides = collect($carouselParameter->value);
-        }
+        $carouselParameter = $this->moduleRepository->getParameter('home', 'carousel');
+        $slides = collect($carouselParameter->value ?? []);
 
-
-        $elements = collect();
-        if ($elementsParameter = $this->moduleRepository->getParameter('home', 'elements')) {
-            $elements = collect($elementsParameter->value);
-        }
+        $elementsParameter = $this->moduleRepository->getParameter('home', 'elements');
+        $elements = collect($elementsParameter->value ?? []);
 
         return view('home.index', compact('products', 'categories', 'elements', 'slides'));
     }

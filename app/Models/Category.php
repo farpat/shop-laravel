@@ -44,12 +44,12 @@ class Category extends Model
 
     public function products ()
     {
-        $this->hasMany(Product::class);
+        return $this->hasMany(Product::class);
     }
 
     public function image ()
     {
-        $this->hasOne(Image::class);
+        return $this->belongsTo(Image::class);
     }
 
     public function getLevelAttribute ()

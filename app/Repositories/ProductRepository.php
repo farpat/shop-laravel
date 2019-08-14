@@ -23,7 +23,10 @@ class ProductRepository
     public function getProductsInHome (): Collection
     {
         if ($productIds = $this->moduleRepository->getParameter('home', 'products')) {
-            return Product::query()->whereIn('id', $productIds->value)->get();
+            return Product::query()
+                ->with('category', 'main_image')
+                ->whereIn('id', $productIds->value)
+                ->get();
         }
 
         return collect();
@@ -57,16 +60,17 @@ class ProductRepository
     }
 
     /**
-     * @param array|null $in
+     * @param array|null $productReferenceIds
      *
      * @return ProductReference[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getReferences (array $in = null)
+    public function getReferences (?array $productReferenceIds = null)
     {
-        $query = ProductReference::query()->with(['images', 'main_image', 'product', 'product.category:id,slug,label', 'product.taxes']);
+        $query = ProductReference::query()
+            ->with(['product', 'product.category:id,slug,label', 'product.taxes']);
 
-        if ($in) {
-            $query->whereIn('id', $in);
+        if ($productReferenceIds) {
+            $query->whereIn('id', $productReferenceIds);
         }
 
         return $query->get()->keyBy('id');

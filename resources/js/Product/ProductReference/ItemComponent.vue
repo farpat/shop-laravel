@@ -10,7 +10,7 @@
                     getUnitPriceIncludingTaxes(getCurrentReference.unit_price_including_taxes) }}
                 </li>
                 <li>
-                    <QuantityComponent :reference="getCurrentReference"></QuantityComponent>
+                    <quantity-component :reference="getCurrentReference"></quantity-component>
                 </li>
             </ul>
         </div>

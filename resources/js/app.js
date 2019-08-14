@@ -1,23 +1,21 @@
 import 'bootstrap';
-import MyRequest from "./src/Request/Requestor";
 
 if (document.querySelector('#category-show')) {
-    require('./front/category-show');
+    require('./app/category-show');
 }
 
 if (document.querySelector('#product-show')) {
-    require('./front/product-show');
+    require('./app/product-show');
 }
 
 if (document.querySelector('#cart')) {
-    require('./front/cart');
+    require('./app/cart');
+}
+
+if (document.querySelector('#login-form')) {
+    require('./app/login-form');
 }
 
 $(document).on('click', '.js-nav-item-cart .dropdown-menu', function (e) {
     e.stopPropagation();
 });
-
-
-const obj = {a:{}, b:{}, c:{d:'e'}};
-MyRequest
-

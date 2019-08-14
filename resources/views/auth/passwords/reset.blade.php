@@ -1,8 +1,10 @@
-@extends('_layouts.app')
+@extends('app')
 
 @section('title', __('Reset Password'))
 
 @section('description', __('Reset Password'))
+
+@section('js-require', 'resetPasswordForm')
 
 @push('scripts')
     <script>

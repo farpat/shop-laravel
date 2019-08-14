@@ -1,7 +1,10 @@
 @import "modules/variables-bootstrap";
 @import "~bootstrap/scss/bootstrap";
 
+@import "modules/spinner";
+
 @import "modules/home";
 @import "modules/elements";
 @import "modules/product";
 @import "modules/category";
+@import "modules/cart";
