@@ -66,8 +66,8 @@ class ProductRepository
      */
     public function getReferences (?array $productReferenceIds = null)
     {
-        $query = ProductReference::query()
-            ->with(['product', 'product.category:id,slug,label', 'product.taxes']);
+        //TODO: Eager loading for product.taxes
+        $query = ProductReference::query()->with(['product.category:id,slug,label']);
 
         if ($productReferenceIds) {
             $query->whereIn('id', $productReferenceIds);

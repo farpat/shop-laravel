@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Repositories\CartRepository;
+use App\Repositories\CategoryRepository;
 use App\Repositories\ModuleRepository;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -31,21 +34,24 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/';
+    /**
+     * @var CartRepository
+     */
+    private $cartRepository;
 
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
     public function __construct ()
     {
-        $this->middleware('guest')->except('logout', 'auth');
+        $this->middleware('guest')->except('logout');
     }
 
     /**
      * Show the application's login form.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function showLoginForm ()
     {
@@ -53,13 +59,21 @@ class LoginController extends Controller
     }
 
     /**
-     * @param User $user
+     * The user has been authenticated.
      *
-     * @return RedirectResponse
+     * @param Request $request
+     * @param  mixed  $user
+     * @return mixed
      */
-    public function auth (User $user)
+    protected function authenticated(Request $request, $user)
     {
-        Auth::login($user);
-        return redirect()->route('home.index');
+        $cartRepository = app(CartRepository::class);
+
+        $cartRepository->mergeItemsOnDatabase(collect($cartRepository->getCookieItems()));
+        return redirect()->intended($this->redirectPath());
+    }
+
+    public function redirectTo() {
+        return route('home.index');
     }
 }

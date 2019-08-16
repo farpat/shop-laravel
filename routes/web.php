@@ -19,5 +19,3 @@ require 'web/product.php';
 require 'web/cart.php';
 
 Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');

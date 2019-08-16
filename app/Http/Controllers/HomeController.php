@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\{CategoryRepository, ModuleRepository, ProductRepository};
+use App\Repositories\{CartRepository, CategoryRepository, ModuleRepository, ProductRepository};
 
 class HomeController extends Controller
 {

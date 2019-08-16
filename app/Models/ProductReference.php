@@ -71,6 +71,7 @@ class ProductReference extends Model
 
     public function getUnitPriceIncludingTaxesAttribute ()
     {
+
         if ($this->getAttribute('total_taxes') === null) {
             $totalTaxes = $this->product->taxes->reduce(function ($acc, Tax $tax) {
                 if ($tax->type === Tax::UNITY_TYPE) {

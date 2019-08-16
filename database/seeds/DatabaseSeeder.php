@@ -1,7 +1,8 @@
 <?php
 
 use App\Models\{Category, Image, Product, ProductReference, Tax, User};
-use App\Repositories\{CategoryRepository, ModuleRepository};
+use App\Repositories\{CartRepository, CategoryRepository, ModuleRepository};
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 
@@ -28,12 +29,22 @@ class DatabaseSeeder extends Seeder
      * @var Tax
      */
     private $tax20Percent;
+    /**
+     * @var CartRepository
+     */
+    private $cartRepository;
+    /**
+     * @var Guard
+     */
+    private $auth;
 
-    public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository)
+    public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository, CartRepository $cartRepository, Guard $auth)
     {
         $this->moduleRepository = $moduleRepository;
         $this->categoryRepository = $categoryRepository;
         $this->faker = Faker\Factory::create('fr_FR');
+        $this->cartRepository = $cartRepository;
+        $this->auth = $auth;
     }
 
     /**
@@ -46,8 +57,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->createTaxes();
 
-        factory(User::class, 10)->create();
-
         foreach (factory(Category::class, 30)->create() as $category) {
             $category->update(['image_id' => factory(Image::class)->create()->id]);
 
@@ -59,6 +68,12 @@ class DatabaseSeeder extends Seeder
                 $this->createImages($product, $productReferences);
                 $this->attachTaxes($product);
             }
+        }
+
+        foreach (factory(User::class, 10)->create() as $user) {
+            $this->auth->login($user);
+            $this->cartRepository->refreshItems();
+            $this->cartRepository->addItem(random_int(1, 5), ProductReference::query()->inRandomOrder()->first());
         }
 
         $this->createHomeModule();

@@ -3,11 +3,10 @@
 namespace App\Repositories;
 
 use App\Models\{Cart, CartItem, ProductReference, User};
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Illuminate\Session\SessionManager;
+use Exception;
+use Illuminate\Auth\SessionGuard;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 
 class CartRepository
@@ -21,19 +20,19 @@ class CartRepository
      */
     private $cart;
     /**
-     * @var User|null
-     */
-    private $currentUser;
-    /**
      * @var ProductRepository
      */
     private $productRepository;
+    /**
+     * @var SessionGuard
+     */
+    private $auth;
 
-    public function __construct (ProductRepository $productRepository)
+    public function __construct (ProductRepository $productRepository, Guard $auth)
     {
         $this->productRepository = $productRepository;
-        $this->currentUser = auth()->user();
-        $this->setItems();
+        $this->auth = $auth;
+        $this->refreshItems();
     }
 
     public function returnArray (ProductReference $productReference, int $quantity = null)
@@ -56,15 +55,19 @@ class CartRepository
 
     public function addItem (int $quantity, ProductReference $productReference): array
     {
+        if ($this->items->get($productReference->id) !== null) {
+            throw new Exception(__('Product reference already present in cart'), 422);
+        }
+
         $this->items->put($productReference->id, [
             'quantity'             => $quantity,
             'product_reference_id' => $productReference->id,
         ]);
 
-        if ($this->currentUser !== null) {
+        if ($this->auth->user() !== null) {
             $this->addItemOnDatabase($quantity, $productReference);
         } else {
-            $this->persistCookie();
+            $this->persistCookie($this->items);
         }
 
         return $this->returnArray($productReference, $quantity);
@@ -72,15 +75,19 @@ class CartRepository
 
     public function updateItem (int $quantity, ProductReference $productReference): array
     {
+        if ($this->items->get($productReference->id) === null) {
+            throw new Exception(__('Product reference not present in cart'), 422);
+        }
+
         $this->items->put($productReference->id, [
             'quantity'             => $quantity,
             'product_reference_id' => $productReference->id,
         ]);
 
-        if ($this->currentUser !== null) {
+        if ($this->auth->user() !== null) {
             $this->updateItemOnDatabase($quantity, $productReference);
         } else {
-            $this->persistCookie();
+            $this->persistCookie($this->items);
         }
 
         return $this->returnArray($productReference, $quantity);
@@ -88,12 +95,16 @@ class CartRepository
 
     public function deleteItem (ProductReference $productReference): array
     {
+        if ($this->items->get($productReference->id) === null) {
+            throw new Exception(__('Product reference not present in cart'), 422);
+        }
+
         $this->items->forget($productReference->id);
 
-        if ($this->currentUser !== null) {
+        if ($this->auth->user() !== null) {
             $this->deleteItemOnDatabase($productReference);
         } else {
-            $this->persistCookie();
+            $this->persistCookie($this->items);
         }
 
         return $this->returnArray($productReference);
@@ -123,20 +134,20 @@ class CartRepository
             ]);
     }
 
-    private function setItems ()
+    public function refreshItems ()
     {
         if ($this->items === null) {
-            if ($this->currentUser !== null) {
-                $this->cart = $this->getCart($this->currentUser);
+            if ($user = $this->auth->user()) {
+                $this->cart = $this->getCart($user);
 
                 $items = $this->cart ? CartItem::query()
                     ->select(['quantity', 'product_reference_id'])
                     ->where(['cart_id' => $this->cart->id])
                     ->get()
                     ->keyBy('product_reference_id')
-                    ->all() : [];
+                    ->toArray(): [];
             } else {
-                $items = json_decode(Cookie::get('cart-items', '{}'), true);
+                $items = $this->getCookieItems();
             }
 
             $this->items = collect($items);
@@ -161,14 +172,23 @@ class CartRepository
         return $items;
     }
 
-    private function persistCookie ()
+    private function persistCookie (?Collection $items)
     {
-        Cookie::queue('cart-items', $this->items->toJson());
+        $cookie = ($items === null) ?
+            Cookie::forget('cart-items') :
+            Cookie::make('cart-items', $items->toJson());
+
+        Cookie::queue($cookie);
+    }
+
+    public function getCookieItems (): array
+    {
+        return json_decode(Cookie::get('cart-items', '[]'), true);
     }
 
     private function deleteItemOnDatabase (ProductReference $productReference)
     {
-        $cart = $this->getCart($this->currentUser, false);
+        $cart = $this->getCart($this->auth->user(), false);
 
         $cartItem = CartItem::query()
             ->where([
@@ -191,7 +211,7 @@ class CartRepository
 
     private function updateItemOnDatabase (int $quantity, ProductReference $productReference)
     {
-        $cart = $this->getCart($this->currentUser, false);
+        $cart = $this->getCart($this->auth->user(), false);
 
         $cartItem = CartItem::query()
             ->where([
@@ -213,7 +233,7 @@ class CartRepository
 
     private function addItemOnDatabase (int $quantity, ProductReference $productReference)
     {
-        $cart = $this->getCart($this->currentUser, false);
+        $cart = $this->getCart($this->auth->user(), false);
 
         $cartItem = new CartItem([
             'quantity'               => $quantity,
@@ -229,5 +249,42 @@ class CartRepository
 
         $cartItem->save();
         $cart->save();
+    }
+
+    public function mergeItemsOnDatabase (Collection $cookieItems)
+    {
+        $this->persistCookie(null);
+
+        if ($cookieItems->isEmpty()) {
+            return;
+        }
+
+        $updates = [];
+        $addings = [];
+        foreach ($cookieItems as $productReferenceId => $cookieItem) {
+            $databaseItem = $this->items->get($productReferenceId);
+
+            if ($databaseItem !== null && $cookieItem['quantity'] > $databaseItem['quantity']) { //database item present with quantity lower
+                $updates[$productReferenceId] = $cookieItem['quantity'];
+            }
+
+            if ($databaseItem === null) {  //database item not present
+                $addings[$productReferenceId] = $cookieItem['quantity'];
+            }
+        }
+
+        if (empty($updates) && empty($addings)) {
+            return;
+        }
+
+        $productReferences = $this->productRepository->getReferences(array_keys($updates) + array_keys($addings));
+
+        foreach ($updates as $productReferenceId => $quantity) {
+            $this->updateItemOnDatabase($quantity, $productReferences->get($productReferenceId));
+        }
+
+        foreach ($addings as $productReferenceId => $quantity) {
+            $this->addItemOnDatabase($quantity, $productReferences->get($productReferenceId));
+        }
     }
 }
