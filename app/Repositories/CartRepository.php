@@ -158,15 +158,17 @@ class CartRepository
     {
         $items = $this->items->all();
 
-        $productReferences = $this->productRepository->getReferences(!empty($items) ? array_keys($items) : null);
+        if (!empty($items)) {
+            $productReferences = $this->productRepository->getReferences(array_keys($items));
 
-        foreach ($items as $productReferenceId => $item) {
-            $quantity = $item['quantity'];
-            $productReference = $productReferences->get($productReferenceId);
+            foreach ($items as $productReferenceId => $item) {
+                $quantity = $item['quantity'];
+                $productReference = $productReferences->get($productReferenceId);
 
-            $items[$productReferenceId]['product_reference'] = $productReference;
-            $items[$productReferenceId]['amount_excluding_taxes'] = $quantity * $productReference->unit_price_excluding_taxes;
-            $items[$productReferenceId]['amount_including_taxes'] = $quantity * $productReference->unit_price_including_taxes;
+                $items[$productReferenceId]['product_reference'] = $productReference;
+                $items[$productReferenceId]['amount_excluding_taxes'] = $quantity * $productReference->unit_price_excluding_taxes;
+                $items[$productReferenceId]['amount_including_taxes'] = $quantity * $productReference->unit_price_including_taxes;
+            }
         }
 
         return $items;

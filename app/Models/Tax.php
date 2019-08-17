@@ -33,6 +33,6 @@ class Tax extends Model
 
     public function products ()
     {
-        $this->belongsToMany(Product::class, 'products_taxes');
+        return $this->belongsToMany(Product::class, 'products_taxes', 'tax_id', 'product_id');
     }
 }
