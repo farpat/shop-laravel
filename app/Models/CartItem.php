@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\CartItem
  *
  * @property int $id
- * @property int|null $cart_id
+ * @property int $cart_id
  * @property int $quantity
- * @property int $product_reference_id
+ * @property int|null $product_reference_id
  * @property float $amount_excluding_taxes
  * @property float $amount_including_taxes
- * @property-read \App\Models\ProductReference $product_reference
- * @property-read Cart $cart
+ * @property-read \App\Models\Cart $cart
+ * @property-read \App\Models\ProductReference|null $product_reference
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem query()

@@ -136,22 +136,20 @@ class CartRepository
 
     public function refreshItems ()
     {
-        if ($this->items === null) {
-            if ($user = $this->auth->user()) {
-                $this->cart = $this->getCart($user);
+        if ($user = $this->auth->user()) {
+            $this->cart = $this->getCart($user);
 
-                $items = $this->cart ? CartItem::query()
-                    ->select(['quantity', 'product_reference_id'])
-                    ->where(['cart_id' => $this->cart->id])
-                    ->get()
-                    ->keyBy('product_reference_id')
-                    ->toArray(): [];
-            } else {
-                $items = $this->getCookieItems();
-            }
-
-            $this->items = collect($items);
+            $items = $this->cart ? CartItem::query()
+                ->select(['quantity', 'product_reference_id'])
+                ->where(['cart_id' => $this->cart->id])
+                ->get()
+                ->keyBy('product_reference_id')
+                ->toArray() : [];
+        } else {
+            $items = $this->getCookieItems();
         }
+
+        $this->items = collect($items);
     }
 
     public function getItems (): array

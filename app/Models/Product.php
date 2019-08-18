@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $label
  * @property string $slug
  * @property int|null $category_id
+ * @property int|null $main_image_id
  * @property string|null $excerpt
  * @property string|null $description
  * @property-read \App\Models\Category|null $category
  * @property-read mixed $meta_description
  * @property-read mixed $url
+ * @property-read \App\Models\Image|null $main_image
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProductReference[] $references
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tax[] $taxes
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereExcerpt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereMainImageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product whereSlug($value)
  * @mixin \Eloquent
  */

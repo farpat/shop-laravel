@@ -3,6 +3,7 @@
 /* @var $factory Factory */
 
 use App\Models\Category;
+use App\Models\Image;
 use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
@@ -18,5 +19,6 @@ $factory->define(Category::class, function (Faker $faker) {
         'nomenclature' => $nomenclature,
         'description'  => $faker->paragraph,
         'is_last'      => true,
+        'image_id'     => factory(Image::class)->create()->id
     ];
 });

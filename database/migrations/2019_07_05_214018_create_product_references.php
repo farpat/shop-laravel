@@ -20,6 +20,7 @@ class CreateProductReferences extends Migration
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('main_image_id')->nullable();
             $table->unsignedDecimal('unit_price_excluding_taxes', 10, 2);
+            $table->unsignedDecimal('unit_price_including_taxes', 10, 2);
             $table->json('filled_product_fields');
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');

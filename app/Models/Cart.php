@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $total_amount_excluding_taxes
  * @property float $total_amount_including_taxes
  * @property string $status
- * @property string $comment
+ * @property string|null $comment
  * @property int $user_id
  * @property int|null $address_id
  * @property \Illuminate\Support\Carbon|null $created_at
