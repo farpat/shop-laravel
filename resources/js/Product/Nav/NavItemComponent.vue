@@ -1,12 +1,9 @@
 <template>
-    <div class="media" :class="getLiClass">
-        <a href="#" @click="(e) => setCurrentProductReference(reference, e)">
-            <img v-if="reference.main_image" :src="reference.main_image.url_thumbnail" class="mr-3" :alt="reference.label">
+    <div :class="getLiClass" class="nav-product-reference-item col-md-3">
+        <a @click="(e) => setCurrentProductReference(reference, e)" class="row no-gutters nav-product-reference-item-container">
+            <img :alt="reference.label" :src="reference.main_image.url_thumbnail" v-if="reference.main_image">
+            <h2 :class="getTitleClass" class="mt-0 mb-1 h6">{{ reference.label }}</h2>
         </a>
-
-        <div class="media-body" @click="(e) => setCurrentProductReference(reference, e)">
-            <h3 :class="getTitleClass">{{ reference.label }}</h3>
-        </div>
     </div>
 </template>
 
@@ -25,7 +22,6 @@
             },
             getTitleClass: function () {
                 return {
-                    'mt-0': true, 'mb-1': true,
                     'text-white': this.reference === ProductStore.state.currentProductReference
                 }
             }

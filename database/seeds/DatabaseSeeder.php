@@ -169,7 +169,7 @@ class DatabaseSeeder extends Seeder
 
 
             $productReference = ProductReference::query()->create([
-                'label'                      => $product->label . $this->faker->words(2, true),
+                'label'                      => $this->faker->words(2, true),
                 'product_id'                 => $product->id,
                 'unit_price_excluding_taxes' => $unitPriceExcludingTaxes,
                 'unit_price_including_taxes' => $unitPriceIncludingTaxes,

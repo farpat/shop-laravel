@@ -1,22 +1,22 @@
 <template>
     <section>
-        <Menu></Menu>
+        <NavComponent></NavComponent>
 
         <keep-alive>
-            <ProductReference :key="getCurrentReference.id"></ProductReference>
+            <ProductReferenceComponent :key="getCurrentReference.id"></ProductReferenceComponent>
         </keep-alive>
     </section>
 </template>
 
 <script>
-    import Menu from "./Menu/MenuComponent";
+    import NavComponent from "./Nav/NavComponent";
     import TranslationMixin from "../src/Translation/TranslationMixin";
     import ProductStore from "./ProductStore";
-    import ProductReference from "./ProductReference/ItemComponent";
+    import ProductReferenceComponent from "./ProductReference/ItemComponent";
 
     export default {
         mixins: [TranslationMixin],
-        components: {ProductReference, Menu},
+        components: {ProductReferenceComponent, NavComponent},
         data: function () {
             return {
                 productState: ProductStore.state,

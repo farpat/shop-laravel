@@ -6,7 +6,7 @@
         <div class="col-md">
             <ul>
                 <li>
-                    {{ translate('Unit price') }} : {{
+                    {{ translate('Unit price including taxes') }} : {{
                     getUnitPriceIncludingTaxes(getCurrentReference.unit_price_including_taxes) }}
                 </li>
                 <li>

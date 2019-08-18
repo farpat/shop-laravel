@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-4 align-self-stretch">
+    <div class="col-md-3 align-self-stretch">
         <article class="card product">
             <a :href="product.url">
                 <img src="https://picsum.photos/300" class="card-img-top" :alt="product.label">

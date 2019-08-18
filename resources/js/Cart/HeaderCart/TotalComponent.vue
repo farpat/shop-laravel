@@ -6,8 +6,8 @@
         <td></td>
     </tr>
     <tr class="header-cart-total-vat">
-        <td colspan="2" class="text-right">{{ translate('Including VAT') }} :</td>
-        <td>{{ getFormattedIncludingVat }}</td>
+        <td colspan="2" class="text-right">{{ translate('Including taxes') }} :</td>
+        <td>{{ getFormattedIncludingTaxes }}</td>
         <td></td>
     </tr>
     <tr>
@@ -42,18 +42,18 @@
                 return this.toLocaleCurrency(this.getAmountIncludingTaxes, CartStore.data.currency);
             },
             getAmountExcludingTaxes: function () {
-                let totalPriceExcludingVat = 0;
+                let totalPriceExcludingTaxes = 0;
 
                 for (let productReferenceId in this.items) {
-                    totalPriceExcludingVat += this.items[productReferenceId]['amount_excluding_taxes'];
+                    totalPriceExcludingTaxes += this.items[productReferenceId]['amount_excluding_taxes'];
                 }
-                return totalPriceExcludingVat;
+                return totalPriceExcludingTaxes;
             },
-            getIncludingVat: function () {
+            getIncludingTaxes: function () {
                 return this.getAmountIncludingTaxes - this.getAmountExcludingTaxes;
             },
-            getFormattedIncludingVat: function () {
-                return this.toLocaleCurrency(this.getIncludingVat, CartStore.data.currency);
+            getFormattedIncludingTaxes: function () {
+                return this.toLocaleCurrency(this.getIncludingTaxes, CartStore.data.currency);
             }
         }
     }

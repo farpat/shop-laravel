@@ -2,7 +2,7 @@
     <div class="products-component">
         <h1>{{ translate('Products') }}</h1>
 
-        <nav :aria-label="translate('Products pagination')" class="mt-2" v-show="state.currentProducts.length > 1">
+        <nav :aria-label="translate('Products pagination')" class="mt-2" v-show="hasMorePage">
             <ul class="pagination">
                 <li :class="firstPageItemClass">
                     <a class="page-link" href="#" aria-disabled="true" @click="(e) => setPreviousPage(e)" v-html="translate('pagination.previous')"></a>
@@ -48,6 +48,9 @@
             },
             getPages: function () {
                 return range(1, CategoryStore.getLastPage() + 1);
+            },
+            hasMorePage: function () {
+                return CategoryStore.getLastPage() > 1;
             },
             isFirstPage: function () {
                 return this.state.currentPage === 1;
