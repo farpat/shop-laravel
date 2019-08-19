@@ -1,5 +1,7 @@
 import 'bootstrap';
 
+require('./app/search-form');
+
 if (document.querySelector('#category-show')) {
     require('./app/category-show');
 }
@@ -16,6 +18,8 @@ if (document.querySelector('#login-form')) {
     require('./app/login-form');
 }
 
+/*
 $(document).on('click', '.js-nav-item-cart .dropdown-menu', function (e) {
     e.stopPropagation();
 });
+*/

@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductField;
 use App\Models\ProductReference;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ProductRepository
 {
@@ -66,7 +67,6 @@ class ProductRepository
      */
     public function getReferences (?array $productReferenceIds = null)
     {
-        //TODO: Eager loading for product.taxes
         $query = ProductReference::query()->with(['product.taxes', 'product.category']);
 
         if ($productReferenceIds) {
@@ -74,7 +74,24 @@ class ProductRepository
         }
 
         return $query->get()->keyBy('id');
+    }
 
+    public function search (string $term): Collection
+    {
+        $domain = config('app.url');
 
+        return DB::query()
+            ->selectRaw('
+            p.id, p.label, i.url_thumbnail as image, 
+            CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id, "/", p.slug, "-", p.id) as url,
+            MIN(pr.unit_price_including_taxes) as min_unit_price_including_taxes')
+            ->fromRaw('products p')
+            ->leftJoin(DB::raw('images i'), DB::raw('p.main_image_id'), '=', DB::raw('i.id'))
+            ->leftJoin(DB::raw('categories c'), DB::raw('p.category_id'), '=', DB::raw('c.id'))
+            ->leftJoin(DB::raw('product_references pr'), DB::raw('p.id'), '=', DB::raw('pr.product_id'))
+            ->whereRaw('p.label like :term', ['term' => "%$term%"])
+            ->limit(5)
+            ->groupBy(DB::raw('p.id'))
+            ->get();
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <nav class="nav-product-reference row no-gutters">
+        <nav class="nav-product-reference">
             <NavItem :key="reference.id" :reference="reference" v-for="reference in getReferences"></NavItem>
         </nav>
 

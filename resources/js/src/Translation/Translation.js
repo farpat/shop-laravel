@@ -75,7 +75,7 @@ class Translation {
 
     getTranslation(key) {
         const regex = /([a-z_-]+\.)+([a-z_-]+)/g;
-        let translation = undefined;
+        let translation = key;
 
         if (regex.test(key)) {
             const keys = key.split('.');

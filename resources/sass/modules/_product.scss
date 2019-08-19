@@ -22,14 +22,20 @@
 }
 
 .nav-product-reference {
-    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .nav-product-reference-item {
     margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem !important;
+    flex-basis: 16rem;
 }
 
 .nav-product-reference-item-container {
+    display: flex;
     cursor: pointer;
     align-items: center;
 
@@ -38,4 +44,9 @@
         height: auto;
         margin-right: 0.5rem;
     }
+}
+
+.nav-product-reference-item-title {
+    font-size: 1rem;
+    margin: 0;
 }

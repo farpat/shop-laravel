@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductField;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CategoryRepository
 {
@@ -118,5 +119,21 @@ class CategoryRepository
         }
 
         return $productFields;
+    }
+
+    public function search (string $term): Collection
+    {
+        $domain = config('app.url');
+
+        return DB::query()
+            ->selectRaw('
+            c.id, c.label, i.url_thumbnail as image, 
+            CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
+            ->fromRaw('categories c')
+            ->leftJoin(DB::raw('images i'), DB::raw('c.image_id'), '=', DB::raw('i.id'))
+            ->whereRaw('c.label like :term', ['term' => "%$term%"])
+            ->groupBy(DB::raw('c.id'))
+            ->limit(2)
+            ->get();
     }
 }

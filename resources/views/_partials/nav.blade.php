@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-xl navbar-dark bg-dark">
     <a class="navbar-brand" href="{{ route('home.index') }}">{{ config('app.name') }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
             aria-controls="navbar" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -8,6 +8,11 @@
     <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav">
             {{ navigation() }}
+        </ul>
+        <ul class="ml-md-5 navbar-nav">
+            <li class="nav-item">
+                <input type="text" id="form-search-input" data-url="{{ route('home.search') }}" class="form-control form-search-input">
+            </li>
         </ul>
         <section class="ml-auto">
             <ul class="navbar-nav">

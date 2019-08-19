@@ -22,7 +22,7 @@ export default class Http {
 
         if (data !== null) {
             if (config.method === 'GET' || config.method === 'DELETE') {
-                endPoint += this.buildQueryString(data);
+                endPoint += '?' + this.buildQueryString(data);
             } else {
                 config.body = JSON.stringify(data);
             }
@@ -66,11 +66,11 @@ export default class Http {
 
     get(endPoint, data = null, headers = {}, config = {}) {
         config.method = 'GET';
-        return this.fetch(endPoint, null, headers, config);
+        return this.fetch(endPoint, data, headers, config);
     }
 
     delete(endPoint, data = null, headers = {}, config = {}) {
         config.method = 'DELETE';
-        return this.fetch(endPoint, null, headers, config);
+        return this.fetch(endPoint, data, headers, config);
     }
 }

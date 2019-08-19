@@ -40,6 +40,8 @@ class Category extends Model
 
     public $timestamps = false;
 
+    protected $appends = ['url'];
+
     protected $fillable = [
         'label', 'nomenclature', 'slug', 'description', 'is_last', 'image_id'
     ];

@@ -39,7 +39,7 @@ class Product extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'label', 'slug', 'excerpt', 'description', 'category_id', 'main_image_id'
+        'label', 'slug', 'excerpt', 'description', 'category_id', 'main_image_id',
     ];
 
     protected $appends = ['url'];

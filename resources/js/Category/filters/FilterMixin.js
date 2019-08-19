@@ -1,4 +1,7 @@
 import CategoryStore from "../CategoryStore";
+import {throttle} from "lodash";
+
+const wait = 1000; //seconds
 
 export default {
     props: {
@@ -6,9 +9,9 @@ export default {
         size: {type: Number, default: 3}
     },
     methods: {
-        setFilterValue: function (filterId, value) {
+        setFilterValue: throttle(function (filterId, value) {
             CategoryStore.setFilterValue(filterId, value);
-        },
+        }, wait),
         getFilterValue: function (filterId) {
             return CategoryStore.getFilterValue(filterId);
         }

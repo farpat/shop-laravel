@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\ProductReferenceComponent
+ * App\Models\ProductReference
  *
  * @property int $id
  * @property string $label

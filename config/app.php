@@ -210,5 +210,6 @@ return [
 
     ],
 
-    'webpack_port' => env('WEBPACK_DEV_SERVER_PORT')
+    'webpack_port' => env('WEBPACK_DEV_SERVER_PORT'),
+    'url' => env('APP_URL')
 ];

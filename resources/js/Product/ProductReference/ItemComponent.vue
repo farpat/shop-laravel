@@ -6,8 +6,8 @@
         <div class="col-md">
             <ul>
                 <li>
-                    {{ translate('Unit price including taxes') }} : {{
-                    getUnitPriceIncludingTaxes(getCurrentReference.unit_price_including_taxes) }}
+                    {{ translate('Unit price including taxes') }} :
+                    {{ getUnitPriceIncludingTaxes(getCurrentReference.unit_price_including_taxes) }}
                 </li>
                 <li>
                     <quantity-component :reference="getCurrentReference"></quantity-component>
@@ -29,9 +29,6 @@
         mixins: [TranslationMixin],
         components: {QuantityComponent, Slider},
         methods: {
-            getFilledProductValue: function (reference) {
-                return ProductStore.getFilledProductValue(reference)
-            },
             getUnitPriceIncludingTaxes: function (amount) {
                 return Str.toLocaleCurrency(amount, CartStore.data.currency);
             },

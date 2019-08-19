@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\{CartRepository, CategoryRepository, ModuleRepository, ProductRepository};
+use App\Repositories\{CategoryRepository, ModuleRepository, ProductRepository};
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -39,5 +40,19 @@ class HomeController extends Controller
         $elements = collect($elementsParameter->value ?? []);
 
         return view('home.index', compact('products', 'categories', 'elements', 'slides'));
+    }
+
+    public function search (Request $request)
+    {
+        $term = $request->input('q');
+
+        if ($term === null) {
+            return [];
+        }
+
+        $categories = $this->categoryRepository->search($term);
+        $products = $this->productRepository->search($term);
+
+        return $categories->merge($products);
     }
 }
