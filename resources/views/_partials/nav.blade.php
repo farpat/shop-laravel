@@ -9,12 +9,12 @@
         <ul class="navbar-nav">
             {{ navigation() }}
         </ul>
-        <ul class="ml-md-5 navbar-nav">
+        <ul class="navbar-nav">
             <li class="nav-item">
                 <input type="text" id="form-search-input" data-url="{{ route('home.search') }}" class="form-control form-search-input">
             </li>
         </ul>
-        <section class="ml-auto">
+        <section class="mt-sm-3 ml-auto">
             <ul class="navbar-nav">
                 @auth
                     <li class="navbar-text mr-2 p-0">
