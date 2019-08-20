@@ -7,19 +7,13 @@
     ],
     "license": "MIT",
     "type": "project",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/farpat/api"
-        }
-    ],
     "require": {
         "php": "^7.2",
         "ext-curl": "*",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-        "farpat/api": "dev-master",
+        "farpat/api": "^1.0",
         "fideloper/proxy": "^4.1",
         "laravel/framework": "^5.8",
         "laravel/passport": "^7.3",

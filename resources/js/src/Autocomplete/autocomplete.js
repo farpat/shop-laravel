@@ -1,4 +1,4 @@
-export default function autoComplete(options) {
+export default function autocomplete(options) {
     if (!document.querySelector) return;
 
     // helpers

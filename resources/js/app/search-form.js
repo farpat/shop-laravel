@@ -1,4 +1,4 @@
-import autoComplete from "../src/Autocomplete/auto-complete";
+import autocomplete from "../src/Autocomplete/autocomplete";
 import Requestor from "../src/Request/Requestor";
 import Str from "../src/String/Str";
 import CartStore from "../Cart/CartStore";
@@ -45,7 +45,7 @@ function renderNotItems() {
 `;
 }
 
-new autoComplete({
+new autocomplete({
     selector: input,
     minChars: 2,
     cache: true,
