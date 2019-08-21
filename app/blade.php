@@ -32,10 +32,10 @@ function get_form_store (ViewErrorBag $errorBag, array $old): HtmlString
 {
     $errors = json_encode(array_map(function ($errors) {
         return $errors[0];
-    }, $errorBag->getMessages()));
+    }, $errorBag->getMessages()), JSON_FORCE_OBJECT);
 
     unset($old['_token']);
-    $datas = json_encode($old);
+    $datas = json_encode($old, JSON_FORCE_OBJECT);
 
     return new HtmlString("window.formStore = { errors : $errors, datas : $datas}");
 }

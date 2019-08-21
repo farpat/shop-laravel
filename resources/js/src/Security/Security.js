@@ -48,7 +48,7 @@ class Security {
             }
         }
 
-        return '';
+        return undefined;
     }
 }
 

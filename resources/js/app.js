@@ -18,8 +18,6 @@ if (document.querySelector('#login-form')) {
     require('./app/login-form');
 }
 
-/*
-$(document).on('click', '.js-nav-item-cart .dropdown-menu', function (e) {
-    e.stopPropagation();
-});
-*/
+if (document.querySelector('#register-form')) {
+    require('./app/register-form');
+}

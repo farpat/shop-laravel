@@ -1,10 +1,8 @@
-@extends('app')
+@extends('_layouts.app')
 
 @section('title'){{ __('Register') }}@endsection
 
 @section('description'){{ __('Register') }}@endsection
-
-@section('js-require', 'registerForm')
 
 @push('scripts')
     <script>
@@ -21,7 +19,7 @@
 
                     <div class="card-body">
 
-                        <form id="register-form" method="POST" action="{{ route('register') }}">
+                        <form id="register-form" @change="onChange($event)" @submit="onSubmit($event)" method="POST" action="{{ route('register') }}">
                             @csrf
 
                             <input-component name="name" label="{{ __('Name') }}" autofocus></input-component>
@@ -42,7 +40,7 @@
 
 
                             <div class="form-group mt-5">
-                                <button type="submit" class="btn btn-primary btn-block">
+                                <button type="submit" id="submit" class="btn btn-primary">
                                     {{ __('Register') }}
                                 </button>
                             </div>

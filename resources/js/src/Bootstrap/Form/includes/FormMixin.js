@@ -13,20 +13,30 @@ export default {
         }
     },
     methods: {
-        onChangeElement: function (name, value) {
-            this.$set(this.datas, name, value);
-            if (this.rules && this.rules[name]) {
-                this.$set(this.errors, name, Security.getError(this.rules[name], name, value));
+        checkField: function (field, value) {
+            if (this.rules && this.rules[field]) {
+                let error = Security.getError(this.rules[field], field, value);
+                this.$set(this.errors, field, error)
             }
         },
-        verifyForm: function () {
-            for (let key in this.rules) {
-                this.$set(this.errors, key, Security.getError(this.rules[key], key, this.datas[key]));
+        changeField: function (field, value) {
+            this.$set(this.datas, field, value);
+
+            this.checkField(field, value);
+
+            let confirmationField = field + '_confirmation';
+            if (this.rules.hasOwnProperty(confirmationField)) {
+                this.checkField(confirmationField, this.datas[confirmationField]);
+            }
+        },
+        checkForm: function () {
+            for (let field in this.rules) {
+                this.checkField(field, this.datas[field]);
             }
         },
         hasErrors: function () {
-            for (let key in this.errors) {
-                if (this.errors.hasOwnProperty(key) && this.errors[key] !== '') {
+            for (let field in this.errors) {
+                if (this.errors.hasOwnProperty(field)) {
                     return true;
                 }
             }

@@ -28,7 +28,7 @@ export default {
 
     methods: {
         onChange: function (value) {
-            this.$parent.onChangeElement(this.name, value);
+            this.$parent.changeField(this.name, value);
         },
     }
 };
