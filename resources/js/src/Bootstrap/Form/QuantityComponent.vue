@@ -3,15 +3,15 @@
         <label :for="getId" v-if="label" class="col-form-label" v-html="label"></label>
 
         <div class="input-group input-group-quantity" :class="getContainerClass">
-            <button :class="getMinusButtonClass" :style="getMinusButtonStyle" type="button" @click="onDecrease">
+            <button :class="getMinusButtonClass" :style="getMinusButtonStyle" @click="decrease" type="button">
                 <i class="fas fa-minus"></i>
             </button>
 
-            <input :name="name" type="hidden" :value="getValue">
+            <input :name="getName" type="hidden" :value="getValue">
 
             <span :class="getInputClass">{{ getFormattedValue }}</span>
 
-            <button :class="getPlusButtonClass" :style="getPlusButtonStyle" type="button" @click="onIncrease">
+            <button :class="getPlusButtonClass" :style="getPlusButtonStyle" @click="increase" type="button">
                 <i class="fas fa-plus"></i>
             </button>
         </div>
@@ -22,7 +22,7 @@
 
 <script>
     import ErrorComponent from "./includes/ErrorComponent";
-    import StringU from "../../../Utilities/String/StringU";
+    import Str from "../../String/Str";
     import FormElementMixin from "./includes/FormElementMixin";
 
     export default {
@@ -73,19 +73,19 @@
                 return (this.getQuantity - this.step >= this.min);
             },
             getFormattedValue: function () {
-                return StringU.toLocaleString(this.getQuantity);
+                return Str.toLocaleNumber(this.getQuantity);
             },
         },
         methods: {
-            onIncrease: function () {
+            increase: function () {
                 if (this.canIncrease) {
-                    this.onChange(this.getQuantity + this.step);
+                    this.change(this.getQuantity + this.step);
                 }
             },
 
-            onDecrease: function () {
+            decrease: function () {
                 if (this.canDecrease) {
-                    this.onChange(this.getQuantity - this.step);
+                    this.change(this.getQuantity - this.step);
                 }
             },
         }

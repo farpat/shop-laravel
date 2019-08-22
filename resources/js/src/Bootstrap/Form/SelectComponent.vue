@@ -4,8 +4,8 @@
 
         <required-component :label="label" :required="isRequired"></required-component>
 
-        <select :name="name" :id="getId" :class="selectClass" :style="{cursor:'pointer'}" :value="getValue"
-                @change="onChange($event.target.value)">
+        <select :name="getName" :id="getId" :class="selectClass" :style="{cursor:'pointer'}" :value="getValue"
+                @change="change($event.target.value)">
             <option v-if="placeholder" disabled value="">{{ placeholder }}</option>
             <option v-for="option in options" :value="option.value">{{ option.label }}</option>
         </select>

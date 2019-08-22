@@ -1,15 +1,17 @@
 import Vue from "vue";
 import InputComponent from "../src/Bootstrap/Form/InputComponent";
 import CheckboxComponent from "../src/Bootstrap/Form/CheckboxComponent";
+import QuantityComponent from "../src/Bootstrap/Form/QuantityComponent"
 import RequiredRule from "../src/Security/Rules/RequiredRule";
 import EmailRule from "../src/Security/Rules/EmailRule";
 import FormMixin from "../src/Bootstrap/Form/includes/FormMixin";
 import ConfirmedRule from "../src/Security/Rules/ConfirmedRule";
 import MinRule from "../src/Security/Rules/MinRule";
 
+
 new Vue({
     el: '#register-form',
-    components: {InputComponent, CheckboxComponent},
+    components: {InputComponent, CheckboxComponent, QuantityComponent},
     mixins: [FormMixin],
     mounted: function () {
         this.$submitButton = this.$el.querySelector('#submit');

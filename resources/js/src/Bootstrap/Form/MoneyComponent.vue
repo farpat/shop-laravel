@@ -2,15 +2,15 @@
     <div class="form-group">
         <label :for="getId" class="col-form-label" v-html="label" v-if="label"></label>
         <required-component :label="label" :required="isRequired"></required-component>
-        
+
         <div class="input-group">
             <div class="input-group-prepend"><span class="input-group-text">&euro;</span></div>
 
-            <input :name="name" :value="getValue" type="hidden">
+            <input :name="getName" :value="getValue" type="hidden">
 
             <input :autofocus="autofocus" :class="getInputClass" :id="getId" :key="getId" :placeholder="placeholder"
                    :required="isRequired" :value="getFormattedValue" @blur="onBlur" @focus="onFocus"
-                   type="text" @change="onChangeMoney($event.target.value)">
+                   @change="changeValue($event.target.value)" type="text">
         </div>
 
         <error-component :error="getError"></error-component>
@@ -21,8 +21,8 @@
 <script>
     import RequiredComponent from "./includes/RequiredComponent";
     import ErrorComponent from "./includes/ErrorComponent";
-    import StringU from "../../../Utilities/String/StringU";
     import FormElementMixin from "./includes/FormElementMixin";
+    import Str from "../../String/Str";
 
     export default {
         components: {RequiredComponent, ErrorComponent},
@@ -37,16 +37,16 @@
             autofocus: {type: Boolean, default: false},
         },
         methods: {
-            onChangeMoney: function (value) {
+            changeValue: function (value) {
                 value = value.replace(/,/g, '.');
                 const parsedValue = value === '' || isNaN(value) ? value : parseFloat(value);
-                this.onChange(parsedValue);
+                this.change(parsedValue);
             },
             onFocus: function () {
                 this.isFocused = true;
 
                 if (this.getValue == 0) {
-                    this.onChange('');
+                    this.change('');
                 }
             },
             onBlur: function () {
@@ -60,7 +60,7 @@
                         return this.getValue;
                     }
 
-                    return StringU.toLocaleString(this.getValue);
+                    return Str.toLocaleCurrency(this.getValue);
                 }
 
                 return this.getValue;

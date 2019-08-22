@@ -5,7 +5,7 @@
         <required-component :label="label" :required="isRequired"></required-component>
 
         <textarea :readonly="readonly" :autofocus="autofocus" :id="getId" :class="getInputClass"
-                  :name="name" :value="getValue" @change="onChange($event.target.value)"
+                  :name="getName" :value="getValue" @change="change($event.target.value)"
                   :placeholder="placeholder" :required="isRequired"></textarea>
 
         <error-component :error="getError"></error-component>
@@ -20,10 +20,7 @@
     import FormElementMixin from "./includes/FormElementMixin";
 
     export default {
-        components: {
-            ErrorComponent,
-            RequiredComponent,
-        },
+        components: {ErrorComponent, RequiredComponent},
         mixins: [FormElementMixin],
         props: {
             readonly: {type: Boolean, default: false},

@@ -1,19 +1,23 @@
 <template>
     <div class="modal fade" tabindex="-1" role="dialog">
-        <div :class="getModalClass" role="document">
+        <div :class="getModalClass" class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header" :class="getModalHeaderClass">
-                    <p v-if="title" :class="getModalTitleClass">{{ title }}</p>
+                <div class="modal-header">
+                    <p :class="getModalTitleClass" class="modal-title" v-if="title">{{ title }}</p>
                     <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" v-html="content" :class="getModalBodyClass">
+                <div class="modal-body" v-html="content">
                 </div>
-                <div class="modal-footer" :class="getModalFooterClass">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ closeButtonLabel }}</button>
-                    <button type="button" :class="getOkButtonClass" @click="onSubmit">O.K.</button>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-link" data-dismiss="modal" type="button">
+                        {{ closeButtonLabel }}
+                    </button>
+                    <button :class="getOkButtonClass" @click="onSubmit" class="btn" type="button">
+                        O.K.
+                    </button>
                 </div>
             </div>
         </div>
@@ -33,42 +37,14 @@
             closeButtonLabel: {type: String, default: 'Close'}
         },
         computed: {
-            getModalHeaderClass: function () {
-                return {};
-            },
-            getModalBodyClass: function () {
-                return {};
-            },
             getModalClass: function () {
-                let classes = ['modal-dialog'];
-
-                if (this.size) {
-                    classes.push('modal-' + this.size);
-                }
-
-                return classes;
-
+                return this.size ? 'modal-' + this.size : null;
             },
             getModalTitleClass: function () {
-                let classes = ['modal-title'];
-
-                if (this.type) {
-                    classes.push('text-' + this.type);
-                }
-
-                return classes;
-            },
-            getModalFooterClass: function () {
-                return '';
+                return this.type ? 'text-' + this.type : null;
             },
             getOkButtonClass: function () {
-                let classes = ['btn'];
-
-                if (this.type) {
-                    classes.push('btn-' + this.type);
-                }
-
-                return classes;
+                return this.type ? 'btn-' + this.type : null;
             }
         },
         mounted: function () {

@@ -76,7 +76,7 @@
                             newValue = option.checked ? this.getValues.concat(option.value) : this.getValues.filter(v => option.value !== v);
                         }
 
-                        this.onChange(newValue);
+                        this.change(newValue);
 
                         if (this.getError) {
                             this.$msParent.classList.add('is-invalid');

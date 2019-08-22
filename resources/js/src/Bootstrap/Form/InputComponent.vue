@@ -1,17 +1,16 @@
 <template>
     <div class="form-group">
-        <label :for="getId" v-if="label" class="col-form-label" v-html="label"></label>
+        <label :for="getId" class="col-form-label" v-html="label" v-if="label"></label>
         <required-component :label="label" :required="isRequired"></required-component>
 
         <div :class="getContainerClass">
-            <div v-if="before" class="input-group-prepend"><span class="input-group-text" v-html="before"></span>
-            </div>
+            <div class="input-group-prepend" v-if="before"><span class="input-group-text" v-html="before"></span></div>
 
-            <input :type="type" :readonly="readonly" :autofocus="autofocus" :id="getId" :class="getInputClass"
-                   :name="name" :value="getValue" :placeholder="placeholder" :required="isRequired"
-                   @change="onChange($event.target.value)">
+            <input :autofocus="autofocus" :class="getInputClass" :id="getId" :name="getName" :placeholder="placeholder"
+                   :readonly="readonly" :required="isRequired" :type="type" :value="getValue"
+                   @change="change($event.target.value)">
 
-            <div v-if="after" class="input-group-append"><span class="input-group-text" v-html="after"></span></div>
+            <div class="input-group-append" v-if="after"><span class="input-group-text" v-html="after"></span></div>
 
             <error-component :error="getError"></error-component>
         </div>

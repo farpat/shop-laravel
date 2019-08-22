@@ -1,7 +1,8 @@
 @import "modules/variables-bootstrap";
 @import "~bootstrap/scss/bootstrap";
 
-@import "../js/src/Autocomplete/autocomplete";
+@import "modules/autocomplete";
+@import "modules/quantity";
 @import "modules/spinner";
 
 @import "modules/navbar";

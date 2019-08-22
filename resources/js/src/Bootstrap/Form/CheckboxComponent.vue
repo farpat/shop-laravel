@@ -1,10 +1,11 @@
 <template>
     <div class="form-group">
         <div class="custom-control custom-checkbox">
-            <input v-if="!getValue" type="hidden" :name="name" value=""/>
+            <input :name="getName" type="hidden" v-if="!getValue" value=""/>
 
-            <input type="checkbox" :name="name" :id="getId" :class="getInputClass" :checked="getValue"
-                   @change="onChange($event.target.checked)" value="1">
+            <input :checked="getValue" :class="getInputClass" :id="getId" :name="getName" class="custom-control-input"
+                   type="checkbox"
+                   @change="change($event.target.checked)" value="1">
 
             <label class="custom-control-label" :for="getId" style="cursor: pointer">{{ label }}</label>
 
@@ -26,7 +27,6 @@
         computed: {
             getInputClass: function () {
                 return {
-                    'custom-control-input': true,
                     'is-invalid': this.getError
                 };
             },

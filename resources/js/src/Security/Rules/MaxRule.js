@@ -1,9 +1,9 @@
-import StringU from "../../String/StringU";
+import Str from "../../String/Str";
 
 export default class MaxRule {
     constructor(params) {
         this.params = params;
-        this.maxSize = StringU.sizeToBytes(params);
+        this.maxSize = Str.sizeToBytes(params);
         this.name = 'max';
     }
 

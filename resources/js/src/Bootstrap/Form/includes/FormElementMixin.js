@@ -27,7 +27,7 @@ export default {
     },
 
     methods: {
-        onChange: function (value) {
+        change: function (value) {
             this.$parent.changeField(this.name, value);
         },
     }

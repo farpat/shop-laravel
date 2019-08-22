@@ -1,6 +1,5 @@
 <template>
-    <modal-component :title="title" size="md" :content="deleteForm" type="danger"
-                     :close-button-label="closeButtonLabel">
+    <modal-component :title="title" size="md" :content="deleteForm" type="danger" :close-button-label="closeButtonLabel">
     </modal-component>
 </template>
 

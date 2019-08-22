@@ -8,7 +8,7 @@
 
             <div class="custom-file">
                 <input type="file" :name="getName" :required="isRequired"
-                       @change="onChange(Array.from($event.target.files))"
+                       @change="change(Array.from($event.target.files))"
                        :multiple="multiple" :accept="getAccept"
                        :id="getId" :class="getInputClass">
 
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-    import StringU from "../../../Utilities/String/StringU";
+    import Str from "../../String/Str";
     import RequiredComponent from "./includes/RequiredComponent";
     import ErrorComponent from "./includes/ErrorComponent";
     import FilePreviewerComponent from './includes/FilePreviewerComponent';
@@ -56,7 +56,7 @@
         methods: {
             onDeleteFile: function () {
                 this.$inputFile.value = '';
-                this.onChange([]);
+                this.change([]);
             }
         },
 
@@ -92,12 +92,12 @@
 
                 if (filesCount === 0) {
                     return this.initialIndicator;
-                } else {
-                    const totalSize = this.getFiles.reduce((acc, file) => acc + file.size, 0);
-                    const information = filesCount === 1 ? this.getFiles[0].name : filesCount + ' files';
-
-                    return information + ' (' + StringU.bytesToSize(totalSize) + ')';
                 }
+
+                const totalSize = this.getFiles.reduce((acc, file) => acc + file.size, 0);
+                const information = filesCount === 1 ? this.getFiles[0].name : filesCount + ' files';
+
+                return information + ' (' + Str.bytesToSize(totalSize) + ')';
             }
         }
     }

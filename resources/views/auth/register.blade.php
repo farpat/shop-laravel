@@ -38,6 +38,8 @@
                             <checkbox-component name="accept"
                                                 label="{{ __('I accept the registration') }}"></checkbox-component>
 
+                            <quantity-component name="quantity"></quantity-component>
+
 
                             <div class="form-group mt-5">
                                 <button type="submit" id="submit" class="btn btn-primary">
