@@ -5,6 +5,7 @@ use App\Repositories\{CartRepository, CategoryRepository, ModuleRepository};
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -40,9 +41,10 @@ class DatabaseSeeder extends Seeder
 
     public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository, CartRepository $cartRepository, Guard $auth)
     {
+        $this->faker = Faker\Factory::create('fr_FR');
+
         $this->moduleRepository = $moduleRepository;
         $this->categoryRepository = $categoryRepository;
-        $this->faker = Faker\Factory::create('fr_FR');
         $this->cartRepository = $cartRepository;
         $this->auth = $auth;
     }
@@ -59,19 +61,22 @@ class DatabaseSeeder extends Seeder
 
         dump('Creation of products');
         $start = microtime(true);
-        foreach (factory(Category::class, 10)->create() as $category) {
+        foreach (factory(Category::class, 4)->create() as $category) {
 
-            $productfields = $this->createProductfields($category);
-            $products = $this->createProducts($category);
+            for ($i = 0; $i < 2; $i++) {
+                $subCategory = $this->createSubCategory($category);
+                $productfields = $this->createProductfields($subCategory);
+                $products = $this->createProducts($subCategory);
 
-            foreach ($products as $product) {
-                $taxes = $this->attachTaxes($product);
-                $productReferences = $this->createProductReferences($product, $productfields, $taxes);
-                $this->createImages($product, $productReferences);
+                foreach ($products as $product) {
+                    $taxes = $this->attachTaxes($product);
+                    $productReferences = $this->createProductReferences($product, $productfields, $taxes);
+                    $this->createImages($product, $productReferences);
+                }
             }
         }
         $end = microtime(true);
-        dump('==> ' . ($end - $start) . ' seconds');
+        dump('==> ' . round($end - $start, 2) . ' seconds');
 
         dump('Creation of carts');
         $start = microtime(true);
@@ -81,9 +86,23 @@ class DatabaseSeeder extends Seeder
             $this->cartRepository->addItem(random_int(1, 5), ProductReference::query()->inRandomOrder()->first());
         }
         $end = microtime(true);
-        dump('==> ' . ($end - $start) . ' seconds');
+        dump('==> ' . round($end - $start, 2) . ' seconds');
 
         $this->createHomeModule();
+    }
+
+    private function createSubCategory (Category $category): Category
+    {
+        $label = $this->faker->words(3, true);
+        $slug = Str::slug($label);
+        $nomenclature = $category->nomenclature . '.' . str_replace('-', '', Str::upper($slug));
+
+        return factory(Category::class)->create([
+            'label'        => $label,
+            'slug'         => $slug,
+            'nomenclature' => $nomenclature,
+            'is_last'      => true,
+        ]);
     }
 
     private function attachTaxes (Product $product): Collection
@@ -127,7 +146,7 @@ class DatabaseSeeder extends Seeder
      */
     private function createProducts (Category $category)
     {
-        return factory(Product::class, random_int(1, 6))->create([
+        return factory(Product::class, random_int(1, 15))->create([
             'category_id' => $category->id
         ]);
     }
@@ -192,6 +211,10 @@ class DatabaseSeeder extends Seeder
             [
                 'icon'  => 'fas fa-book',
                 'title' => 'Book 2',
+            ],
+            [
+                'icon'  => 'fas fa-book',
+                'title' => 'Book 3',
             ]
         ];
 

@@ -1,3 +1,17 @@
 .category {
     max-width: 15rem;
 }
+
+.category-index {
+    img { max-width: 5rem; }
+
+    h2 { font-size: 1rem; }
+
+    .media {
+        margin: 1rem 0;
+    }
+
+    .media-link {
+        margin-right: 0.5rem;
+    }
+}

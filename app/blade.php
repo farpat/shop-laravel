@@ -8,6 +8,10 @@ function navigation ()
     return app(NavigationRepository::class);
 }
 
+function is_active(string $url) {
+    return url()->current() === $url ? 'active' : '';
+}
+
 function breadcrumb (array $links): HtmlString
 {
     $linksCount = count($links);

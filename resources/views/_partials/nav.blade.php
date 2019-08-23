@@ -7,6 +7,9 @@
 
     <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="{{ route('categories.index') }}" class="nav-link {{ is_active(route('categories.index')) }}">{{ __('All categories') }}</a>
+            </li>
             {{ navigation() }}
         </ul>
         <ul class="navbar-nav">

@@ -8,7 +8,17 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function show (string $slug, Category $category, Request $request, CategoryRepository $categoryRepository)
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+
+    public function __construct (CategoryRepository $categoryRepository)
+    {
+        $this->categoryRepository = $categoryRepository;
+    }
+
+    public function show (string $slug, Category $category, Request $request)
     {
         $currentPage = $request->get('page');
         if ($slug !== $category->slug || $currentPage === 1 || (!is_null($currentPage) && !is_numeric($currentPage))) {
@@ -20,9 +30,9 @@ class CategoryController extends Controller
             ['label' => $category->label]
         ];
 
-        $products = $categoryRepository->getProductsFor($category)->get();
+        $products = $this->categoryRepository->getProductsFor($category)->get();
 
-        $filters = $products->isNotEmpty() ? $categoryRepository->getProductFields($category) : collect();
+        $filters = $products->isNotEmpty() ? $this->categoryRepository->getProductFields($category) : collect();
         $filterValues = $request->get('f', []);
 
         $perPage = Category::PRODUCTS_PER_PAGE;
@@ -32,6 +42,8 @@ class CategoryController extends Controller
 
     public function index ()
     {
-        return view('categories.index');
+        $html = $this->categoryRepository->toHtml($this->categoryRepository->getRootCategories());
+
+        return view('categories.index', compact('html'));
     }
 }

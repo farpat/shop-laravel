@@ -5,9 +5,11 @@ namespace App\Repositories;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductField;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class CategoryRepository
 {
@@ -17,11 +19,53 @@ class CategoryRepository
      */
     private $moduleRepository;
 
+
     public function __construct (ModuleRepository $moduleRepository)
     {
         $this->moduleRepository = $moduleRepository;
     }
 
+    /**
+     * @param Category[] $parents
+     *
+     * @return HtmlString
+     * @throws \Exception
+     */
+    public function toHtml (array $parents): HtmlString
+    {
+        $string = '';
+        if (!empty($parents)) {
+            foreach ($parents as $parent) {
+                $children = $this->getChildren($parent)->all();
+                $img = $parent->image ?
+                    "<img src=\"{$parent->image->url_thumbnail}\" alt=\"{$parent->image->alt_thumbnail}\">" :
+                    "<img src=\"https://via.placeholder.com/80x32\">";
+
+                $string .= <<<HTML
+                <div class="media">
+                    <a class="media-link" href="{$parent->url}">
+                        $img
+                    </a>
+                    <div class="media-body">
+                        <h2><a href="{$parent->url}">{$parent->label}</a></h2>
+                        {$this->toHtml($children)}
+                    </div>
+                </div>
+                HTML;
+            }
+        }
+
+        return new HtmlString($string);
+    }
+
+    public function getRootCategories (): array
+    {
+        return Category::query()
+            ->where(DB::raw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature,".","")) + 1'), 1)
+            ->with(['image'])
+            ->get()
+            ->all();
+    }
 
     public function getCategoriesInHome (): Collection
     {
@@ -87,7 +131,8 @@ class CategoryRepository
 
         return Category::query()
             ->where('nomenclature', 'LIKE', $category->nomenclature . '.%')
-            ->whereRaw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature, "' . Category::BREAKING_POINT . '", "")) = :level', [$category->level])
+            ->whereRaw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature, "' . Category::BREAKING_POINT . '", "")) + 1 = ?', [$category->level + 1])
+            ->with(['image'])
             ->get();
     }
 
