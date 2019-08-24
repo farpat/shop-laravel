@@ -3,12 +3,10 @@ import Security from "../../Security/Security";
 
 class FormStore {
     constructor() {
-        let formStore = window.formStore;
-
         this.state = {
-            rules:  formStore.rules,
-            datas:  formStore.datas,
-            errors: formStore.errors,
+            rules:  window.FormStore.rules,
+            datas:  window.FormStore.datas,
+            errors: window.FormStore.errors,
         };
     }
 
