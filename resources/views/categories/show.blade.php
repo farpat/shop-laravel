@@ -10,7 +10,9 @@
     {{ breadcrumb($breadcrumb) }}
 
     <section id="category-show">
-        <filter-component :filters='@json($filters)'></filter-component>
+        @if($filters->isNotEmpty())
+            <filter-component :filters='@json($filters, JSON_FORCE_OBJECT)'></filter-component>
+        @endif
         <products-component></products-component>
     </section>
 @endsection
@@ -24,7 +26,7 @@
                 perPage: {{ $perPage }},
                 currentPage: {{ $currentPage ?? 1 }}
             },
-            data: {
+            data:  {
                 allProducts: @json($products),
                 baseUrl: '{{ url()->current() }}'
             }
