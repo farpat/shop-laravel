@@ -24,10 +24,8 @@
 <script>
     import TranslationMixin from "../src/Translation/TranslationMixin";
     import CartStore from "./CartStore";
-    import QuantityComponent from "../src/Bootstrap/Form/QuantityComponent";
 
     export default {
-        components: {QuantityComponent},
         mixins: [TranslationMixin],
         props: {
             reference: {type: Object, required: true}
