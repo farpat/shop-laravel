@@ -1,5 +1,3 @@
-import CartStore from "../Cart/CartStore";
-
 class ProductStore {
     constructor() {
         this.state = {

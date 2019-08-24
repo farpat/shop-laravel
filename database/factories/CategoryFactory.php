@@ -19,6 +19,6 @@ $factory->define(Category::class, function (Faker $faker) {
         'nomenclature' => $nomenclature,
         'description'  => $faker->paragraph,
         'is_last'      => false,
-        'image_id'     => factory(Image::class)->create()->id
+        'image_id'     => $faker->boolean(65) ? factory(Image::class)->create()->id : null
     ];
 });

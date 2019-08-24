@@ -1,3 +1,5 @@
+import FormStore from "../FormStore";
+
 export default {
     props: {
         id: {type: String, required: false},
@@ -12,23 +14,23 @@ export default {
             return this.id || this.name;
         },
         isRequired: function () {
-            if (this.$parent.rules === {} || !this.$parent.rules[this.name]) {
+            if (FormStore.state.rules === {} || !FormStore.state.rules[this.name]) {
                 return false;
             }
 
-            return this.$parent.rules[this.name].find(rule => rule.name === 'required') !== undefined;
+            return FormStore.state.rules[this.name].find(rule => rule.name === 'required') !== undefined;
         },
         getValue: function () {
-            return this.$parent.datas[this.name];
+            return FormStore.state.datas[this.name];
         },
         getError: function () {
-            return this.$parent.errors[this.name] || '';
+            return FormStore.state.errors[this.name] || '';
         },
     },
 
     methods: {
         change: function (value) {
-            this.$parent.changeField(this.name, value);
+            FormStore.changeField(this.name, value);
         },
     }
 };
