@@ -2,7 +2,7 @@ import Vue from "vue";
 
 import InputComponent from "../src/Bootstrap/Form/InputComponent";
 import CheckboxComponent from "../src/Bootstrap/Form/CheckboxComponent";
-import QuantityComponent from "../src/Bootstrap/Form/QuantityComponent"
+import NumberComponent from "../src/Bootstrap/Form/NumberComponent"
 
 import RequiredRule from "../src/Security/Rules/RequiredRule";
 import EmailRule from "../src/Security/Rules/EmailRule";
@@ -13,7 +13,7 @@ import FormStore from "../src/Bootstrap/Form/FormStore";
 
 new Vue({
     el:         '#register-form',
-    components: {InputComponent, CheckboxComponent, QuantityComponent},
+    components: {InputComponent, CheckboxComponent, NumberComponent},
     data:       function () {
         return {
             state: FormStore.state

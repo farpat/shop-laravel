@@ -3,10 +3,12 @@ import Security from "../../Security/Security";
 
 class FormStore {
     constructor() {
+        let formStore = window.FormStore || {};
+
         this.state = {
-            rules:  window.FormStore.rules,
-            datas:  window.FormStore.datas,
-            errors: window.FormStore.errors,
+            rules:  formStore.rules || {},
+            datas:  formStore.datas || {},
+            errors: formStore.errors || {},
         };
     }
 
@@ -22,7 +24,7 @@ class FormStore {
     }
 
     checkField(field, value) {
-        if (this.state.rules && this.state.rules[field]) {
+        if (this.state.rules[field] !== undefined) {
             const fieldRules = this.state.rules[field];
             const error = Security.getError(fieldRules, field, value);
             Vue.set(this.state.errors, field, error);

@@ -38,7 +38,7 @@
                             <checkbox-component name="accept"
                                                 label="{{ __('I accept the registration') }}"></checkbox-component>
 
-                            <quantity-component name="quantity"></quantity-component>
+                            <number-component name="quantity"></number-component>
 
 
                             <div class="form-group mt-5">

@@ -1,9 +1,7 @@
 <template>
     <div class="row align-items-center" v-if="getItem === undefined">
         <div class="col-auto">
-            {{ translate('Quantity') }} :
-            <input class="form-control d-inline-block" min="1" style="max-width: 5rem" type="number"
-                   v-model.number="quantity">
+            <quantity-component :min="1" :name="'quantity-' + this.reference.id"></quantity-component>
         </div>
         <div class="col-auto">
             <button @click="() => addInCart()" class="btn btn-primary" type="button" v-show="!isLoading">
@@ -24,30 +22,36 @@
 <script>
     import TranslationMixin from "../src/Translation/TranslationMixin";
     import CartStore from "./CartStore";
+    import QuantityComponent from "../src/Bootstrap/Form/NumberComponent";
+    import FormStore from "../src/Bootstrap/Form/FormStore";
 
     export default {
-        mixins: [TranslationMixin],
-        props: {
+        mixins:     [TranslationMixin],
+        components: {QuantityComponent},
+        props:      {
             reference: {type: Object, required: true}
         },
-        data: function () {
+        data:       function () {
             return {
-                quantity: 1,
-                state: CartStore.state
+                cartState: CartStore.state,
+                formState: FormStore.state
             };
         },
-        computed: {
-            getItem: function () {
+        computed:   {
+            getItem:     function () {
                 return CartStore.getItem(this.reference.id);
             },
-            isLoading: function () {
-                return CartStore.state.isLoading[this.reference.id];
+            isLoading:   function () {
+                return this.cartState.isLoading[this.reference.id];
+            },
+            getQuantity: function () {
+                return this.formState.datas['quantity-' + this.reference.id]
             }
         },
-        methods: {
+        methods:    {
             addInCart: function () {
-                CartStore.addItem(this.reference.id, this.quantity);
-                window.setTimeout(() => this.quantity = 1, 500);
+                CartStore.addItem(this.reference.id, this.getQuantity);
+                window.setTimeout(() => FormStore.changeField('quantity-' + this.reference.id, 1), 500);
             }
         }
     }

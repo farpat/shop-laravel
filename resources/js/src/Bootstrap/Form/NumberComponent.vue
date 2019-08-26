@@ -1,5 +1,5 @@
 <template>
-    <div class="form-group">
+    <div>
         <label :for="getId" v-if="label" class="col-form-label" v-html="label"></label>
 
         <div class="input-group input-group-quantity" :class="getContainerClass">

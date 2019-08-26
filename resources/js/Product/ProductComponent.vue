@@ -15,14 +15,14 @@
     import ProductReferenceComponent from "./ProductReference/ItemComponent";
 
     export default {
-        mixins: [TranslationMixin],
+        mixins:     [TranslationMixin],
         components: {ProductReferenceComponent, NavComponent},
-        data: function () {
+        data:       function () {
             return {
                 productState: ProductStore.state,
             }
         },
-        computed: {
+        computed:   {
             getCurrentReference: function () {
                 return ProductStore.state.currentProductReference
             }

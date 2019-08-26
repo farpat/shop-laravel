@@ -4,9 +4,8 @@
             <Slider :reference="getCurrentReference"></Slider>
         </div>
         <div class="col-md">
-            <ul>
-                <li>
-                    {{ translate('Unit price including taxes') }} :
+            <ul class="list-unstyled">
+                <li class="mb-5">
                     {{ getUnitPriceIncludingTaxes(getCurrentReference.unit_price_including_taxes) }}
                 </li>
                 <li>
