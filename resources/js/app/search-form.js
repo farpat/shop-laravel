@@ -1,5 +1,5 @@
 import autocomplete from "../src/Autocomplete/autocomplete";
-import Requestor from "../src/Request/Requestor";
+import Requestor from "@farpat/api";
 import Str from "../src/String/Str";
 import CartStore from "../Cart/CartStore";
 import Translation from "../src/Translation/Translation";

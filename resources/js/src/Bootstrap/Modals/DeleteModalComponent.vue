@@ -6,7 +6,7 @@
 
 <script>
     import ModalComponent from "./ModalComponent";
-    import Requestor from "../../Request/Requestor";
+    import Requestor from "@farpat/api";
 
     export default {
         components: {ModalComponent},

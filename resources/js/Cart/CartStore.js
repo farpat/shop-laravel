@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Requestor from "../src/Request/Requestor";
+import Requestor from "@farpat/api";
 
 class CartStore {
     constructor() {
