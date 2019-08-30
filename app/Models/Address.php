@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $created_at
  * @property string|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cart[] $carts
+ * @property-read int|null $carts_count
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address newQuery()

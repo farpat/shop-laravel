@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
  * @property-read mixed $url
  * @property-read \App\Models\Image|null $image
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Product[] $products
+ * @property-read int|null $products_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category query()

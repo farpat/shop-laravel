@@ -20,8 +20,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read mixed $url
  * @property-read \App\Models\Image|null $main_image
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProductReference[] $references
+ * @property-read int|null $references_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tax[] $taxes
+ * @property-read int|null $taxes_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Product query()

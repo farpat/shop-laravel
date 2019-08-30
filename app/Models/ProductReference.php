@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property array $filled_product_fields
  * @property-read mixed $url
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Image[] $images
+ * @property-read int|null $images_count
  * @property-read \App\Models\Image|null $main_image
  * @property-read \App\Models\Product $product
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductReference newModelQuery()

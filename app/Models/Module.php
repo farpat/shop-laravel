@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $is_active
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ModuleParameter[] $parameters
+ * @property-read int|null $parameters_count
  * @method static bool|null forceDelete()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Module newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Module newQuery()

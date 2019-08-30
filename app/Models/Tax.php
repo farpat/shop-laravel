@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $type
  * @property float $value
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Product[] $products
+ * @property-read int|null $products_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tax newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tax newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tax query()
