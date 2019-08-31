@@ -21,3 +21,7 @@ if (document.querySelector('#login-form')) {
 if (document.querySelector('#register-form')) {
     require('./app/register-form');
 }
+
+if (document.querySelector('#send-token-password-form')) {
+    require('./app/send-token-password-form');
+}

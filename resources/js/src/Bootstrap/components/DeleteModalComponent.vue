@@ -20,7 +20,7 @@
         computed: {
             formHtml: function () {
                 return `
-                <form action="${this.action}" method="POST">
+                <form action="${this.action}" method="post">
                     <input type="hidden" name="_token" value="${Requestor.getCsrfToken()}">
                     <input type="hidden" name="_method" value="DELETE">
                 </form>`;

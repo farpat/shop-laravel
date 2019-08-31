@@ -18,7 +18,7 @@
                     <div class="card-header">{{ __('Reset Password') }}</div>
 
                     <div class="card-body">
-                        <form id="reset-password-form" method="POST" action="{{ route('password.request') }}"
+                        <form id="reset-password-form" method="post" action="{{ route('password.request') }}"
                               aria-label="{{ __('Reset Password') }}">
                             @csrf
 

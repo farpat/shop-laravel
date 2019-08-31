@@ -17,7 +17,7 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form id="login-form" @change="onChange($event)" @submit="onSubmit($event)" method="POST"
+                    <form id="login-form" @change="onChange($event)" @submit="onSubmit($event)" method="post"
                           action="{{ route('login') }}" aria-label="{{ __('Login') }}">
                         @csrf
 
