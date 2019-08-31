@@ -8,7 +8,7 @@
 @section('content')
     <div class="row">
         <section class="col">
-            <img src="{{asset('/svg/404.svg')}}" alt="{{ __('Error 404') }}">
+            <img src="{{ asset('/svg/404.svg') }}" alt="{{ __('Error 404') }}">
         </section>
 
         <section class="col">
