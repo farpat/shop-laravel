@@ -1,12 +1,12 @@
 class ProductStore {
     constructor() {
         this.state = {
-            ...window.ProductStore.state,
+            ...window._ProductStore.state,
             currentProductReference: {}
         };
 
         this.data = {
-            ...window.ProductStore.data,
+            ...window._ProductStore.data,
             filledProductFields: {}
         };
 

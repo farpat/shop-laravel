@@ -41,7 +41,7 @@ function get_form_store (ViewErrorBag $errorBag, array $old): HtmlString
     unset($old['_token']);
     $datas = json_encode($old, JSON_FORCE_OBJECT);
 
-    return new HtmlString("window.FormStore = { errors : $errors, datas : $datas, rules : {}}");
+    return new HtmlString("window._FormStore = { errors : $errors, datas : $datas, rules : {}}");
 }
 
 function get_asset (string $asset): string

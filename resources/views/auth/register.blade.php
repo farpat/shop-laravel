@@ -19,7 +19,7 @@
 
                     <div class="card-body">
 
-                        <form id="register-form" @change="onChange($event)" @submit="onSubmit($event)" method="POST" action="{{ route('register') }}">
+                        <form id="register-form" @change="onChange($event)" @submit="onSubmit($event)" method="POST" action="{{ route('register') }}" novalidate>
                             @csrf
 
                             <input-component name="name" label="{{ __('Name') }}" autofocus></input-component>

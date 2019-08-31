@@ -22,7 +22,7 @@ new Vue({
     mounted:    function () {
         this.$submitButton = this.$el.querySelector('#submit');
 
-        FormStore.state.rules = {
+        this.state.rules = {
             name:                  [new RequiredRule()],
             email:                 [new RequiredRule(), new EmailRule()],
             password:              [new RequiredRule(), new MinRule(6)],

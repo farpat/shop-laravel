@@ -1,12 +1,12 @@
 class CategoryStore {
     constructor() {
         this.state = {
-            ...window.CategoryStore.state,
+            ...window._CategoryStore.state,
             currentProducts: [],
         };
 
         this.data = {
-            ...window.CategoryStore.data,
+            ...window._CategoryStore.data,
             currentQueryString: ''
         };
 

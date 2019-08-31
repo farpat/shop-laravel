@@ -21,7 +21,7 @@
 
 @push('scripts')
     <script>
-        window.ProductStore = {
+        window._ProductStore = {
             state: {},
             data: {
                 baseUrl: '{{ url()->current() }}',

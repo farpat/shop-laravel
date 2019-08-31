@@ -20,7 +20,7 @@
 
 @push('scripts')
     <script>
-        window.CategoryStore = {
+        window._CategoryStore = {
             state: {
                 filterValues: @json($filterValues, JSON_FORCE_OBJECT),
                 perPage: {{ $perPage }},
