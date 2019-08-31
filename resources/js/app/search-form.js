@@ -20,7 +20,6 @@ const renderProduct = function (item, searchValue) {
 </div>
 `;
 };
-
 const renderCategory = function (item, searchValue) {
     const text = Str.markValueIntoText(searchValue, item.label);
     const autocompleteImgString = item.image ? `<div class="autocomplete-img"><img src="${item.image}" alt="${item.label}"></div>` : '';
@@ -34,23 +33,22 @@ const renderCategory = function (item, searchValue) {
 </div>
 `;
 };
-
-function renderNotItems() {
+const renderNotItems = function () {
     return `
 <div class="autocomplete-suggestion">
     <div class="autocomplete-description">
-        <p class="autocomplete-description-label">${Translation.getTranslation('Not items')}</p>
+        <p class="autocomplete-description-label">${Translation.getTranslation('not items')}</p>
     </div>
 </div>
 `;
-}
+};
 
 new autocomplete({
-    selector: input,
-    minChars: 2,
-    cache: true,
-    delay: 150,
-    source: function (q, suggest) {
+    selector:   input,
+    minChars:   2,
+    cache:      true,
+    delay:      150,
+    source:     function (q, suggest) {
         input.classList.add('searching');
 
         Requestor.newRequest()
@@ -72,9 +70,10 @@ new autocomplete({
             return renderCategory(item, searchValue);
         }
     },
-    onSelect: function (e, term, item) {
-        e.preventDefault();
-        window.location.href = item.dataset.url;
+    onSelect:   function (e, term, item) {
+        if (item.dataset.url !== undefined) {
+            window.location.href = item.dataset.url;
+        }
     }
 });
 

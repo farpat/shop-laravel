@@ -13,10 +13,10 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-link" data-dismiss="modal" type="button">
-                        {{ closeButtonLabel }}
+                        {{ translate(closeButtonLabel) }}
                     </button>
                     <button v-if="displayOk" :class="getOkButtonClass" class="btn" type="button">
-                        O.K.
+                        {{ translate(okButtonLabel) }}
                     </button>
                 </div>
             </div>
@@ -27,14 +27,17 @@
 
 <script>
     import 'bootstrap/js/dist/modal';
+    import TranslationMixin from "../../Translation/TranslationMixin";
 
     export default {
-        props: {
+        mixins:   [TranslationMixin],
+        props:    {
             type:             {type: String, default: ''},
             title:            {type: String, default: ''},
             size:             {type: String, default: ''},
             content:          {type: String, required: true},
             closeButtonLabel: {type: String, default: 'Close'},
+            okButtonLabel:    {type: String, default: 'OK'},
             displayOk:        {type: Boolean, default: false}
         },
         computed: {
@@ -48,7 +51,7 @@
                 return this.type ? 'btn-' + this.type : null;
             }
         },
-        mounted: function () {
+        mounted:  function () {
             $(this.$el).modal('show');
             $(this.$el).on('hidden.bs.modal', () => this.$destroy());
         },
