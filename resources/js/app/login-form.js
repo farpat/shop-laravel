@@ -19,23 +19,21 @@ new Vue({
     mounted:    function () {
         this.$submitButton = this.$el.querySelector('#submit');
 
-        this.rules = {
+        this.state.rules = {
             email:    [new RequiredRule(), new EmailRule()],
             password: [new RequiredRule()],
         };
     },
     methods:    {
         onSubmit: function (event) {
-            this.checkForm();
-
-            if (this.hasErrors()) {
-                this.$submitButton.disabled = true;
+            if (FormStore.hasErrors()) {
                 event.preventDefault();
             }
         },
 
         onChange: function () {
-            this.$submitButton.disabled = this.hasErrors();
+            FormStore.checkForm();
+            this.$submitButton.disabled = FormStore.hasErrors();
         }
     }
 });
