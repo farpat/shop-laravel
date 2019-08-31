@@ -1,14 +1,14 @@
 import Vue from "vue";
 
-import {InputComponent, CheckboxComponent} from "../src/Bootstrap";
+import {CheckboxComponent, InputComponent} from "../src/Bootstrap";
 import FormStore from "../src/Bootstrap/FormStore";
 import FormMixin from "../src/Bootstrap/FormMixin";
-import {RequiredRule, EmailRule} from "../src/Security";
+import {EmailRule, RequiredRule} from "../src/Security";
 
 new Vue({
     el:         '#login-form',
     components: {InputComponent, CheckboxComponent},
-    mixins: [FormMixin],
+    mixins:     [FormMixin],
     mounted:    function () {
         this.$submitButton = this.$el.querySelector('#submit');
 
@@ -24,9 +24,10 @@ new Vue({
             }
         },
 
-        onChange: function () {
-            FormStore.checkForm();
-            this.$submitButton.disabled = FormStore.hasErrors();
+        onChange: function (e) {
+            if (e.target.name === 'password') {
+                this.$submitButton.disabled = FormStore.hasErrors();
+            }
         }
     }
 });
