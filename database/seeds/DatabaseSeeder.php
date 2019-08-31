@@ -234,7 +234,6 @@ class DatabaseSeeder extends Seeder
         $navigation = [
             Category::class . ':2' => [Product::class . ':1', Product::class . ':2', Product::class . ':3'],
             Category::class . ':1' => [Product::class . ':4', Product::class . ':6', Product::class . ':5'],
-            Category::class . ':3' => [Product::class . ':7', Product::class . ':8', Product::class . ':9'],
             Product::class . ':10'
         ];
 
