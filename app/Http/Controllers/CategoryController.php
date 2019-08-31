@@ -20,6 +20,8 @@ class CategoryController extends Controller
 
     public function show (string $slug, Category $category, Request $request)
     {
+        $category->load(['image']);
+
         $currentPage = $request->get('page');
         if ($slug !== $category->slug || $currentPage === 1 || (!is_null($currentPage) && !is_numeric($currentPage))) {
             return redirect($category->url);

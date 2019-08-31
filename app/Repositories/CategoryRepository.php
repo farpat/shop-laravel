@@ -82,7 +82,7 @@ class CategoryRepository
     public function getProductsFor (Category $category): Builder
     {
         return Product::query()
-            ->with(['category', 'main_image', 'references'])
+            ->with(['category', 'main_image', 'references.product.category'])
             ->whereHas('category', function (Builder $query) use ($category) {
                 $query
                     ->where('nomenclature', 'like', $category->nomenclature . '.%')
