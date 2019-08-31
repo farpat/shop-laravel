@@ -1,4 +1,4 @@
-.PHONY: install update clean help test dusk dev stop-dev build migrate bash stop-dusk
+.PHONY: install update clean help test dusk dev stop-dev build migrate bash
 .DEFAULT_GOAL   = help
 
 include .env
@@ -62,17 +62,14 @@ endif
 	@docker-compose -f docker-compose-dusk.yml down --remove-orphans
 	@echo "$(PRIMARY_COLOR)End of browser tests$(NO_COLOR)"
 
-dev: install stop-dusk ## Run development servers
+dev: install ## Run development servers
+	@docker-compose -f docker-compose-dusk.yml down --remove-orphans
 	@docker-compose up -d
 	@echo "Dev server launched on $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
-
 
 stop-dev: ## Stop development servers
 	@docker-compose down --remove-orphans
 	@echo "Dev server stopped : $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
-
-stop-dusk:
-	@docker-compose -f docker-compose-dusk.yml down --remove-orphans
 
 build: install ## Build assets projects for production
 	@$(npm) run build
