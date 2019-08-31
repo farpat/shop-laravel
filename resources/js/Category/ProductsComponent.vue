@@ -1,7 +1,5 @@
 <template>
     <div class="products-component">
-        <h1>{{ translate('Products') }}</h1>
-
         <nav :aria-label="translate('Products pagination')" class="mt-2" v-show="hasMorePage">
             <ul class="pagination">
                 <li :class="firstPageItemClass">
@@ -42,6 +40,9 @@
             }
         },
         computed: {
+            getProductsCount: function() {
+              return CategoryStore.data.allProducts.length;
+            },
             getCurrentProducts: function () {
                 const start = (this.state.currentPage - 1) * this.state.perPage;
                 return this.state.currentProducts.slice(start, start + this.state.perPage);

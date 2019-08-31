@@ -5,7 +5,7 @@
 @section('description', $category->meta_description)
 
 @section('content')
-    <h1>{{ __('Category') }} : {{ $category->label }}</h1>
+    <h1>{{ trans_choice('category', 1) }} : {{ $category->label }} - {{ $products->count() }} {{ trans_choice('product', $products->count()) }}</h1>
 
     {{ breadcrumb($breadcrumb) }}
 

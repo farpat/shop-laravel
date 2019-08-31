@@ -75,9 +75,9 @@ class Product extends Model
     {
         return route('products.show', [
             'categorySlug' => $this->category->slug,
-            'category'     => $this->category,
-            'id'           => $this->id,
-            'slug'         => $this->slug
+            'categoryId'   => $this->category,
+            'slug'         => $this->slug,
+            'product'      => $this
         ]);
     }
 

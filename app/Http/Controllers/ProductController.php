@@ -22,7 +22,7 @@ class ProductController extends Controller
         $productFields = $productRepository->getProductFields($product);
 
         $breadcrumb = [
-            ['label' => __('Categories'), 'url' => route('categories.index')],
+            ['label' => trans_choice('category', 2), 'url' => route('categories.index')],
             ['label' => $product->category->label, 'url' => $product->category->url],
             ['label' => $product->label]
         ];

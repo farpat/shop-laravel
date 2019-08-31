@@ -26,7 +26,7 @@ class CategoryController extends Controller
         }
 
         $breadcrumb = [
-            ['label' => __('Categories'), 'url' => route('categories.index')],
+            ['label' => trans_choice('category', 2), 'url' => route('categories.index')],
             ['label' => $category->label]
         ];
 

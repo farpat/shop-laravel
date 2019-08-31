@@ -7,7 +7,7 @@
 @section('content')
     <h1>{{ __('All categories') }}</h1>
 
-    {!!  breadcrumb([['label' => __('Categories')]]) !!}
+    {{ breadcrumb([['label' => trans_choice('category', 2)]]) }}
 
     <section id="category-index" class="category-index">
         {{ $html }}
