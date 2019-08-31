@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Security from "../../Security/Security";
+import Security from "../Security/Security";
 
 class FormStore {
     constructor() {
@@ -45,6 +45,10 @@ class FormStore {
         for (const field in this.state.rules) {
             this.checkField(field, this.state.datas[field]);
         }
+    }
+
+    setRules(rules) {
+        this.state.rules = rules;
     }
 }
 

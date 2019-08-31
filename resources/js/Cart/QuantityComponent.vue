@@ -22,8 +22,8 @@
 <script>
     import TranslationMixin from "../src/Translation/TranslationMixin";
     import CartStore from "./CartStore";
-    import QuantityComponent from "../src/Bootstrap/Form/NumberComponent";
-    import FormStore from "../src/Bootstrap/Form/FormStore";
+    import QuantityComponent from "../src/Bootstrap/components/NumberComponent";
+    import FormStore from "../src/Bootstrap/FormStore";
 
     export default {
         mixins:     [TranslationMixin],

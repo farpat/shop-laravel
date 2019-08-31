@@ -19,9 +19,9 @@
 
 
 <script>
-    import FormElementMixin from "./includes/FormElementMixin";
-    import RequiredComponent from "./includes/RequiredComponent";
-    import ErrorComponent from "./includes/ErrorComponent";
+    import FormElementMixin from "../includes/FormElementMixin";
+    import RequiredComponent from "../includes/RequiredComponent";
+    import ErrorComponent from "../includes/ErrorComponent";
 
     export default {
         components: {RequiredComponent, ErrorComponent},

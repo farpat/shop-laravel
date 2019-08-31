@@ -12,10 +12,10 @@
                 <div class="modal-body" v-html="content">
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary btn-link" data-dismiss="modal" type="button">
+                    <button class="btn btn-link" data-dismiss="modal" type="button">
                         {{ closeButtonLabel }}
                     </button>
-                    <button :class="getOkButtonClass" @click="onSubmit" class="btn" type="button">
+                    <button v-if="displayOk" :class="getOkButtonClass" class="btn" type="button">
                         O.K.
                     </button>
                 </div>
@@ -30,11 +30,12 @@
 
     export default {
         props: {
-            type: {type: String, default: ''},
-            title: {type: String, default: ''},
-            size: {type: String, default: ''},
-            content: {type: String, default: ''},
-            closeButtonLabel: {type: String, default: 'Close'}
+            type:             {type: String, default: ''},
+            title:            {type: String, default: ''},
+            size:             {type: String, default: ''},
+            content:          {type: String, required: true},
+            closeButtonLabel: {type: String, default: 'Close'},
+            displayOk:        {type: Boolean, default: false}
         },
         computed: {
             getModalClass: function () {
@@ -50,17 +51,9 @@
         mounted: function () {
             $(this.$el).modal('show');
             $(this.$el).on('hidden.bs.modal', () => this.$destroy());
-            this.$form = this.$el.querySelector('form');
         },
         destroyed: function () {
             this.$el.remove();
         },
-        methods: {
-            onSubmit: function () {
-                if (this.$form) {
-                    this.$form.submit();
-                }
-            }
-        }
     }
 </script>

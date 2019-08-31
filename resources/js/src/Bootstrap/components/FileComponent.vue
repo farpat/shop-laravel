@@ -28,10 +28,10 @@
 
 <script>
     import Str from "../../String/Str";
-    import RequiredComponent from "./includes/RequiredComponent";
-    import ErrorComponent from "./includes/ErrorComponent";
-    import FilePreviewerComponent from './includes/FilePreviewerComponent';
-    import FormElementMixin from "./includes/FormElementMixin";
+    import RequiredComponent from "../includes/RequiredComponent";
+    import ErrorComponent from "../includes/ErrorComponent";
+    import FilePreviewerComponent from '../includes/FilePreviewerComponent';
+    import FormElementMixin from "../includes/FormElementMixin";
 
     export default {
         components: {

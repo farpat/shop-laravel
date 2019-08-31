@@ -26,6 +26,7 @@
         "beyondcode/laravel-dump-server": "^1.2",
         "codedungeon/phpunit-result-printer": "^0.22",
         "doctrine/dbal": "^2.9",
+        "facade/ignition": "^1.0",
         "filp/whoops": "^2.4",
         "fzaninotto/faker": "^1.8",
         "laravel/dusk": "^5.3",

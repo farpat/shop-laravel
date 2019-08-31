@@ -1,28 +1,21 @@
 import Vue from "vue";
 
-import InputComponent from "../src/Bootstrap/Form/InputComponent";
-import CheckboxComponent from "../src/Bootstrap/Form/CheckboxComponent";
-
-import RequiredRule from "../src/Security/Rules/RequiredRule";
-import EmailRule from "../src/Security/Rules/EmailRule";
-
-import FormStore from "../src/Bootstrap/Form/FormStore";
+import {InputComponent, CheckboxComponent} from "../src/Bootstrap";
+import FormStore from "../src/Bootstrap/FormStore";
+import FormMixin from "../src/Bootstrap/FormMixin";
+import {RequiredRule, EmailRule} from "../src/Security";
 
 new Vue({
     el:         '#login-form',
     components: {InputComponent, CheckboxComponent},
-    data:       function () {
-        return {
-            state: FormStore.state
-        }
-    },
+    mixins: [FormMixin],
     mounted:    function () {
         this.$submitButton = this.$el.querySelector('#submit');
 
-        this.state.rules = {
+        FormStore.setRules({
             email:    [new RequiredRule(), new EmailRule()],
             password: [new RequiredRule()],
-        };
+        });
     },
     methods:    {
         onSubmit: function (event) {

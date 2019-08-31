@@ -35,11 +35,9 @@
                                              type="password"
                             ></input-component>
 
-                            <checkbox-component name="accept"
-                                                label="{{ __('I accept the registration') }}"></checkbox-component>
+                            <button id="terms-of-use-modal-button" class="btn btn-link" type="button" data-content="{{ $modalContent }}">{{ __('See terms of use') }}</button>
 
-                            <number-component name="quantity"></number-component>
-
+                            <checkbox-component name="accept" label="{{ __('I accept the registration') }}"></checkbox-component>
 
                             <div class="form-group mt-5">
                                 <button type="submit" id="submit" class="btn btn-primary">

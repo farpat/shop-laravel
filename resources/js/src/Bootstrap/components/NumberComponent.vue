@@ -21,9 +21,9 @@
 </template>
 
 <script>
-    import ErrorComponent from "./includes/ErrorComponent";
+    import ErrorComponent from "../includes/ErrorComponent";
     import Str from "../../String/Str";
-    import FormElementMixin from "./includes/FormElementMixin";
+    import FormElementMixin from "../includes/FormElementMixin";
 
     export default {
         components: {ErrorComponent},

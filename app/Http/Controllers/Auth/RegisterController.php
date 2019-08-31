@@ -47,7 +47,7 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm ()
     {
-        return view('auth.register');
+        return view('auth.register', ['modalContent' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi aperiam aspernatur corporis debitis dignissimos distinctio ea earum, facilis illo perspiciatis, porro qui soluta tempore velit. Ad consequuntur magni repellendus?']);
     }
 
     /**
