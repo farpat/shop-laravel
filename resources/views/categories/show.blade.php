@@ -5,9 +5,18 @@
 @section('description', $category->meta_description)
 
 @section('content')
-    <h1>{{ trans_choice('category', 1) }} : {{ $category->label }} - {{ $products->count() }} {{ trans_choice('product', $products->count()) }}</h1>
-
     {{ breadcrumb($breadcrumb) }}
+
+    <section class="header-category-show">
+        @if($category->image)
+            <img src="{{ $category->image->url }}" alt="{{ $category->image->alt }}">
+        @endif
+
+        <h1>
+            {{ trans_choice('category', 1) }} : {{ $category->label }}
+            - {{ $products->count() }} {{ trans_choice('product', $products->count()) }}
+        </h1>
+    </section>
 
     <section id="category-show">
         @if($filters->isNotEmpty())

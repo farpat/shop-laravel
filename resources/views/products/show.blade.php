@@ -5,9 +5,11 @@
 @section('description', $product->meta_description)
 
 @section('content')
-    <h1 class="mr-5">{{ __('Product') }} : {{ $product->label }}</h1>
-
     {{ breadcrumb($breadcrumb) }}
+
+    <section class="header-product-show">
+        <h1>{{ __('Product') }} : {{ $product->label }}</h1>
+    </section>
 
     <section id="product-show">
         <product-component></product-component>
