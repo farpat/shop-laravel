@@ -1,4 +1,4 @@
-import autocomplete from "../src/Autocomplete/autocomplete";
+import AutoComplete from "../src/Autocomplete";
 import Requestor from "@farpat/api";
 import Str from "../src/String/Str";
 import CartStore from "../Cart/CartStore";
@@ -43,7 +43,7 @@ const renderNotItems = function () {
 `;
 };
 
-new autocomplete({
+new AutoComplete({
     selector:   input,
     minChars:   2,
     cache:      true,
