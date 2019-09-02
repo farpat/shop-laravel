@@ -13,8 +13,8 @@
             {{ navigation() }}
         </ul>
         <ul class="navbar-nav">
-            <li class="nav-item">
-                <input type="text" id="form-search-input" data-url="{{ route('home.search') }}" class="form-control form-search-input">
+            <li class="nav-item form-search" id="form-search">
+                <input type="text" data-url="{{ route('home.search') }}" class="form-control form-search-input">
             </li>
         </ul>
         <section class="ml-auto">

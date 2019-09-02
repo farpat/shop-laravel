@@ -4,7 +4,9 @@ import Str from "../src/String/Str";
 import CartStore from "../Cart/CartStore";
 import Translation from "../src/Translation/Translation";
 
-const input = document.querySelector('#form-search-input');
+const inputContainer = document.querySelector('#form-search');
+const input = inputContainer.querySelector('input');
+
 
 const renderProduct = function (item, searchValue) {
     const text = Str.markValueIntoText(searchValue, item.label);
@@ -47,15 +49,17 @@ new AutoComplete({
     selector:   input,
     minChars:   2,
     cache:      true,
-    delay:      150,
     source:     function (q, suggest) {
-        input.classList.add('searching');
+        inputContainer.classList.add('searching');
 
         Requestor.newRequest()
             .get(input.dataset.url, {q})
             .then(response => {
-                input.classList.remove('loading');
-                if (response.length > 0) suggest(response);
+                inputContainer.classList.remove('searching');
+
+                if (response.length > 0) {
+                    suggest(response);
+                }
                 else {
                     suggest([{label: null}]);
                 }
@@ -74,14 +78,6 @@ new AutoComplete({
         if (item.dataset.url !== undefined) {
             window.location.href = item.dataset.url;
         }
-    }
-});
-
-
-const divSuggestions = document.querySelector('.autocomplete-suggestions');
-input.addEventListener('focus', function () {
-    if (divSuggestions.innerHTML !== '' && input.value !== '') {
-        divSuggestions.style.display = 'block';
     }
 });
 
