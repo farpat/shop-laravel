@@ -1,3 +1,5 @@
+import {debounce} from 'lodash';
+
 export default class Input {
     constructor(element, options) {
         this.element = element;
@@ -7,8 +9,9 @@ export default class Input {
         this.setAutocompleteAttribute();
         this.cache = {};
         this.lastValue = '';
+        this.updateScreenOnResize = debounce((e) => {this.updateScreen(e, null)}, 500);
 
-        window.addEventListener('resize', this.updateScreen.bind(this));
+        window.addEventListener('resize', this.updateScreenOnResize.bind(this));
 
         this.setOnMouseLeaveAnElement();
         this.setOnMouseHoverAnElement();
@@ -35,12 +38,13 @@ export default class Input {
         this.element.setAttribute('autocomplete', 'off');
     }
 
-    updateScreen(resize, next) {
+    updateScreen(resizeEvent, nextElement) {
         var rect = this.element.getBoundingClientRect();
         this.containerElement.style.left = Math.round(rect.left + window.pageXOffset + this.options.offsetLeft) + 'px';
         this.containerElement.style.top = Math.round(rect.bottom + window.pageYOffset + this.options.offsetTop) + 'px';
         this.containerElement.style.width = Math.round(rect.right - rect.left) + 'px'; // outerWidth
-        if (!resize) {
+
+        if (resizeEvent === null) {
             this.containerElement.style.display = 'block';
             if (!this.containerElement.maxHeight) {
                 this.containerElement.maxHeight = parseInt(getComputedStyle(this.containerElement, null).maxHeight);
@@ -49,11 +53,11 @@ export default class Input {
                 this.containerElement.suggestionHeight = this.containerElement.querySelector('.autocomplete-suggestion').offsetHeight;
             }
             if (this.containerElement.suggestionHeight) {
-                if (!next) {
+                if (nextElement === undefined || nextElement === null) {
                     this.containerElement.scrollTop = 0;
                 } else {
                     var scrTop = this.containerElement.scrollTop,
-                        selTop = next.getBoundingClientRect().top - this.containerElement.getBoundingClientRect().top;
+                        selTop = nextElement.getBoundingClientRect().top - this.containerElement.getBoundingClientRect().top;
                     if (selTop + this.containerElement.suggestionHeight - this.containerElement.maxHeight > 0) {
                         this.containerElement.scrollTop = selTop + this.containerElement.suggestionHeight + scrTop - this.containerElement.maxHeight;
                     } else if (selTop < 0) {
@@ -134,7 +138,7 @@ export default class Input {
                 s += this.options.renderItem(data[i], val);
             }
             this.containerElement.innerHTML = s;
-            this.updateScreen(0, null);
+            this.updateScreen(null, null);
         } else {
             this.containerElement.style.display = 'none';
         }
@@ -167,7 +171,7 @@ export default class Input {
                     next = 0;
                 }
             }
-            this.updateScreen(0, next);
+            this.updateScreen(null, next);
             return false;
         }
         // esc
@@ -228,7 +232,7 @@ export default class Input {
     }
 
     destroy() {
-        window.removeEventListener('resize', this.updateScreen);
+        window.removeEventListener('resize', this.updateScreenOnResize);
         this.element.removeEventListener('blur', this.blurHandler);
         this.element.removeEventListener('focus', this.focusHandler);
         this.element.removeEventListener('keydown', this.keydownHandler);

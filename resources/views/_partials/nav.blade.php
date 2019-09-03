@@ -17,7 +17,7 @@
                 <input type="text" data-url="{{ route('home.search') }}" class="form-control form-search-input">
             </li>
         </ul>
-        <section class="ml-auto">
+        <section class="navbar-nav ml-auto mt-3 mt-xl-0">
             <ul class="navbar-nav">
                 @auth
                     <li class="navbar-text mr-2 p-0">
@@ -31,7 +31,7 @@
                 @guest
                     <li class="nav-item mr-2">
                         <a class="btn btn-outline-info" href="{{ route('register') }}">{{ __('Register') }}</a>
-                        <a class="btn btn-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                        <a class="btn btn-link text-info" href="{{ route('login') }}">{{ __('Login') }}</a>
                     </li>
                 @endguest
                 <li id="cart" class="nav-item js-nav-item-cart">

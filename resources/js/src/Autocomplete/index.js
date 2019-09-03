@@ -1,6 +1,6 @@
 import Input from "./Input";
 
-export default class Index {
+export default class Autocomplete {
     constructor(options) {
         this.setOptions(options);
         this.init();
