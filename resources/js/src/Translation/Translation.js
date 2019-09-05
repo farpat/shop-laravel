@@ -47,7 +47,7 @@ class Translation {
         }
     }
 
-    returnNestedProperty(obj) {
+    _returnNestedProperty(obj) {
         const args = Array.prototype.slice.call(arguments, 1);
 
         for (let i = 0; i < args.length; i++) {
@@ -63,43 +63,27 @@ class Translation {
         return obj;
     }
 
-    getMainTranslation(key) {
+    _getMainTranslation(key) {
         this.loadMainTranslation();
 
-        if (this.translations[this.lang + '.json'][key] !== undefined) {
-            return this.translations[this.lang + '.json'][key];
-        }
-
-        return undefined;
+        return this.translations[this.lang + '.json'][key];
     }
 
-    getTranslation(key) {
+    _getTranslation(key) {
         const regex = /([a-z_-]+\.)+([a-z_-]+)/g;
-        let translation = key;
 
         if (regex.test(key)) {
             const keys = key.split('.');
             this.loadTranslation(keys.slice(0, 1));
-            translation = this.returnNestedProperty(this.translations[this.lang], ...keys);
+            return this._returnNestedProperty(this.translations[this.lang], ...keys);
         }
-
-        return translation;
+        else {
+            return key;
+        }
     }
 
     get(key) {
-        let translation;
-
-        translation = this.getMainTranslation(key);
-        if (translation !== undefined) {
-            return translation
-        }
-
-        translation = this.getTranslation(key);
-        if (translation !== undefined) {
-            return translation;
-        }
-
-        return key;
+        return this._getMainTranslation(key) || this._getTranslation(key) || key;
     }
 }
 

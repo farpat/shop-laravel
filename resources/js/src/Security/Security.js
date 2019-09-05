@@ -2,8 +2,7 @@ import Translation from "../Translation/Translation";
 
 class Security {
     constructor() {
-        this.prefixLang = 'validation.';
-        this.attributes = Translation.get(this.prefixLang + 'attributes');
+        this.attributes = Translation.get('validation.attributes');
     }
 
     _getType(value) {
@@ -18,7 +17,7 @@ class Security {
         return type;
     }
 
-    _isComplexType(type) {
+    _isMinMaxRule(type) {
         return type === 'min' || type === 'max';
     }
 
@@ -35,9 +34,9 @@ class Security {
         for (let i = 0; i < rulesLength; i++) {
             let rule = rules[i];
             if (!rule.check(value)) {
-                let error = Translation.get(this.prefixLang + rule.name);
+                let error = Translation.get('validation.' + rule.name);
                 const attribute = this.attributes[name] || name;
-                if (this._isComplexType(rule.name)) {
+                if (this._isMinMaxRule(rule.name)) {
                     const type = this._getType(value);
                     error = error[type].replace(':attribute', attribute).replace(/:[a-z]*/gi, rule.params);
                 } else {
