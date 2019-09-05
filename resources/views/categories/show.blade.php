@@ -13,8 +13,7 @@
         @endif
 
         <h1>
-            {{ trans_choice('category', 1) }} : {{ $category->label }}
-            - {{ $products->count() }} {{ trans_choice('product', $products->count()) }}
+            {{ $category->label }} - {{ $products->count() }} {{ trans_choice('product', $products->count()) }}
         </h1>
     </section>
 

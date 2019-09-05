@@ -14,8 +14,7 @@ class DatabaseSeeder extends Seeder
         'color'      => ['white', 'red', 'green', 'blue', 'yellow', 'orange'],
         'size'       => ['s', 'm', 'l', 'xs', 'xl', 'xxl'],
         'material'   => ['wood', 'plastic', 'metal'],
-        'round'      => ['yes', 'no'],
-        'watertight' => ['yes', 'no']
+        'form'       => ['square', 'rectangle', 'round', 'diamond'],
     ];
 
     const NUMBER_PRODUCT_FIELDS = [

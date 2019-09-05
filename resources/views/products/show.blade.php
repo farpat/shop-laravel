@@ -8,7 +8,7 @@
     {{ breadcrumb($breadcrumb) }}
 
     <section class="header-product-show">
-        <h1>{{ __('Product') }} : {{ $product->label }}</h1>
+        <h1>{{ $product->label }}</h1>
     </section>
 
     <section id="product-show">
