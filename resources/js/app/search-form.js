@@ -13,8 +13,7 @@ const renderProduct = function (item, searchValue) {
     const autocompleteImgString = item.image ? `<div class="autocomplete-img"><img src="${item.image}" alt="${item.label}"></div>` : '';
 
     return `
-<div data-url="${item.url}" class="autocomplete-suggestion" data-val="${searchValue}">
-    ${autocompleteImgString}
+<div data-url="${item.url}" class="autocomplete-suggestion" data-val="${searchValue}">${autocompleteImgString}
     <div class="autocomplete-description">
         <p class="autocomplete-description-label">${text}</p>
         <p class="autocomplete-description-price">${Translation.getTranslation('From') + ' ' + Str.toLocaleCurrency(item.min_unit_price_including_taxes, CartStore.data.currency)}</p>
@@ -27,8 +26,7 @@ const renderCategory = function (item, searchValue) {
     const autocompleteImgString = item.image ? `<div class="autocomplete-img"><img src="${item.image}" alt="${item.label}"></div>` : '';
 
     return `
-<div data-url="${item.url}" class="autocomplete-suggestion" data-val="${searchValue}">
-    ${autocompleteImgString}
+<div data-url="${item.url}" class="autocomplete-suggestion" data-val="${searchValue}">${autocompleteImgString}
     <div class="autocomplete-description">
         <p class="autocomplete-description-label">${text}</p>
     </div>
@@ -57,21 +55,17 @@ new AutoComplete({
             .then(response => {
                 inputContainer.classList.remove('searching');
 
-                if (response.length > 0) {
-                    suggest(response);
-                }
-                else {
-                    suggest([{label: null}]);
-                }
+                const data = response.length > 0 ? response : [{label: null}];
+                suggest(data);
             });
     },
-    renderItem: function (item, searchValue) {
+    renderItem: function (item, q) {
         if (item.label === null) {
             return renderNotItems();
         } else if (item.min_unit_price_including_taxes !== undefined) {
-            return renderProduct(item, searchValue);
+            return renderProduct(item, q);
         } else {
-            return renderCategory(item, searchValue);
+            return renderCategory(item, q);
         }
     },
     onSelect:   function (e, term, item) {

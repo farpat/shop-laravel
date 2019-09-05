@@ -1,4 +1,5 @@
 import Input from "./Input";
+import Str from "../String/Str";
 
 export default class Autocomplete {
     constructor(options) {
@@ -17,10 +18,11 @@ export default class Autocomplete {
             cache:      1,
             menuClass:  undefined,
             renderItem: function (item, search) {
-                // escape special characters
-                search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                return '<div class="autocomplete-suggestion" data-val="' + item + '">' + item.replace(re, "<b>$1</b>") + '</div>';
+                if (!item.label) {
+                    return '';
+                }
+
+                return '<div class="autocomplete-suggestion" data-val="' + item + '">' + Str.markValueIntoText(search, item.label) + '</div>';
             },
             onSelect:   function (e, term, item) {
             }

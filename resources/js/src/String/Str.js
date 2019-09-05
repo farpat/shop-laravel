@@ -41,10 +41,10 @@ class Str {
         return bytes;
     }
 
-    markValueIntoText(value, text) {
-        value = value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        let regex = new RegExp("(" + value.split(' ').join('|') + ")", "gi");
-        return text.replace(regex, "<mark>$1</mark>");
+    markValueIntoText(neddle, haystack) {
+        neddle = neddle.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        let regex = new RegExp("(" + neddle.split(' ').join('|') + ")", "gi");
+        return haystack.replace(regex, "<mark>$1</mark>");
     }
 }
 

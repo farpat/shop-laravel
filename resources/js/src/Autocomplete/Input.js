@@ -53,7 +53,7 @@ export default class Input {
                 this.containerElement.suggestionHeight = this.containerElement.querySelector('.autocomplete-suggestion').offsetHeight;
             }
             if (this.containerElement.suggestionHeight) {
-                if (nextElement === undefined || nextElement === null) {
+                if (nextElement === null) {
                     this.containerElement.scrollTop = 0;
                 } else {
                     var scrTop = this.containerElement.scrollTop,
@@ -113,18 +113,11 @@ export default class Input {
     }
 
     blurHandler() {
-        var overSB = document.querySelector('.autocomplete-suggestions:hover');
+        var hoveredElement = document.querySelector('.autocomplete-suggestions:hover');
 
-        if (overSB === null) {
+        if (hoveredElement === null) {
             this.lastValue = this.element.value;
             this.containerElement.style.display = 'none';
-            setTimeout(() => {
-                this.containerElement.style.display = 'none'
-            }, 350);
-        } else if (this.element !== document.activeElement) {
-            setTimeout(() => {
-                this.element.focus();
-            }, 20)
         }
     }
 
@@ -132,12 +125,12 @@ export default class Input {
         var val = this.element.value;
         this.cache[val] = data;
 
-        if (data.length && val.length >= this.options.minChars) {
-            var s = '';
-            for (let i = 0; i < data.length; i++) {
-                s += this.options.renderItem(data[i], val);
-            }
-            this.containerElement.innerHTML = s;
+        if (data.length > 0 && val.length >= this.options.minChars) {
+            this.containerElement.innerHTML = data.reduce((acc, item) => {
+                acc += this.options.renderItem(item, val);
+                return acc;
+            }, '');
+
             this.updateScreen(null, null);
         } else {
             this.containerElement.style.display = 'none';
@@ -145,19 +138,16 @@ export default class Input {
     }
 
     keydownHandler(e) {
-        var key = e.keyCode;
-
-        // down (40), up (38)
-        if ((key == 40 || key == 38) && this.containerElement.innerHTML) {
+        if ((e.key === "ArrowDown" || e.key === "ArrowUp") && this.containerElement.innerHTML) {
             var next, sel = this.containerElement.querySelector('.autocomplete-suggestion.selected');
             if (!sel) {
-                next = (key == 40) ?
+                next = (e.key === "ArrowDown") ?
                     this.containerElement.querySelector('.autocomplete-suggestion') :
                     this.containerElement.children[this.containerElement.children.length - 1]; // first : last
                 next.classList.add('selected');
                 this.element.value = next.getAttribute('data-val');
             } else {
-                next = (key == 40) ?
+                next = (e.key === "ArrowDown") ?
                     sel.nextElementSibling :
                     sel.previousElementSibling;
 
@@ -168,19 +158,17 @@ export default class Input {
                 } else {
                     sel.className = sel.className.replace('selected', '');
                     this.element.value = this.lastValue;
-                    next = 0;
+                    next = null;
                 }
             }
             this.updateScreen(null, next);
             return false;
         }
-        // esc
-        else if (key == 27) {
+        else if (e.key === "Escape") {
             this.element.value = this.lastValue;
             this.containerElement.style.display = 'none';
         }
-        // enter
-        else if (key == 13 || key == 9) {
+        else if (e.key === "Enter") {
             var sel = this.containerElement.querySelector('.autocomplete-suggestion.selected');
             if (sel && this.containerElement.style.display != 'none') {
                 this.options.onSelect(e, sel.getAttribute('data-val'), sel);
@@ -192,20 +180,21 @@ export default class Input {
     }
 
     keyupHandler(e) {
-        var key = e.keyCode;
-        if (!key || (key < 35 || key > 40) && key != 13 && key != 27) {
+        var key = e.key;
+
+        if (!key || key !== "Enter" && key !== "Escape") {
             var val = this.element.value;
 
             if (val.length >= this.options.minChars) {
-                if (val != this.lastValue) {
+                if (val !== this.lastValue) {
                     this.lastValue = val;
                     clearTimeout(this.timer);
                     if (this.options.cache) {
-
                         if (val in this.cache) {
                             this.suggest(this.cache[val]);
                             return;
                         }
+
                         // no requests if previous suggestions were empty
                         for (var i = 1; i < val.length - this.options.minChars; i++) {
                             var part = val.slice(0, val.length - i);
