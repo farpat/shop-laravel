@@ -10,6 +10,21 @@ use Illuminate\Support\Str;
 class DatabaseSeeder extends Seeder
 {
 
+    const STRING_PRODUCT_FIELDS = [
+        'color'      => ['white', 'red', 'green', 'blue', 'yellow', 'orange'],
+        'size'       => ['s', 'm', 'l', 'xs', 'xl', 'xxl'],
+        'material'   => ['wood', 'plastic', 'metal'],
+        'round'      => ['yes', 'no'],
+        'watertight' => ['yes', 'no']
+    ];
+
+    const NUMBER_PRODUCT_FIELDS = [
+        'storage space' => [8, 16, 32, 64, 128, 256],
+        'weight in kg'  => [1, 4, 8, 16],
+        'height in cm'  => [4, 16, 32, 64],
+        'width in cm'   => [4, 16, 32, 64],
+    ];
+
     /**
      * @var ModuleRepository
      */
@@ -61,12 +76,17 @@ class DatabaseSeeder extends Seeder
 
         dump('Creation of products');
         $start = microtime(true);
-        foreach (factory(Category::class, 4)->create() as $category) {
+
+        foreach (['Computers', 'Phones', 'Printers', 'Cameras', 'Screens'] as $categoryLabel) {
+            $category = factory(Category::class)->create(['label'        => $categoryLabel,
+                                                          'nomenclature' => strtoupper($categoryLabel),
+                                                          'slug'         => strtolower($categoryLabel)]);
+
+            $productfields = $this->createProductfields($category);
 
             for ($i = 0; $i < 2; $i++) {
                 $subCategory = $this->createSubCategory($category);
-                $productfields = $this->createProductfields($subCategory);
-                $products = $this->createProducts($subCategory);
+                $products = $this->createProducts($subCategory, $categoryLabel);
 
                 foreach ($products as $product) {
                     $taxes = $this->attachTaxes($product);
@@ -75,6 +95,7 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
+
         $end = microtime(true);
         dump('==> ' . round($end - $start, 2) . ' seconds');
 
@@ -91,17 +112,78 @@ class DatabaseSeeder extends Seeder
         $this->createHomeModule();
     }
 
-    private function createSubCategory (Category $category): Category
+    private function createTaxes ()
     {
-        $label = $this->faker->words(3, true);
+        $this->tax20Percent = Tax::query()->create([
+            'label' => 'VAT 20%',
+            'type'  => Tax::PERCENTAGE_TYPE,
+            'value' => 20
+        ]);
+
+        $this->ecoTax5Cents = Tax::query()->create([
+            'label' => 'Eco tax',
+            'type'  => Tax::UNITY_TYPE,
+            'value' => 0.05,
+        ]);
+    }
+
+    private function createProductfields (Category $category)
+    {
+        $numbers = self::NUMBER_PRODUCT_FIELDS;
+        $strings = self::STRING_PRODUCT_FIELDS;
+
+        if (($count = random_int(0, 4)) > 0) {
+            $productFieldsRequestData = [];
+
+            for ($i = 0; $i < $count; $i++) {
+                $type = $this->faker->boolean ? 'string' : 'number';
+                if ($type === 'string') {
+                    $label = array_rand($strings);
+                    unset($strings[$label]);
+                } else {
+                    $label = array_rand($numbers);
+                    unset($numbers[$label]);
+                }
+
+                $productFieldsRequestData[] = [
+                    'type'        => $type,
+                    'label'       => $label,
+                    'is_required' => true,
+                ];
+            }
+            return $this->categoryRepository->setProductFields($category, $productFieldsRequestData);
+        }
+
+        return null;
+    }
+
+    private function createSubCategory (Category $parentCategory): Category
+    {
+        $label = $parentCategory->label . ' ' . $this->faker->word;
         $slug = Str::slug($label);
-        $nomenclature = $category->nomenclature . '.' . str_replace('-', '', Str::upper($slug));
+        $nomenclature = $parentCategory->nomenclature . '.' . str_replace('-', '', Str::upper($slug));
 
         return factory(Category::class)->create([
             'label'        => $label,
             'slug'         => $slug,
             'nomenclature' => $nomenclature,
             'is_last'      => true,
+        ]);
+    }
+
+    /**
+     * @param Category $category
+     *
+     * @param string $rootCategoryLabel
+     *
+     * @return Collection|Product[]
+     * @throws Exception
+     */
+    private function createProducts (Category $category, string $rootCategoryLabel)
+    {
+        return factory(Product::class, random_int(1, 30))->create([
+            'label'       => substr($rootCategoryLabel, 0, -1) . ' ' . $this->faker->words(2, true),
+            'category_id' => $category->id
         ]);
     }
 
@@ -116,39 +198,6 @@ class DatabaseSeeder extends Seeder
         $product->save();
 
         return $taxes;
-    }
-
-    private function createProductfields (Category $category)
-    {
-        if (($count = random_int(0, 4)) > 0) {
-            $productFieldsRequestData = [];
-
-            for ($i = 0; $i < $count; $i++) {
-                static $types = ['number', 'string'];
-
-                $productFieldsRequestData[] = [
-                    'type'        => $types[array_rand($types)],
-                    'label'       => $this->faker->unique()->words(2, true),
-                    'is_required' => true,
-                ];
-            }
-            return $this->categoryRepository->setProductFields($category, $productFieldsRequestData);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param Category $category
-     *
-     * @return Collection|Product[]
-     * @throws Exception
-     */
-    private function createProducts (Category $category)
-    {
-        return factory(Product::class, random_int(1, 15))->create([
-            'category_id' => $category->id
-        ]);
     }
 
     /**
@@ -174,21 +223,27 @@ class DatabaseSeeder extends Seeder
         $unitPriceIncludingTaxes = $totalTaxes + $unitPriceExcludingTaxes;
 
         $productReferences = collect();
-        $count = random_int(1, 4);
+        $count = random_int(1, 3);
         for ($i = 0; $i < $count; $i++) {
             $filledProductfields = [];
+            $labelArray = [];
 
             if ($productFields) {
                 foreach ($productFields as $productField) {
-                    $filledProductfields[$productField->id] = ($productField->type === 'number') ?
-                        random_int(1, 10) :
-                        $this->faker->words(2, true);
+                    $values = $productField->type === 'string' ?
+                        self::STRING_PRODUCT_FIELDS[$productField->label] :
+                        self::NUMBER_PRODUCT_FIELDS[$productField->label];
+
+                    $value = $values[array_rand($values)];
+
+                    $filledProductfields[$productField->id] = $value;
+                    $labelArray = [$productField->label . ' - ' . $value];
                 }
             }
 
 
             $productReference = ProductReference::query()->create([
-                'label'                      => $this->faker->words(2, true),
+                'label'                      => !empty($labelArray) ? implode('|', $labelArray) : $product->label,
                 'product_id'                 => $product->id,
                 'unit_price_excluding_taxes' => $unitPriceExcludingTaxes,
                 'unit_price_including_taxes' => $unitPriceIncludingTaxes,
@@ -199,6 +254,27 @@ class DatabaseSeeder extends Seeder
         }
 
         return $productReferences;
+    }
+
+    /**
+     * @param Product $product
+     * @param Collection|ProductReference[] $productReferences
+     *
+     * @throws Exception
+     */
+    private function createImages (Product $product, Collection $productReferences): void
+    {
+        if (($count = random_int(0, 5)) === 0) {
+            return;
+        }
+
+        $images = [];
+        foreach ($productReferences as $productReference) {
+            $images = $productReference->images()->createMany(factory(Image::class, $count)->make()->toArray());
+            $productReference->update(['main_image_id' => $images[0]->id]);
+        }
+
+        $product->update(['main_image_id' => $images[0]->id]);
     }
 
     private function createHomeModule ()
@@ -244,41 +320,5 @@ class DatabaseSeeder extends Seeder
         $this->moduleRepository->createParameter('home', 'elements', $elements);
         $this->moduleRepository->createParameter('home', 'navigation', $navigation);
         $this->moduleRepository->createParameter('home', 'currency', 'EUR');
-    }
-
-    /**
-     * @param Product $product
-     * @param Collection|ProductReference[] $productReferences
-     *
-     * @throws Exception
-     */
-    private function createImages (Product $product, Collection $productReferences): void
-    {
-        if (($count = random_int(0, 5)) === 0) {
-            return;
-        }
-
-        $images = [];
-        foreach ($productReferences as $productReference) {
-            $images = $productReference->images()->createMany(factory(Image::class, $count)->make()->toArray());
-            $productReference->update(['main_image_id' => $images[0]->id]);
-        }
-
-        $product->update(['main_image_id' => $images[0]->id]);
-    }
-
-    private function createTaxes ()
-    {
-        $this->tax20Percent = Tax::query()->create([
-            'label' => 'VAT 20%',
-            'type'  => Tax::PERCENTAGE_TYPE,
-            'value' => 20
-        ]);
-
-        $this->ecoTax5Cents = Tax::query()->create([
-            'label' => 'Eco tax',
-            'type'  => Tax::UNITY_TYPE,
-            'value' => 0.05,
-        ]);
     }
 }

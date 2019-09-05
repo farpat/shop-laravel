@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductField;
+use Exception;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -29,7 +30,7 @@ class CategoryRepository
      * @param Category[] $parents
      *
      * @return HtmlString
-     * @throws \Exception
+     * @throws Exception
      */
     public function toHtml (array $parents): HtmlString
     {
@@ -56,6 +57,26 @@ class CategoryRepository
         }
 
         return new HtmlString($string);
+    }
+
+    public function getChildren (Category $category): Collection
+    {
+        if (!($childrenBuilder = $this->getChildrenBuilder($category))) {
+            return collect();
+        }
+
+        return $childrenBuilder->with(['image'])->get();
+    }
+
+    public function getChildrenBuilder (Category $category): ?Builder
+    {
+        if ($category->is_last) {
+            return null;
+        }
+
+        return Category::query()
+            ->where('nomenclature', 'LIKE', $category->nomenclature . '.%')
+            ->whereRaw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature, "' . Category::BREAKING_POINT . '", "")) + 1 = ?', [$category->level + 1]);
     }
 
     public function getRootCategories (): array
@@ -92,47 +113,22 @@ class CategoryRepository
 
     public function getProductFields (Category $category): Collection
     {
-        if ($parentsBuilder = $this->getParents($category)) {
-            $ids = $parentsBuilder->pluck('id');
-        } else {
-            $ids = collect();
-        }
-        $ids->push($category->id);
-
         return ProductField::query()
-            ->whereIn('category_id', $ids)
+            ->where('category_id', $this->getRootId($category))
             ->get()
             ->keyBy('id');
     }
 
-    private function getParents (Category $category): ?Builder
+    public function getRootId(Category $category): int
     {
         if ($category->level === 1) {
-            return null;
-        }
-
-        $nomenclatures = [];
-        $categoryNomenclature = $category->nomenclature;
-        for ($i = 0; $i < strlen($categoryNomenclature); $i++) {
-            if ($categoryNomenclature[$i] === Category::BREAKING_POINT) {
-                $nomenclatures[] = substr($categoryNomenclature, 0, $i - 1);
-            }
-        }
-
-        return Category::query()->whereIn('nomenclature', $nomenclatures);
-    }
-
-    public function getChildren (Category $category): Collection
-    {
-        if ($category->is_last) {
-            return collect();
+            return $category->id;
         }
 
         return Category::query()
-            ->where('nomenclature', 'LIKE', $category->nomenclature . '.%')
-            ->whereRaw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature, "' . Category::BREAKING_POINT . '", "")) + 1 = ?', [$category->level + 1])
-            ->with(['image'])
-            ->get();
+            ->where('nomenclature', substr($category->nomenclature, 0, strpos($category->nomenclature, '.')))
+            ->firstOrFail()
+            ->id;
     }
 
     public function setProductFields (Category $category, array $productFieldsRequestData): Collection

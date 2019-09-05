@@ -14,7 +14,7 @@
             </ul>
         </nav>
 
-        <div class="row" v-if="state.currentProducts.length > 1">
+        <div class="row" v-if="state.currentProducts.length > 0">
             <ProductComponent v-for="product in getCurrentProducts" :product="product" :key="product.id"/>
         </div>
 
@@ -40,9 +40,6 @@
             }
         },
         computed: {
-            getProductsCount: function() {
-              return CategoryStore.data.allProducts.length;
-            },
             getCurrentProducts: function () {
                 const start = (this.state.currentPage - 1) * this.state.perPage;
                 return this.state.currentProducts.slice(start, start + this.state.perPage);
