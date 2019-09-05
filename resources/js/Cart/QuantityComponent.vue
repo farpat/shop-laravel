@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-center" v-if="getItem === undefined">
         <div class="col-auto">
-            <quantity-component :min="1" :name="'quantity-' + this.reference.id"></quantity-component>
+            <number-component :min="1" :name="'quantity-' + this.reference.id"></number-component>
         </div>
         <div class="col-auto">
             <button @click="() => addInCart()" class="btn btn-primary" type="button" v-show="!isLoading">
@@ -22,12 +22,12 @@
 <script>
     import TranslationMixin from "../src/Translation/TranslationMixin";
     import CartStore from "./CartStore";
-    import QuantityComponent from "../src/Bootstrap/components/NumberComponent";
+    import NumberComponent from "../src/Bootstrap/components/NumberComponent";
     import FormStore from "../src/Bootstrap/FormStore";
 
     export default {
         mixins:     [TranslationMixin],
-        components: {QuantityComponent},
+        components: {NumberComponent},
         props:      {
             reference: {type: Object, required: true}
         },

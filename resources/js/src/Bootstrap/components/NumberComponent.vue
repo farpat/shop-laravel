@@ -27,14 +27,19 @@
 
     export default {
         components: {ErrorComponent},
-        mixins: [FormElementMixin],
-        props: {
+        mixins:     [FormElementMixin],
+        mounted:    function () {
+            if (this.getValue === undefined) {
+                this.change(this.min);
+            }
+        },
+        props:      {
             direction: {type: String, default: 'horizontal'},
             step: {type: Number, default: 1},
             min: {type: Number, default: 0},
             max: {type: Number, default: -1},
         },
-        computed: {
+        computed:   {
             getQuantity: function () {
                 return this.getValue || 0;
             },
