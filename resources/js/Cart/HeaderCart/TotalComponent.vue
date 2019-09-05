@@ -6,13 +6,15 @@
         <td></td>
     </tr>
     <tr class="header-cart-total-vat">
-        <td colspan="2" class="text-right">{{ translate('Including taxes') }} :</td>
+        <td class="text-right" colspan="2">{{ translate('Including taxes') }} :</td>
         <td>{{ getFormattedIncludingTaxes }}</td>
         <td></td>
     </tr>
     <tr>
         <td colspan="4">
-            <button class="float-right btn btn-primary">{{ translate('Purchase') }}</button>
+            <a class="float-right btn btn-primary" :href="getPurchaseUrl">
+                {{ translate('Purchase') }}
+            </a>
         </td>
     </tr>
     </tfoot>
@@ -25,12 +27,15 @@
     import CartStore from "../CartStore";
 
     export default {
-        mixins: [TranslationMixin, StrMixin],
-        props: {
+        mixins:   [TranslationMixin, StrMixin],
+        props:    {
             items: {type: Object, required: true}
         },
         computed: {
-            getAmountIncludingTaxes: function () {
+            getPurchaseUrl: function() {
+                return CartStore.data.purchaseUrl;
+            },
+            getAmountIncludingTaxes:          function () {
                 let totalPriceIncludingVat = 0;
 
                 for (let productReferenceId in this.items) {
@@ -41,7 +46,7 @@
             getFormattedAmountIncludingTaxes: function () {
                 return this.toLocaleCurrency(this.getAmountIncludingTaxes, CartStore.data.currency);
             },
-            getAmountExcludingTaxes: function () {
+            getAmountExcludingTaxes:          function () {
                 let totalPriceExcludingTaxes = 0;
 
                 for (let productReferenceId in this.items) {
@@ -49,10 +54,10 @@
                 }
                 return totalPriceExcludingTaxes;
             },
-            getIncludingTaxes: function () {
+            getIncludingTaxes:                function () {
                 return this.getAmountIncludingTaxes - this.getAmountExcludingTaxes;
             },
-            getFormattedIncludingTaxes: function () {
+            getFormattedIncludingTaxes:       function () {
                 return this.toLocaleCurrency(this.getIncludingTaxes, CartStore.data.currency);
             }
         }

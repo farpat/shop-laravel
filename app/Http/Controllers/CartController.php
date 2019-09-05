@@ -23,7 +23,7 @@ class CartController extends Controller
 
     public function __construct (ProductRepository $productRepository)
     {
-        $this->middleware(MustXmlHttpRequest::class);
+        $this->middleware(MustXmlHttpRequest::class)->except(['purchase']);
         $this->middleware(function(Request $request, $next) {
             $this->cartRepository = app(CartRepository::class);
             return $next($request);
@@ -55,5 +55,9 @@ class CartController extends Controller
         $responseData = $this->cartRepository->deleteItem($this->productRepository->getReference($productReferenceId));
 
         return new JsonResponse($responseData);
+    }
+
+    public function purchase() {
+        dd('purchase');
     }
 }

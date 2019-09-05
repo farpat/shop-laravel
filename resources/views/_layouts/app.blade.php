@@ -33,8 +33,9 @@
             cartItems: @json($cartItems, JSON_FORCE_OBJECT),
             cartItemsLength: {{ count($cartItems) }},
         },
-        data: {
+        data:  {
             currency: '{{ $currency }}',
+            purchaseUrl:  '{{ Auth::check() ? route('cart.purchase') : route('login') }}',
         }
     };
 </script>

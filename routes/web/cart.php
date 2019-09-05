@@ -10,3 +10,6 @@ Route::patch('/cart-items/{productReferenceId}', 'CartController@updateItem')
 Route::delete('/cart-items/{productReferenceId}', 'CartController@destroyItem')
     ->where('productReferenceId', '\d+')
     ->name('cart-items.destroy');
+
+Route::get('/purchase', 'CartController@purchase')
+    ->name('cart.purchase');
