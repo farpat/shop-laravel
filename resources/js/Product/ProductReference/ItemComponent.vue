@@ -9,7 +9,7 @@
                     {{ getUnitPriceIncludingTaxes(getCurrentReference.unit_price_including_taxes) }}
                 </li>
                 <li>
-                    <quantity-component :reference="getCurrentReference"></quantity-component>
+                    <QuantityComponent :reference="getCurrentReference"></QuantityComponent>
                 </li>
             </ul>
         </div>
@@ -21,7 +21,7 @@
     import CartStore from "../../Cart/CartStore";
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import Str from "../../src/String/Str";
-    import QuantityComponent from "../../Cart/QuantityComponent";
+    import QuantityComponent from "../../Cart/Outside/QuantityComponent";
     import Slider from "./SliderComponent";
 
     export default {

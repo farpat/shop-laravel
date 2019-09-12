@@ -76,8 +76,7 @@ class Translation {
             const keys = key.split('.');
             this.loadTranslation(keys.slice(0, 1));
             return this._returnNestedProperty(this.translations[this.lang], ...keys);
-        }
-        else {
+        } else {
             return key;
         }
     }

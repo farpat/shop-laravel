@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-center" v-if="getItem === undefined">
         <div class="col-auto">
-            <number-component :min="1" :name="'quantity-' + this.reference.id"></number-component>
+            <NumberComponent :min="1" :name="'quantity-outside-' + this.reference.id"></NumberComponent>
         </div>
         <div class="col-auto">
             <button @click="() => addInCart()" class="btn btn-primary" type="button" v-show="!isLoading">
@@ -20,10 +20,10 @@
 </template>
 
 <script>
-    import TranslationMixin from "../src/Translation/TranslationMixin";
-    import CartStore from "./CartStore";
-    import NumberComponent from "../src/Bootstrap/components/NumberComponent";
-    import FormStore from "../src/Bootstrap/FormStore";
+    import TranslationMixin from "../../src/Translation/TranslationMixin";
+    import CartStore from "../CartStore";
+    import NumberComponent from "../../src/Bootstrap/components/NumberComponent";
+    import FormStore from "../../src/Bootstrap/FormStore";
 
     export default {
         mixins:     [TranslationMixin],
@@ -45,13 +45,13 @@
                 return this.cartState.isLoading[this.reference.id];
             },
             getQuantity: function () {
-                return this.formState.datas['quantity-' + this.reference.id]
+                return this.formState.datas['quantity-outside-' + this.reference.id]
             }
         },
         methods:    {
             addInCart: function () {
                 CartStore.addItem(this.reference.id, this.getQuantity);
-                window.setTimeout(() => FormStore.changeField('quantity-' + this.reference.id, 1), 500);
+                window.setTimeout(() => FormStore.changeField('quantity-outside-' + this.reference.id, 1), 500);
             }
         }
     }

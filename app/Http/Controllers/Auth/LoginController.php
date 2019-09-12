@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Repositories\CartRepository;
-use App\Repositories\CategoryRepository;
-use App\Repositories\ModuleRepository;
+use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -51,29 +48,34 @@ class LoginController extends Controller
     /**
      * Show the application's login form.
      *
+     * @param Request $request
+     *
      * @return Response
      */
-    public function showLoginForm ()
+    public function showLoginForm (Request $request, Session $session)
     {
-        return view('auth.login');
+        $wantPurchase = $session->previousUrl() === route('cart.purchase');
+        return view('auth.login', compact('wantPurchase'));
     }
 
     /**
      * The user has been authenticated.
      *
      * @param Request $request
-     * @param  mixed  $user
+     * @param mixed $user
+     *
      * @return mixed
      */
-    protected function authenticated(Request $request, $user)
+    protected function authenticated (Request $request, $user)
     {
         $cartRepository = app(CartRepository::class);
 
         $cartRepository->mergeItemsOnDatabase(collect($cartRepository->getCookieItems()));
-        return redirect()->intended($this->redirectPath());
-    }
 
-    public function redirectTo() {
-        return route('home.index');
+        if ($request->input('purchase')) {
+            $this->redirectTo = route('cart.purchase');
+        }
+
+        return redirect()->intended($this->redirectPath());
     }
 }

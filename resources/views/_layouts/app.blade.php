@@ -34,8 +34,8 @@
             cartItemsLength: {{ count($cartItems) }},
         },
         data:  {
-            currency: '{{ $currency }}',
-            purchaseUrl:  '{{ Auth::check() ? route('cart.purchase') : route('login') }}',
+            currency:    '{{ $currency }}',
+            purchaseUrl: '{{ route('cart.purchase') }}',
         }
     };
 </script>

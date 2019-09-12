@@ -17,9 +17,10 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form id="login-form" @change="onChange($event)" @submit="onSubmit($event)" method="post"
-                          action="{{ route('login') }}" aria-label="{{ __('Login') }}">
+                    <form id="login-form" method="post" action="{{ route('login') }}" aria-label="{{ __('Login') }}">
                         @csrf
+
+                        <input type="hidden" name="purchase" value="{{ $wantPurchase }}">
 
                         <input-component autofocus label="{{ __('E-Mail Address') }}" name="email" type="email"
                         ></input-component>

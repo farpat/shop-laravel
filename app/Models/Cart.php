@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Cart
  *
  * @property int $id
- * @property-read int|null $items_count
+ * @property int|null $items_count
  * @property float $total_amount_excluding_taxes
  * @property float $total_amount_including_taxes
  * @property string $status

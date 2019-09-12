@@ -31,9 +31,13 @@ class FormStore {
         }
     }
 
+    hasError(field) {
+        return (this.state.errors.hasOwnProperty(field) && this.state.errors[field] !== undefined);
+    }
+
     hasErrors() {
         for (const field in this.state.errors) {
-            if (this.state.errors.hasOwnProperty(field) && this.state.errors[field] !== undefined) {
+            if (this.hasError(field)) {
                 return true;
             }
         }

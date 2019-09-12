@@ -1,17 +1,17 @@
 <template>
     <div>
-        <label :for="getId" v-if="label" class="col-form-label" v-html="label"></label>
+        <label :for="getId" class="col-form-label" v-html="label" v-if="label"></label>
 
-        <div class="input-group input-group-quantity" :class="getContainerClass">
-            <button :class="getMinusButtonClass" :style="getMinusButtonStyle" @click="decrease" type="button">
+        <div :class="getContainerClass" class="input-group input-group-quantity">
+            <button :class="getMinusButtonClass" :style="getMinusButtonStyle" @click="decrease($event)" type="button">
                 <i class="fas fa-minus"></i>
             </button>
 
-            <input :name="getName" type="hidden" :value="getValue">
+            <input :name="getName" :value="getValue" type="hidden">
 
             <span :class="getInputClass">{{ getFormattedValue }}</span>
 
-            <button :class="getPlusButtonClass" :style="getPlusButtonStyle" @click="increase" type="button">
+            <button :class="getPlusButtonClass" :style="getPlusButtonStyle" @click="increase($event)" type="button">
                 <i class="fas fa-plus"></i>
             </button>
         </div>
@@ -35,15 +35,15 @@
         },
         props:      {
             direction: {type: String, default: 'horizontal'},
-            step: {type: Number, default: 1},
-            min: {type: Number, default: 0},
-            max: {type: Number, default: -1},
+            step:      {type: Number, default: 1},
+            min:       {type: Number, default: 0},
+            max:       {type: Number, default: -1},
         },
         computed:   {
-            getQuantity: function () {
+            getQuantity:         function () {
                 return this.getValue || 0;
             },
-            getContainerClass: function () {
+            getContainerClass:   function () {
                 return 'input-group-quantity-' + this.direction;
             },
             getMinusButtonStyle: function () {
@@ -51,7 +51,7 @@
                     'cursor': this.canDecrease ? 'pointer' : 'initial'
                 };
             },
-            getPlusButtonStyle: function () {
+            getPlusButtonStyle:  function () {
                 return {
                     'cursor': this.canIncrease ? 'pointer' : 'initial'
                 };
@@ -61,36 +61,38 @@
                     'text-muted': !this.canDecrease
                 };
             },
-            getPlusButtonClass: function () {
+            getPlusButtonClass:  function () {
                 return {
                     'text-muted': !this.canIncrease
                 };
             },
-            getInputClass: function () {
+            getInputClass:       function () {
                 return this.getError ? ' is-invalid' : '';
             },
-            canIncrease: function () {
+            canIncrease:         function () {
                 if (this.max === -1) return true;
 
                 return (this.getQuantity + this.step <= this.max);
             },
-            canDecrease: function () {
+            canDecrease:         function () {
                 return (this.getQuantity - this.step >= this.min);
             },
-            getFormattedValue: function () {
+            getFormattedValue:   function () {
                 return Str.toLocaleNumber(this.getQuantity);
             },
         },
-        methods: {
-            increase: function () {
+        methods:    {
+            increase: function (event) {
                 if (this.canIncrease) {
                     this.change(this.getQuantity + this.step);
+                    this.$emit('increase', {quantity: this.getQuantity});
                 }
             },
 
-            decrease: function () {
+            decrease: function (event) {
                 if (this.canDecrease) {
                     this.change(this.getQuantity - this.step);
+                    this.$emit('decrease', {quantity: this.getQuantity});
                 }
             },
         }

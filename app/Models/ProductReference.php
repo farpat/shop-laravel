@@ -63,13 +63,6 @@ class ProductReference extends Model
 
     public function getUrlAttribute ()
     {
-        $product = $this->product;
-
-        return route('products.show', [
-            'categorySlug' => $product->category->slug,
-            'category'     => $product->category,
-            'id'           => $product->id,
-            'slug'         => $product->slug
-        ]);
+        return $this->product->url;
     }
 }

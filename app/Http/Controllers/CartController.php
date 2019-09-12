@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Requests\UpdateCartItemRequest;
 use App\Repositories\CartRepository;
 use App\Repositories\ProductRepository;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,6 +25,7 @@ class CartController extends Controller
     public function __construct (ProductRepository $productRepository)
     {
         $this->middleware(MustXmlHttpRequest::class)->except(['purchase']);
+        $this->middleware(Authenticate::class)->only(['purchase']);
         $this->middleware(function(Request $request, $next) {
             $this->cartRepository = app(CartRepository::class);
             return $next($request);
@@ -58,6 +60,6 @@ class CartController extends Controller
     }
 
     public function purchase() {
-        dd('purchase');
+        return view('cart.purchase');
     }
 }

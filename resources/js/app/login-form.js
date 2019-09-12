@@ -17,17 +17,4 @@ new Vue({
             password: [new RequiredRule()],
         });
     },
-    methods:    {
-        onSubmit: function (event) {
-            if (FormStore.hasErrors()) {
-                event.preventDefault();
-            }
-        },
-
-        onChange: function (e) {
-            if (e.target.name === 'password') {
-                this.$submitButton.disabled = FormStore.hasErrors();
-            }
-        }
-    }
 });

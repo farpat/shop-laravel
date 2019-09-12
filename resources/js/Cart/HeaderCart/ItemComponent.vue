@@ -1,11 +1,14 @@
 <template>
     <tr class="header-cart-item">
         <td>
-            <input :value="quantity" @change="(e) => this.updateItem(e)" class="form-control header-cart-item-quantity"
-                   min="1" type="number">
+            <NumberComponent :min="1"
+                             :name="'quantity-' + this.item.product_reference_id"
+                             @decrease="updateItem($event)"
+                             @increase="updateItem($event)">
+            </NumberComponent>
         </td>
         <td>
-            <a :href="item.product_reference.url">{{ item.product_reference.label }}</a>
+            <a :href="item.product_reference.url">{{ item.product_reference.product.label + ' | ' + item.product_reference.label }}</a>
         </td>
         <td>
             {{ getAmountIncludingTaxes }}
@@ -28,38 +31,30 @@
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import CartStore from "../CartStore";
     import StrMixin from "../../src/String/StrMixin";
+    import {NumberComponent} from "../../src/Bootstrap";
 
     export default {
-        mixins: [TranslationMixin, StrMixin],
-        data: function () {
-            return {
-                quantity: this.item.quantity
-            }
-        },
-        props: {
+        mixins:     [TranslationMixin, StrMixin],
+        components: {NumberComponent},
+        props:      {
             item: {type: Object, required: true}
         },
-        computed: {
+        computed:   {
             getAmountIncludingTaxes: function () {
                 return this.toLocaleCurrency(this.item.amount_including_taxes, CartStore.data.currency);
             },
-            isLoading: function () {
+            isLoading:               function () {
                 return CartStore.state.isLoading[this.item.product_reference_id];
             }
         },
-        methods: {
+        methods:    {
             deleteItem: function () {
                 if (!this.isLoading) {
                     CartStore.deleteItem(this.item.product_reference_id);
                 }
             },
             updateItem: function (event) {
-                const quantity = parseFloat(event.target.value);
-
-                if (quantity > 0) {
-                    CartStore.updateItem(this.item.product_reference_id, quantity);
-                    this.quantity = quantity;
-                }
+                CartStore.updateItem(this.item.product_reference_id, event.quantity);
             }
         }
     }

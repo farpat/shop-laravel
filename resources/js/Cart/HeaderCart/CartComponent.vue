@@ -7,10 +7,10 @@
         <div aria-labelledby="button-cart" class="dropdown-menu dropdown-menu-right header-cart">
             <table class="table table-borderless">
                 <tbody>
-                <item-component
+                <ItemComponent
                     :item="item" :key="item.product_reference_id"
                     v-for="item in cartState.cartItems">
-                </item-component>
+                </ItemComponent>
                 </tbody>
 
                 <TotalComponent :items="cartState.cartItems"></TotalComponent>
@@ -31,10 +31,11 @@
     import CartStore from "../CartStore";
     import ItemComponent from "./ItemComponent";
     import TotalComponent from "./TotalComponent";
+    import FormMixin from "../../src/Bootstrap/FormMixin";
 
     export default {
         components: {TotalComponent, ItemComponent},
-        mixins: [TranslationMixin],
+        mixins: [TranslationMixin, FormMixin],
         data: function () {
             return {
                 cartState: CartStore.state

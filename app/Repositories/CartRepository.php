@@ -35,22 +35,47 @@ class CartRepository
         $this->refreshItems();
     }
 
-    public function returnArray (ProductReference $productReference, int $quantity = null)
+    public function refreshItems (): void
     {
-        $productReferenceArray = $productReference->toArray();
-        unset($productReferenceArray['product']);
-        $data = [
-            'product_reference_id'   => $productReference->id,
-            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
-            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
-            'product_reference'      => $productReferenceArray
-        ];
+        if ($user = $this->auth->user()) {
+            $this->refreshCart();
 
-        if ($quantity !== null) {
-            $data['quantity'] = $quantity;
+            $items = $this->cart->items_count > 0 ? CartItem::query()
+                ->select(['quantity', 'product_reference_id'])
+                ->where(['cart_id' => $this->cart->id])
+                ->get()
+                ->keyBy('product_reference_id')
+                ->toArray() : [];
+        } else {
+            $items = $this->getCookieItems();
         }
 
-        return $data;
+        $this->items = collect($items);
+    }
+
+    private function refreshCart (): void
+    {
+        $this->cart = $this->getCart($this->auth->user());
+    }
+
+    public function getCart (User $user): Cart
+    {
+        return Cart::query()
+            ->firstOrCreate([
+                'status'  => Cart::ORDERING_STATUS,
+                'user_id' => $user->id
+            ], [
+                'items_count'                  => 0,
+                'total_amount_excluding_taxes' => 0,
+                'total_amount_including_taxes' => 0,
+                'user_id'                      => $user->id,
+                'address_id'                   => null
+            ]);
+    }
+
+    public function getCookieItems (): array
+    {
+        return json_decode(Cookie::get('cart-items', '[]'), true);
     }
 
     public function addItem (int $quantity, ProductReference $productReference): array
@@ -70,7 +95,51 @@ class CartRepository
             $this->persistCookie($this->items);
         }
 
-        return $this->returnArray($productReference, $quantity);
+        return $this->returnArrayForResponse($productReference, $quantity);
+    }
+
+    private function addItemOnDatabase (int $quantity, ProductReference $productReference): void
+    {
+        $cartItem = new CartItem([
+            'quantity'               => $quantity,
+            'product_reference_id'   => $productReference->id,
+            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
+            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
+            'cart_id'                => $this->cart->id
+        ]);
+
+        $this->cart->total_amount_excluding_taxes += $cartItem->amount_excluding_taxes;
+        $this->cart->total_amount_including_taxes += $cartItem->amount_including_taxes;
+        $this->cart->items_count++;
+
+        $cartItem->save();
+        $this->cart->save();
+    }
+
+    private function persistCookie (?Collection $items): void
+    {
+        $cookie = ($items === null) ?
+            Cookie::forget('cart-items') :
+            Cookie::make('cart-items', $items->toJson());
+
+        Cookie::queue($cookie);
+    }
+
+    private function returnArrayForResponse (ProductReference $productReference, int $quantity = null): array
+    {
+        $productReferenceArray = $productReference->toArray();
+        $data = [
+            'product_reference_id'   => $productReference->id,
+            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
+            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
+            'product_reference'      => $productReferenceArray
+        ];
+
+        if ($quantity !== null) {
+            $data['quantity'] = $quantity;
+        }
+
+        return $data;
     }
 
     public function updateItem (int $quantity, ProductReference $productReference): array
@@ -90,7 +159,27 @@ class CartRepository
             $this->persistCookie($this->items);
         }
 
-        return $this->returnArray($productReference, $quantity);
+        return $this->returnArrayForResponse($productReference, $quantity);
+    }
+
+    private function updateItemOnDatabase (int $quantity, ProductReference $productReference): void
+    {
+        $cartItem = CartItem::query()
+            ->where([
+                'product_reference_id' => $productReference->id,
+                'cart_id'              => $this->cart->id
+            ])
+            ->firstOrFail();
+
+        $cartItem->amount_excluding_taxes = $quantity * $productReference->unit_price_excluding_taxes;
+        $cartItem->amount_including_taxes = $quantity * $productReference->unit_price_including_taxes;
+        $cartItem->quantity = $quantity;
+
+        $this->cart->total_amount_excluding_taxes += -$cartItem->getOriginal('amount_excluding_taxes') + $cartItem->amount_excluding_taxes;
+        $this->cart->total_amount_including_taxes += -$cartItem->getOriginal('amount_including_taxes') + $cartItem->amount_including_taxes;
+
+        $cartItem->save();
+        $this->cart->save();
     }
 
     public function deleteItem (ProductReference $productReference): array
@@ -107,49 +196,28 @@ class CartRepository
             $this->persistCookie($this->items);
         }
 
-        return $this->returnArray($productReference);
+        return $this->returnArrayForResponse($productReference);
     }
 
-    public function getCart (User $user, bool $dontCreate = true): ?Cart
+    private function deleteItemOnDatabase (ProductReference $productReference): void
     {
-        if ($dontCreate) {
-            return Cart::query()
-                ->where([
-                    'status'  => Cart::ORDERING_STATUS,
-                    'user_id' => $user->id
-                ])
-                ->first();
-        }
+        $cartItem = CartItem::query()
+            ->where([
+                'product_reference_id' => $productReference->id,
+                'cart_id'              => $this->cart->id
+            ])
+            ->firstOrFail();
 
-        return Cart::query()
-            ->firstOrCreate([
-                'status'  => Cart::ORDERING_STATUS,
-                'user_id' => $user->id
-            ], [
-                'items_count'                  => 0,
-                'total_amount_excluding_taxes' => 0,
-                'total_amount_including_taxes' => 0,
-                'user_id'                      => $user->id,
-                'address_id'                   => null
-            ]);
-    }
+        $this->cart->total_amount_excluding_taxes -= $cartItem->amount_excluding_taxes;
+        $this->cart->total_amount_including_taxes -= $cartItem->amount_including_taxes;
+        $this->cart->items_count--;
 
-    public function refreshItems ()
-    {
-        if ($user = $this->auth->user()) {
-            $this->cart = $this->getCart($user);
-
-            $items = $this->cart ? CartItem::query()
-                ->select(['quantity', 'product_reference_id'])
-                ->where(['cart_id' => $this->cart->id])
-                ->get()
-                ->keyBy('product_reference_id')
-                ->toArray() : [];
+        $cartItem->delete();
+        if ($this->cart->items_count === 0) {
+            $this->cart->delete();
         } else {
-            $items = $this->getCookieItems();
+            $this->cart->save();
         }
-
-        $this->items = collect($items);
     }
 
     public function getItems (): array
@@ -159,99 +227,20 @@ class CartRepository
         if (!empty($items)) {
             $productReferences = $this->productRepository->getReferences(array_keys($items));
 
+            //obliged to re-compute the keys " product_reference and amounts " because the informations can change in the meantime
             foreach ($items as $productReferenceId => $item) {
-                $quantity = $item['quantity'];
                 $productReference = $productReferences->get($productReferenceId);
 
                 $items[$productReferenceId]['product_reference'] = $productReference;
-                $items[$productReferenceId]['amount_excluding_taxes'] = $quantity * $productReference->unit_price_excluding_taxes;
-                $items[$productReferenceId]['amount_including_taxes'] = $quantity * $productReference->unit_price_including_taxes;
+                $items[$productReferenceId]['amount_excluding_taxes'] = $item['quantity'] * $productReference->unit_price_excluding_taxes;
+                $items[$productReferenceId]['amount_including_taxes'] = $item['quantity'] * $productReference->unit_price_including_taxes;
             }
         }
 
         return $items;
     }
 
-    private function persistCookie (?Collection $items)
-    {
-        $cookie = ($items === null) ?
-            Cookie::forget('cart-items') :
-            Cookie::make('cart-items', $items->toJson());
-
-        Cookie::queue($cookie);
-    }
-
-    public function getCookieItems (): array
-    {
-        return json_decode(Cookie::get('cart-items', '[]'), true);
-    }
-
-    private function deleteItemOnDatabase (ProductReference $productReference)
-    {
-        $cart = $this->getCart($this->auth->user(), false);
-
-        $cartItem = CartItem::query()
-            ->where([
-                'product_reference_id' => $productReference->id,
-                'cart_id'              => $cart->id
-            ])
-            ->firstOrFail();
-
-        $cart->total_amount_excluding_taxes -= $cartItem->amount_excluding_taxes;
-        $cart->total_amount_including_taxes -= $cartItem->amount_including_taxes;
-        $cart->items_count--;
-
-        $cartItem->delete();
-        if ($cart->items_count === 0) {
-            $cart->delete();
-        } else {
-            $cart->save();
-        }
-    }
-
-    private function updateItemOnDatabase (int $quantity, ProductReference $productReference)
-    {
-        $cart = $this->getCart($this->auth->user(), false);
-
-        $cartItem = CartItem::query()
-            ->where([
-                'product_reference_id' => $productReference->id,
-                'cart_id'              => $cart->id
-            ])
-            ->firstOrFail();
-
-        $cartItem->amount_excluding_taxes = $quantity * $productReference->unit_price_excluding_taxes;
-        $cartItem->amount_including_taxes = $quantity * $productReference->unit_price_including_taxes;
-        $cartItem->quantity = $quantity;
-
-        $cart->total_amount_excluding_taxes += - $cartItem->getOriginal('amount_excluding_taxes') + $cartItem->amount_excluding_taxes;
-        $cart->total_amount_including_taxes += - $cartItem->getOriginal('amount_including_taxes') + $cartItem->amount_including_taxes;
-
-        $cartItem->save();
-        $cart->save();
-    }
-
-    private function addItemOnDatabase (int $quantity, ProductReference $productReference)
-    {
-        $cart = $this->getCart($this->auth->user(), false);
-
-        $cartItem = new CartItem([
-            'quantity'               => $quantity,
-            'product_reference_id'   => $productReference->id,
-            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
-            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
-            'cart_id'                => $cart->id
-        ]);
-
-        $cart->total_amount_excluding_taxes += $cartItem->amount_excluding_taxes;
-        $cart->total_amount_including_taxes += $cartItem->amount_including_taxes;
-        $cart->items_count++;
-
-        $cartItem->save();
-        $cart->save();
-    }
-
-    public function mergeItemsOnDatabase (Collection $cookieItems)
+    public function mergeItemsOnDatabase (Collection $cookieItems): void
     {
         $this->persistCookie(null);
 
@@ -260,7 +249,7 @@ class CartRepository
         }
 
         $updates = [];
-        $addings = [];
+        $additions = [];
         foreach ($cookieItems as $productReferenceId => $cookieItem) {
             $databaseItem = $this->items->get($productReferenceId);
 
@@ -269,21 +258,21 @@ class CartRepository
             }
 
             if ($databaseItem === null) {  //database item not present
-                $addings[$productReferenceId] = $cookieItem['quantity'];
+                $additions[$productReferenceId] = $cookieItem['quantity'];
             }
         }
 
-        if (empty($updates) && empty($addings)) {
+        if (empty($updates) && empty($additions)) {
             return;
         }
 
-        $productReferences = $this->productRepository->getReferences(array_keys($updates) + array_keys($addings));
+        $productReferences = $this->productRepository->getReferences(array_keys($updates) + array_keys($additions));
 
         foreach ($updates as $productReferenceId => $quantity) {
             $this->updateItemOnDatabase($quantity, $productReferences->get($productReferenceId));
         }
 
-        foreach ($addings as $productReferenceId => $quantity) {
+        foreach ($additions as $productReferenceId => $quantity) {
             $this->addItemOnDatabase($quantity, $productReferences->get($productReferenceId));
         }
     }
