@@ -8,13 +8,6 @@
         <td class="text-right" colspan="2">{{ __('Including taxes') }} :</td>
         <td colspan="2">{{ getFormattedIncludingTaxes }}</td>
     </tr>
-    <tr>
-        <td colspan="4">
-            <a class="float-right btn btn-primary" :href="getPurchaseUrl">
-                {{ __('Purchase') }}
-            </a>
-        </td>
-    </tr>
     </tfoot>
 </template>
 

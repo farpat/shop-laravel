@@ -1,6 +1,6 @@
 <template>
     <div class="filter-component">
-        <h1>{{ translate('Filters') }}</h1>
+        <h1>{{ __('Filters') }}</h1>
         <component
             v-for="filter in filters"
             :filter="filter"

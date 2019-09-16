@@ -3,8 +3,7 @@
         <td>
             <NumberComponent :min="1" :name="'quantity-' + this.item.product_reference_id"
                              @decrease="updateItem($event)"
-                             @increase="updateItem($event)"
-                             direction="horizontal">
+                             @increase="updateItem($event)">
             </NumberComponent>
         </td>
         <td>
@@ -49,9 +48,13 @@
             }
         },
         methods:    {
-            deleteItem: function () {
+            deleteItem: async function () {
                 if (!this.isLoading) {
-                    CartStore.deleteItem(this.item.product_reference_id);
+                    await CartStore.deleteItem(this.item.product_reference_id);
+
+                    if (CartStore.state.cartItemsLength === 0) {
+                        window.location.href = '/';
+                    }
                 }
             },
             updateItem: function (event) {

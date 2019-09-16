@@ -1,14 +1,18 @@
 import Vue from 'vue';
-import CartComponent from "../Cart/HeaderCart/CartComponent";
-import FormStore from "../src/Bootstrap/FormStore";
-import CartStore from "../Cart/CartStore";
+import HeaderCartComponent from "../Cart/HeaderCart/CartComponent";
+import BodyCartComponent from "../Cart/BodyCart/CartComponent";
+import PaymentComponent from "../Cart/Payment/PaymentComponent";
 
-for (let productReferenceId in CartStore.state.cartItems) {
-    let quantity = CartStore.state.cartItems[productReferenceId].quantity;
-    FormStore.changeField('quantity-' + productReferenceId, quantity);
-}
+$(document).on('click', '#cart-nav', function (event) {
+    event.stopPropagation();
+});
 
 new Vue({
-    el: '#cart-nav',
-    components: {CartComponent}
+    el:         '#cart-nav',
+    components: {HeaderCartComponent}
+});
+
+new Vue({
+    el:         '#cart-section',
+    components: {BodyCartComponent, PaymentComponent}
 });

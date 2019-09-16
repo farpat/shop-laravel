@@ -34,8 +34,8 @@
                         <a class="btn btn-link text-info" href="{{ route('login') }}">{{ __('Login') }}</a>
                     </li>
                 @endguest
-                <li id="cart-nav" class="nav-item js-nav-item-cart">
-                    <cart-component></cart-component>
+                <li id="cart-nav" class="nav-item">
+                    <header-cart-component></header-cart-component>
                 </li>
             </ul>
         </section>

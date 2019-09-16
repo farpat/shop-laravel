@@ -6,4 +6,10 @@
 
 @section('content')
     <h1>{{ __('pucharse cart') }}</h1>
+
+    <section id="cart-section" class="cart-section">
+        <body-cart-component></body-cart-component>
+
+        <payment-component></payment-component>
+    </section>
 @endsection

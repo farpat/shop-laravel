@@ -5,7 +5,7 @@
         </div>
         <div class="col-auto">
             <button @click="() => addInCart()" class="btn btn-primary" type="button" v-show="!isLoading">
-                <i class="fas fa-shopping-cart"></i> {{ translate('Add in cart') }}
+                <i class="fas fa-shopping-cart"></i> {{ __('Add in cart') }}
             </button>
 
             <span v-show="isLoading">
@@ -15,7 +15,7 @@
     </div>
 
     <p v-else>
-        {{ translate('Ordering') }} : {{ getItem.quantity }}
+        {{ __('Ordering') }} : {{ getItem.quantity }}
     </p>
 </template>
 

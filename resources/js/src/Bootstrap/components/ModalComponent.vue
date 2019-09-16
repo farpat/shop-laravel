@@ -13,10 +13,10 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-link" data-dismiss="modal" type="button">
-                        {{ translate(closeButtonLabel) }}
+                        {{ __(closeButtonLabel) }}
                     </button>
                     <button v-if="displayOk" :class="getOkButtonClass" class="btn" type="button">
-                        {{ translate(okButtonLabel) }}
+                        {{ __(okButtonLabel) }}
                     </button>
                 </div>
             </div>

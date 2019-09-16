@@ -5,7 +5,7 @@
             <i class="fas fa-shopping-cart"></i> - {{ getLength }}
         </button>
         <div aria-labelledby="button-cart" class="dropdown-menu dropdown-menu-right header-cart">
-            <table class="table table-borderless">
+            <table class="table table-borderless table-hover">
                 <tbody>
                 <ItemComponent
                     :item="item" :key="item.product_reference_id"

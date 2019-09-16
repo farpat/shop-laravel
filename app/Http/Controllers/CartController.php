@@ -26,7 +26,7 @@ class CartController extends Controller
     {
         $this->middleware(MustXmlHttpRequest::class)->except(['purchase']);
         $this->middleware(Authenticate::class)->only(['purchase']);
-        $this->middleware(function(Request $request, $next) {
+        $this->middleware(function (Request $request, $next) {
             $this->cartRepository = app(CartRepository::class);
             return $next($request);
         });
@@ -59,7 +59,12 @@ class CartController extends Controller
         return new JsonResponse($responseData);
     }
 
-    public function purchase() {
+    public function purchase ()
+    {
+        $cartItems = view()->shared('cartItems');
+        if (empty($cartItems)) {
+            return redirect()->route('home.index')->with('danger', __('Your cart is empty'));
+        }
         return view('cart.purchase');
     }
 }

@@ -1,11 +1,8 @@
 import 'bootstrap';
+import 'popper.js';
 
 require('./app/search-form');
 require('./app/cart');
-
-$(document).on('click', '.js-nav-item-cart .dropdown-menu', function (e) {
-    e.stopPropagation();
-});
 
 if (document.querySelector('#category-show')) {
     require('./app/category-show');

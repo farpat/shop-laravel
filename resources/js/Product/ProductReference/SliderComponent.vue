@@ -9,11 +9,11 @@
         </div>
         <a :href="getTarget" class="carousel-control-prev" data-slide="prev" role="button">
             <span aria-hidden="true" class="carousel-control-prev-icon"></span>
-            <span class="sr-only">{{ translate('pagination.previous') }}</span>
+            <span class="sr-only">{{ __('pagination.previous') }}</span>
         </a>
         <a :href="getTarget" class="carousel-control-next" data-slide="next" role="button">
             <span aria-hidden="true" class="carousel-control-next-icon"></span>
-            <span class="sr-only">{{ translate('pagination.next') }}</span>
+            <span class="sr-only">{{ __('pagination.next') }}</span>
         </a>
 
         <ol class="carousel-indicators">

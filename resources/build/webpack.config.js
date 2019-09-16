@@ -117,6 +117,7 @@ let configWebpack = {
         new webpack.ProvidePlugin({
             $:      "jquery",
             jQuery: "jquery",
+            Popper: "popper"
         }),
 
         new MiniCssExtractPlugin({

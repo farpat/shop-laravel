@@ -19,7 +19,7 @@
         </div>
 
         <p v-else>
-            {{ translate('Sorry, no products found!') }}
+            {{ __('Sorry, no products found!') }}
         </p>
     </div>
 </template>
