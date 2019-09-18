@@ -141,6 +141,9 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'card-cvc'              => 'card verification code',
+        'card-number'           => 'card number'
+    ],
 
 ];

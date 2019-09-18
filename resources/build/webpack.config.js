@@ -70,6 +70,15 @@ let configWebpack = {
                     {loader: 'sass-loader', options: {sourceMap: isDebug}}
                 ],
             },
+            //css
+            {
+                test: /\.css$/,
+                use:  [
+                    isDebug ? {loader: 'vue-style-loader'} : MiniCssExtractPlugin.loader,
+                    {loader: 'css-loader', options: {sourceMap: isDebug}},
+                    {loader: 'postcss-loader', options: {sourceMap: isDebug}}
+                ],
+            },
             //vue
             {
                 test:    /\.vue$/,
@@ -86,9 +95,7 @@ let configWebpack = {
             {
                 test:    /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
                 loader:  'file-loader',
-                options: {
-                    name: 'fonts/[name]-[hash:3].[ext]',
-                }
+                options: {name: 'fonts/[name]-[hash:3].[ext]'}
             },
             //images
             {
@@ -96,16 +103,11 @@ let configWebpack = {
                 use:  [
                     {
                         loader:  'url-loader',
-                        options: {
-                            limit: 8192,
-                            name:  'images/[name].[ext]'
-                        }
+                        options: {limit: 8192, name: 'images/[name].[ext]'}
                     },
                     {
                         loader:  'img-loader',
-                        options: {
-                            enabled: !isDebug
-                        }
+                        options: {enabled: !isDebug}
                     }
                 ]
             },
@@ -116,7 +118,6 @@ let configWebpack = {
 
         new webpack.ProvidePlugin({
             $:      "jquery",
-            jQuery: "jquery",
             Popper: "popper"
         }),
 

@@ -17,5 +17,3 @@ require 'web/home.php';
 require 'web/category.php';
 require 'web/product.php';
 require 'web/cart.php';
-
-Auth::routes();

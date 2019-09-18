@@ -7,10 +7,10 @@
                 <div class="p-5">
                     <NavigationComponent></NavigationComponent>
 
-                    <form class="tab-content">
+                    <div class="tab-content">
                         <TabCardComponent></TabCardComponent>
                         <TabPaypalComponent></TabPaypalComponent>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

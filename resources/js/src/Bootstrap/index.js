@@ -8,3 +8,4 @@ export {default as SelectComponent} from "./components/SelectComponent";
 export {default as TextareaComponent} from "./components/TextareaComponent";
 export {default as ModalComponent} from "./components/ModalComponent";
 export {default as DeleteModalComponent} from "./components/DeleteModalComponent";
+export {default as CreditCardNumberComponent} from "./components/CreditCardNumberComponent";

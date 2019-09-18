@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Repositories\CartRepository;
-use Illuminate\Contracts\Routing\UrlGenerator;
+use App\Repositories\UserRepository;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -52,10 +54,17 @@ class LoginController extends Controller
      *
      * @return Response
      */
-    public function showLoginForm (Request $request, Session $session)
+    public function showLoginForm (Request $request, Session $session, UserRepository $userRepository)
     {
         $wantPurchase = $session->previousUrl() === route('cart.purchase');
-        return view('auth.login', compact('wantPurchase'));
+        $users = $userRepository->getAll();
+        return view('auth.login', compact('wantPurchase', 'users'));
+    }
+
+    public function spy (User $user, Request $request)
+    {
+        Auth::login($user);
+        return $this->sendLoginResponse($request);
     }
 
     /**

@@ -5,7 +5,7 @@
 <script>
     export default {
         props: {
-            label: {type: String, required: true},
+            label:    {type: [String, Boolean], required: true},
             required: {type: Boolean, required: true},
         }
     }

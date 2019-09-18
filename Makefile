@@ -63,7 +63,6 @@ endif
 	@echo "$(PRIMARY_COLOR)End of browser tests$(NO_COLOR)"
 
 dev: install ## Run development servers
-	@docker-compose -f docker-compose-dusk.yml down --remove-orphans
 	@docker-compose up -d
 	@echo "Dev server launched on $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
 

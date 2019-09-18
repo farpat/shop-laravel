@@ -1,9 +1,9 @@
 import Str from "../../String/Str";
 
 export default class MaxRule {
-    constructor(params) {
-        this.params = params;
-        this.maxSize = Str.sizeToBytes(params);
+    constructor(max, type = 'string') {
+        this.type = type;
+        this.params = type === 'file' ? Str.sizeToBytes(max) : max;
         this.name = 'max';
     }
 
@@ -14,14 +14,20 @@ export default class MaxRule {
      */
     verifyFileSize(files) {
         let totalSize = files.reduce((acc, file) => acc + file.size, 0);
-        return totalSize <= this.maxSize;
+        return totalSize <= this.params;
     }
 
     check(value) {
-        if (value instanceof Array) {
+        if (this.type === 'file') {
             return this.verifyFileSize(value);
-        } else if (typeof value === 'string') {
+        }
+
+        if (this.type === 'string') {
             return (value.length === 0 || value.length < this.params);
+        }
+
+        if (this.type === 'number') {
+            return value <= this.params;
         }
 
         return false;

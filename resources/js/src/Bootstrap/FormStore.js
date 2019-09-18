@@ -29,6 +29,8 @@ class FormStore {
             const error = Security.getError(fieldRules, field, value);
             Vue.set(this.state.errors, field, error);
         }
+
+        return this.hasError(field);
     }
 
     hasError(field) {
@@ -45,9 +47,17 @@ class FormStore {
         return false;
     }
 
-    checkForm() {
-        for (const field in this.state.rules) {
-            this.checkField(field, this.state.datas[field]);
+    checkForm(fields) {
+        if (fields) {
+            this.state.errors = {};
+
+            fields.forEach(field => {
+                this.checkField(field, this.state.datas[field]);
+            });
+        } else {
+            for (const field in this.state.rules) {
+                this.checkField(field, this.state.datas[field]);
+            }
         }
     }
 

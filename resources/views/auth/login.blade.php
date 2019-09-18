@@ -13,7 +13,7 @@
 @section('content')
     <section class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <section class="card">
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
@@ -40,7 +40,26 @@
                         </div>
                     </form>
                 </div>
-            </div>
+            </section>
+
+            <section class="users-section mt-5">
+                <h2>{{ __('Users') }}</h2>
+
+                <div class="card-group">
+                    @foreach($users->chunk(5) as $chunkedUsers)
+                        <div class="card">
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    @foreach($chunkedUsers as $id => $email)
+                                        <li><a href="{{ route('spy', ['user' => $id]) }}">{{ $email }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
         </div>
     </section>
 @endsection

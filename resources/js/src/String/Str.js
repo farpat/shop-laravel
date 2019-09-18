@@ -1,6 +1,23 @@
 const units = ['o', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo'];
 
 class Str {
+    formatCardNumber(text) {
+        text = text.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+
+        const matches = text.match(/\d{4,16}/g);
+        const match = matches && matches[0] || '';
+        let parts = [];
+        for (let i = 0, len = match.length; i < len; i += 4) {
+            parts.push(match.substring(i, i + 4))
+        }
+
+        if (parts.length > 0) {
+            text = parts.join(' ')
+        }
+
+        return text;
+    }
+
     toLocaleCurrency(amount, currency) {
         if (typeof amount === 'string') {
             amount = parseFloat(amount);
