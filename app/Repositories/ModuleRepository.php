@@ -8,21 +8,17 @@ use App\Models\ModuleParameter;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 class ModuleRepository
 {
     private $cache = [];
 
-    public function __construct ()
-    {
-        dump('construct');
-    }
-
-    public function createModule (string $moduleLabel, bool $is_active = false, string $description = null): Module
+    public function createModule (string $moduleLabel, bool $isActive = false, string $description = null): Module
     {
         $module = new Module([
             'label'       => $moduleLabel,
-            'is_active'   => $is_active,
+            'is_active'   => $isActive,
             'description' => $description
         ]);
 
@@ -45,7 +41,7 @@ class ModuleRepository
             ->where('label', $parameterLabel)
             ->first();
         if ($moduleParameter) {
-            $this->transformValue($moduleParameter);
+            $this->transformValueToGet($moduleParameter);
         }
 
         $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
@@ -53,7 +49,7 @@ class ModuleRepository
         return $moduleParameter;
     }
 
-    private function transformValue (ModuleParameter $moduleParameter)
+    private function transformValueToGet (ModuleParameter $moduleParameter)
     {
         $value = $moduleParameter->value;
 
@@ -73,11 +69,11 @@ class ModuleRepository
             $value = json_encode($value);
         }
 
-        /** @var ModuleParameter $moduleParameter */
-        $moduleParameter = $this->getModule($moduleLabel)->parameters()->create([
+        $moduleParameter = ModuleParameter::create([
             'label'       => $parameterLabel,
             'value'       => $value,
-            'description' => $description
+            'description' => $description,
+            'module_id'   => $this->getModule($moduleLabel)->id
         ]);
 
         $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
@@ -117,5 +113,16 @@ class ModuleRepository
     public function deactivate (string $moduleLabel)
     {
         $this->updateModule($moduleLabel, ['is_active' => false]);
+    }
+
+    private function transformValueToSave (ModuleParameter $moduleParameter)
+    {
+        $value = $moduleParameter->value;
+
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+
+        $moduleParameter->value = $value;
     }
 }

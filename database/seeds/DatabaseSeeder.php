@@ -46,21 +46,16 @@ class DatabaseSeeder extends Seeder
      */
     private $tax20Percent;
     /**
-     * @var Guard
-     */
-    private $auth;
-    /**
      * @var CartManager
      */
     private $cartManager;
 
-    public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository, CartManager $cartManager, Guard $auth)
+    public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository, CartManager $cartManager)
     {
         $this->faker = Faker\Factory::create('fr_FR');
 
         $this->moduleRepository = $moduleRepository;
         $this->categoryRepository = $categoryRepository;
-        $this->auth = $auth;
         $this->cartManager = $cartManager;
     }
 
@@ -102,7 +97,6 @@ class DatabaseSeeder extends Seeder
         dump('Creation of carts');
         $start = microtime(true);
         foreach (factory(User::class, 10)->create() as $user) {
-            $this->auth->login($user);
             $this->cartManager->refresh($user);
             $this->cartManager->addItem(random_int(1, 5), ProductReference::query()->inRandomOrder()->first());
         }
