@@ -1,7 +1,8 @@
 <?php
 
 use App\Models\{Category, Image, Product, ProductReference, Tax, User};
-use App\Repositories\{CartRepository, CategoryRepository, ModuleRepository};
+use App\Repositories\{CategoryRepository, ModuleRepository};
+use App\Services\Bank\CartManager;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -11,10 +12,10 @@ class DatabaseSeeder extends Seeder
 {
 
     const STRING_PRODUCT_FIELDS = [
-        'color'      => ['white', 'red', 'green', 'blue', 'yellow', 'orange'],
-        'size'       => ['s', 'm', 'l', 'xs', 'xl', 'xxl'],
-        'material'   => ['wood', 'plastic', 'metal'],
-        'form'       => ['square', 'rectangle', 'round', 'diamond'],
+        'color'    => ['white', 'red', 'green', 'blue', 'yellow', 'orange'],
+        'size'     => ['s', 'm', 'l', 'xs', 'xl', 'xxl'],
+        'material' => ['wood', 'plastic', 'metal'],
+        'form'     => ['square', 'rectangle', 'round', 'diamond'],
     ];
 
     const NUMBER_PRODUCT_FIELDS = [
@@ -45,22 +46,22 @@ class DatabaseSeeder extends Seeder
      */
     private $tax20Percent;
     /**
-     * @var CartRepository
-     */
-    private $cartRepository;
-    /**
      * @var Guard
      */
     private $auth;
+    /**
+     * @var CartManager
+     */
+    private $cartManager;
 
-    public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository, CartRepository $cartRepository, Guard $auth)
+    public function __construct (ModuleRepository $moduleRepository, CategoryRepository $categoryRepository, CartManager $cartManager, Guard $auth)
     {
         $this->faker = Faker\Factory::create('fr_FR');
 
         $this->moduleRepository = $moduleRepository;
         $this->categoryRepository = $categoryRepository;
-        $this->cartRepository = $cartRepository;
         $this->auth = $auth;
+        $this->cartManager = $cartManager;
     }
 
     /**
@@ -102,8 +103,8 @@ class DatabaseSeeder extends Seeder
         $start = microtime(true);
         foreach (factory(User::class, 10)->create() as $user) {
             $this->auth->login($user);
-            $this->cartRepository->refreshItems();
-            $this->cartRepository->addItem(random_int(1, 5), ProductReference::query()->inRandomOrder()->first());
+            $this->cartManager->refresh($user);
+            $this->cartManager->addItem(random_int(1, 5), ProductReference::query()->inRandomOrder()->first());
         }
         $end = microtime(true);
         dump('==> ' . round($end - $start, 2) . ' seconds');

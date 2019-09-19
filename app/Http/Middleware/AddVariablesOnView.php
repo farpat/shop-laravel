@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Repositories\CartRepository;
 use App\Repositories\ModuleRepository;
+use App\Services\Bank\CartManager;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\View\Factory as View;
@@ -15,19 +15,19 @@ class AddVariablesOnView
      */
     private $moduleRepository;
     /**
-     * @var CartRepository
-     */
-    private $cartRepository;
-    /**
      * @var View
      */
     private $view;
+    /**
+     * @var CartManager
+     */
+    private $cartManager;
 
-    public function __construct (ModuleRepository $moduleRepository, CartRepository $cartRepository, View $view)
+    public function __construct (ModuleRepository $moduleRepository, CartManager $cartManager, View $view)
     {
         $this->moduleRepository = $moduleRepository;
-        $this->cartRepository = $cartRepository;
         $this->view = $view;
+        $this->cartManager = $cartManager;
     }
 
     /**
@@ -42,7 +42,7 @@ class AddVariablesOnView
     {
         $this->view->share([
             'currency'  => $this->moduleRepository->getParameter('home', 'currency')->value,
-            'cartItems' => $this->cartRepository->getItems()
+            'cartItems' => $this->cartManager->getItems()
         ]);
 
         return $next($request);

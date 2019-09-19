@@ -11,6 +11,13 @@ use Illuminate\Support\Str;
 
 class ModuleRepository
 {
+    private $cache = [];
+
+    public function __construct ()
+    {
+        dump('construct');
+    }
+
     public function createModule (string $moduleLabel, bool $is_active = false, string $description = null): Module
     {
         $module = new Module([
@@ -26,6 +33,9 @@ class ModuleRepository
 
     public function getParameter (string $moduleLabel, string $parameterLabel): ?ModuleParameter
     {
+        if (isset($this->cache[$moduleLabel][$parameterLabel])) {
+            return $this->cache[$moduleLabel][$parameterLabel];
+        }
 
         /** @var ModuleParameter $moduleParameter */
         $moduleParameter = ModuleParameter::query()
@@ -37,6 +47,8 @@ class ModuleRepository
         if ($moduleParameter) {
             $this->transformValue($moduleParameter);
         }
+
+        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
 
         return $moduleParameter;
     }
@@ -61,11 +73,16 @@ class ModuleRepository
             $value = json_encode($value);
         }
 
-        return $this->getModule($moduleLabel)->parameters()->create([
+        /** @var ModuleParameter $moduleParameter */
+        $moduleParameter = $this->getModule($moduleLabel)->parameters()->create([
             'label'       => $parameterLabel,
             'value'       => $value,
             'description' => $description
         ]);
+
+        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
+
+        return $moduleParameter;
     }
 
     public function getModule (string $moduleLabel): Module

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Bank\StripeService;
 use App\Repositories\{CategoryRepository, ModuleRepository, ProductRepository};
 use Illuminate\Http\Request;
 

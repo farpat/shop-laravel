@@ -2,15 +2,13 @@
 
 namespace App\Providers;
 
-use App\Repositories\CartRepository;
-use App\Repositories\NavigationRepository;
-use App\Repositories\ProductRepository;
-use App\ViewComposers\UsersList;
-use Illuminate\Support\Facades\{DB, Schema, View};
-use Illuminate\Contracts\Auth\Guard;
+use App\Repositories\ModuleRepository;
+use App\Services\Bank\CartManager;
+use App\Services\Bank\StripeService;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -32,18 +30,28 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
      */
     public function register ()
     {
-        $this->app->singleton(CartRepository::class, function ($app) {
-            return new CartRepository($app->make(ProductRepository::class), $app->make(Guard::class));
+        $this->registerBankServices();
+    }
+
+    private function registerBankServices ()
+    {
+        $this->app->singleton(CartManager::class);
+
+        $this->app->singleton(ModuleRepository::class);
+
+        $this->app->singleton(StripeService::class, function (Application $app) {
+            ['key' => $key, 'secret' => $secret] = $app['config']['services']['stripe'];
+            return new StripeService($key, $secret, $app->make(ModuleRepository::class)->getParameter('home', 'currency')->value);
         });
     }
 
-     /**
-      * Get the services provided by the provider.
-      *
-      * @return array
-      */
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
     public function provides ()
     {
-        return [CartRepository::class];
+        return [CartManager::class, StripeService::class, ModuleRepository::class];
     }
 }

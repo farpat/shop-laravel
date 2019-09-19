@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Repositories\CartRepository;
 use App\Repositories\UserRepository;
+use App\Services\CartManager;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -33,10 +33,6 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/';
-    /**
-     * @var CartRepository
-     */
-    private $cartRepository;
 
     /**
      * Create a new controller instance.
@@ -77,9 +73,9 @@ class LoginController extends Controller
      */
     protected function authenticated (Request $request, $user)
     {
-        $cartRepository = app(CartRepository::class);
+        $cartManager = app(CartManager::class);
 
-        $cartRepository->mergeItemsOnDatabase(collect($cartRepository->getCookieItems()));
+        $cartManager->mergeItemsOnDatabase(collect($cartManager->getCookieItems()), $cartManager->getCart());
 
         if ($request->input('purchase')) {
             $this->redirectTo = route('cart.purchase');

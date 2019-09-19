@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Middleware\MustXmlHttpRequest;
 use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Requests\UpdateCartItemRequest;
-use App\Repositories\CartRepository;
 use App\Repositories\ProductRepository;
+use App\Services\Bank\CartManager;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,9 +14,9 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     /**
-     * @var CartRepository
+     * @var CartManager
      */
-    private $cartRepository;
+    private $cartManager;
     /**
      * @var ProductRepository
      */
@@ -27,7 +27,8 @@ class CartController extends Controller
         $this->middleware(MustXmlHttpRequest::class)->except(['purchase']);
         $this->middleware(Authenticate::class)->only(['purchase']);
         $this->middleware(function (Request $request, $next) {
-            $this->cartRepository = app(CartRepository::class);
+            $this->cartManager = app(CartManager::class);
+            $this->cartManager->refresh($request->user());
             return $next($request);
         });
         $this->productRepository = $productRepository;
@@ -38,7 +39,7 @@ class CartController extends Controller
         $productReferenceId = $request->input('product_reference_id');
         $quantity = $request->input('quantity');
 
-        $responseData = $this->cartRepository->addItem($quantity, $this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->addItem($quantity, $this->productRepository->getReference($productReferenceId));
 
         return new JsonResponse($responseData);
     }
@@ -47,14 +48,14 @@ class CartController extends Controller
     {
         $quantity = $request->input('quantity');
 
-        $responseData = $this->cartRepository->updateItem($quantity, $this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->updateItem($quantity, $this->productRepository->getReference($productReferenceId));
 
         return new JsonResponse($responseData);
     }
 
     public function destroyItem (int $productReferenceId)
     {
-        $responseData = $this->cartRepository->deleteItem($this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->deleteItem($this->productRepository->getReference($productReferenceId));
 
         return new JsonResponse($responseData);
     }
@@ -63,7 +64,9 @@ class CartController extends Controller
     {
         $cartItems = view()->shared('cartItems');
         if (empty($cartItems)) {
-            return redirect()->route('home.index')->with('danger', __('Your cart is empty'));
+            return redirect()
+                ->route('home.index')
+                ->with('danger', __('Your cart is empty'));
         }
         return view('cart.purchase');
     }

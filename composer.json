@@ -18,7 +18,8 @@
         "laravel/framework": "^6.0",
         "laravel/passport": "^7.3",
         "laravel/tinker": "^1.0",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "stripe/stripe-php": "^7.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
