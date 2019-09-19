@@ -1,5 +1,5 @@
 <template>
-    <ul class="nav nav-pills mb-5 bg-light" role="tablist">
+    <ul class="nav nav-pills mb-2 bg-light nav-justified" role="tablist">
         <li class="nav-item">
             <a data-toggle="pill" href="#nav-tab-card" class="nav-link active">
                 <i class="fa fa-credit-card"></i> {{ __('Credit Card') }}

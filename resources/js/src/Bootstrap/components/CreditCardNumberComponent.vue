@@ -21,8 +21,9 @@
             </div>
 
 
-            <error-component :error="getError"></error-component>
         </div>
+
+        <error-component :error="getError"></error-component>
     </div>
 </template>
 
@@ -32,7 +33,6 @@
     import RequiredComponent from "../includes/RequiredComponent";
     import ErrorComponent from "../includes/ErrorComponent";
     import StrMixin from "../../String/StrMixin";
-    import FormStore from "../FormStore";
 
     export default {
         components: {RequiredComponent, ErrorComponent},

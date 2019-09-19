@@ -1,20 +1,12 @@
 <template>
-    <div class="rounded-lg py-2">
-        <h2>{{ __('Payment') }}</h2>
+    <section>
+        <NavigationComponent></NavigationComponent>
 
-        <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <div class="p-5">
-                    <NavigationComponent></NavigationComponent>
-
-                    <div class="tab-content">
-                        <TabCardComponent></TabCardComponent>
-                        <TabPaypalComponent></TabPaypalComponent>
-                    </div>
-                </div>
-            </div>
+        <div class="tab-content">
+            <TabCardComponent></TabCardComponent>
+            <TabPaypalComponent></TabPaypalComponent>
         </div>
-    </div>
+    </section>
 </template>
 
 <script>

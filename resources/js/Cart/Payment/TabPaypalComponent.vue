@@ -1,12 +1,11 @@
 <template>
     <div class="tab-pane fade" id="nav-tab-paypal">
-        <p>{{ __('Paypal is easiest way to pay online') }}</p>
-        <p>
-            <button class="btn btn-primary rounded-pill" type="button">
+        <p class="py-1">
+            {{ __('Paypal is easiest way to pay online') }}
+
+            <button class="btn btn-primary" type="button">
                 <i class="fab fa-paypal mr-2"></i> {{ __('Log into my Paypal') }}
             </button>
-        </p>
-        <p class="text-muted">{{ __('Paypal is good!') }}
         </p>
     </div>
 </template>

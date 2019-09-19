@@ -39,30 +39,30 @@ class Handler extends ExceptionHandler
      * @return void
      * @throws Exception
      */
-    public function report(Exception $exception)
+    public function report (Exception $exception)
     {
         parent::report($exception);
     }
 
-    protected function whoopsHandler()
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param Request $request
+     * @param Exception $exception
+     *
+     * @return Response
+     */
+    public function render ($request, Exception $exception)
+    {
+        return parent::render($request, $exception);
+    }
+
+    protected function whoopsHandler ()
     {
         try {
             return app(HandlerInterface::class);
         } catch (BindingResolutionException $e) {
             return (new WhoopsHandler)->forDebug();
         }
-    }
-
-    /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  Request  $request
-     * @param Exception $exception
-     *
-     * @return Response
-     */
-    public function render($request, Exception $exception)
-    {
-        return parent::render($request, $exception);
     }
 }

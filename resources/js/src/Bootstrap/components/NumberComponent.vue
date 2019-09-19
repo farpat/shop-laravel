@@ -58,12 +58,12 @@
             },
             getMinusButtonClass: function () {
                 return {
-                    'text-muted': !this.canDecrease
+                    'invisible': !this.canDecrease
                 };
             },
             getPlusButtonClass:  function () {
                 return {
-                    'text-muted': !this.canIncrease
+                    'invisible': !this.canIncrease
                 };
             },
             getInputClass:       function () {

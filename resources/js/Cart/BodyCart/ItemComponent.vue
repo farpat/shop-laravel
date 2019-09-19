@@ -7,6 +7,7 @@
             </NumberComponent>
         </td>
         <td>
+            <img v-if="item.product_reference.main_image" :alt="item.product_reference.label" :src="item.product_reference.main_image.url_thumbnail" width="85">
             <a :href="item.product_reference.url">{{ item.product_reference.product.label + ' | ' +
                 item.product_reference.label }}</a>
         </td>

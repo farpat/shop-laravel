@@ -1,7 +1,7 @@
 <template>
     <tfoot class="header-cart-total">
-    <tr>
-        <td colspan="2">{{ __('Total price') }} :</td>
+    <tr style="font-size:1.5rem;">
+        <td colspan="2">{{ __('Total to pay') }} :</td>
         <td colspan="2">{{ getFormattedAmountIncludingTaxes }}</td>
     </tr>
     <tr class="header-cart-total-vat">
@@ -23,7 +23,7 @@
             items: {type: Object, required: true}
         },
         computed: {
-            getPurchaseUrl: function() {
+            getPurchaseUrl:                   function () {
                 return CartStore.data.purchaseUrl;
             },
             getAmountIncludingTaxes:          function () {

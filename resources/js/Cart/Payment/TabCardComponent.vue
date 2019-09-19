@@ -1,7 +1,7 @@
 <!--suppress XmlInvalidId -->
 <template>
     <div class="tab-pane fade show active" id="nav-tab-card">
-        <CreditCardNumberComponent :label="__('Credit Card')" name="card-number"></CreditCardNumberComponent>
+        <CreditCardNumberComponent :label="__('Credit card number')" name="card-number"></CreditCardNumberComponent>
 
 
         <div class="row">
