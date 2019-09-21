@@ -173,12 +173,18 @@ class DatabaseSeeder extends Seeder
      * @return Collection|Product[]
      * @throws Exception
      */
-    private function createProducts (Category $category, string $rootCategoryLabel)
+    private function createProducts (Category $category, string $rootCategoryLabel): Collection
     {
-        return factory(Product::class, random_int(1, 30))->create([
-            'label'       => substr($rootCategoryLabel, 0, -1) . ' ' . $this->faker->words(2, true),
-            'category_id' => $category->id
-        ]);
+        $count = random_int(1, 30);
+        $products = collect();
+        for ($i = 0; $i < $count; $i++) {
+            $products[] = factory(Product::class)->create([
+                'label'       => substr($rootCategoryLabel, 0, -1) . ' ' . $this->faker->words(2, true),
+                'category_id' => $category->id
+            ]);
+        }
+
+        return $products;
     }
 
     private function attachTaxes (Product $product): Collection
@@ -231,13 +237,13 @@ class DatabaseSeeder extends Seeder
                     $value = $values[array_rand($values)];
 
                     $filledProductfields[$productField->id] = $value;
-                    $labelArray = [$productField->label . ' - ' . $value];
+                    $labelArray[] = $productField->label . ' - ' . $value;
                 }
             }
 
 
             $productReference = ProductReference::query()->create([
-                'label'                      => !empty($labelArray) ? implode('|', $labelArray) : $product->label,
+                'label'                      => !empty($labelArray) ? implode(' | ', $labelArray) : $product->label,
                 'product_id'                 => $product->id,
                 'unit_price_excluding_taxes' => $unitPriceExcludingTaxes,
                 'unit_price_including_taxes' => $unitPriceIncludingTaxes,

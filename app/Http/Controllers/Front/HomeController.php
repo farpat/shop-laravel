@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Front;
 
-use App\Services\Bank\StripeService;
+use App\Http\Controllers\Controller;
 use App\Repositories\{CategoryRepository, ModuleRepository, ProductRepository};
 use Illuminate\Http\Request;
 

@@ -6,7 +6,6 @@ const wait = 1000; //seconds
 export default {
     props: {
         filter: {type: Object, required: true},
-        size: {type: Number, default: 3}
     },
     methods: {
         setFilterValue: throttle(function (filterId, value) {

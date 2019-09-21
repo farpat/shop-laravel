@@ -26,6 +26,6 @@
     "Send Password Reset Link": "Envoyer le lien de réinitialisation du mot de passe",
     "Verify Your Email Address": "Vérification de votre adresse e-mail",
     "Welcome": "Bienvenue",
-    "You are authenticated": "Tu es connecté",
-    "You are not authenticated": "Tu n'es pas connecté"
+    "You are connected": "Tu es connecté",
+    "You are offline": "Tu es déconnecté"
 }

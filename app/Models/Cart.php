@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Cart
  *
  * @property int $id
- * @property int|null $items_count
+ * @property-read int|null $items_count
  * @property float $total_amount_excluding_taxes
  * @property float $total_amount_including_taxes
  * @property string $status
@@ -44,6 +44,11 @@ class Cart extends Model
 
     protected $fillable = [
         'items_count', 'total_amount_excluding_taxes', 'total_amount_including_taxes', 'status', 'comment', 'user_id', 'address_id'
+    ];
+
+    protected $casts = [
+        '$total_amount_excluding_taxes' => 'float',
+        '$total_amount_including_taxes' => 'float',
     ];
 
     public function address ()

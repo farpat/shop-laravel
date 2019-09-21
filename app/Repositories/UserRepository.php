@@ -13,4 +13,9 @@ class UserRepository
             ->orderBy('id')
             ->pluck('email', 'id');
     }
+
+    public function update (User $user, array $data)
+    {
+        $user->update($data);
+    }
 }

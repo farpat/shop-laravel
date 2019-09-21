@@ -65,6 +65,7 @@ endif
 dev: install ## Run development servers
 	@docker-compose up -d
 	@echo "Dev server launched on $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
+	@echo "Mail server launched on $(PRIMARY_COLOR)http://localhost:1080$(NO_COLOR)"
 
 stop-dev: ## Stop development servers
 	@docker-compose down --remove-orphans

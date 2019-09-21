@@ -1,12 +1,9 @@
 <template>
-    <div class="form-group row">
-        <div :class="'col-' + size">
-            {{ filter.label }}
-        </div>
-        <div class="col">
-            <input type="text" class="form-control" :placeholder="filter.label" :value="getFilterValue(filter.id)"
-                   @input="(e) => setFilterValue(filter.id, e.currentTarget.value)">
-        </div>
+    <div class="form-group">
+        <p class="mb-1">{{ filter.label }}</p>
+        <input :placeholder="filter.label" :value="getFilterValue(filter.id)"
+               @input="(e) => setFilterValue(filter.id, e.currentTarget.value)" class="form-control"
+               type="text">
     </div>
 </template>
 

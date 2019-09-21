@@ -1,20 +1,18 @@
 <template>
-    <div class="form-group row">
-        <div :class="'col-' + size">
-            {{ filter.label }}
-        </div>
-        <div class="col">
-            <div class="row">
-                <div class="col">
-                    <input type="number" class="form-control" :placeholder="filter.label + ' (min)'"
-                           :value="getMinFilterValue"
-                           @input="(e) => setMinFilterValue(filter.id, e.currentTarget.value)">
-                </div>
-                <div class="col">
-                    <input type="number" class="form-control" :placeholder="filter.label + ' (max)'"
-                           :value="getMaxFilterValue"
-                           @input="(e) => setMaxFilterValue(filter.id, e.currentTarget.value)">
-                </div>
+    <div class="form-group">
+        <p class="mb-1">{{ filter.label }}</p>
+        <div class="row">
+            <div class="col">
+                <input :value="getMinFilterValue" @input="(e) => setMinFilterValue(filter.id, e.currentTarget.value)"
+                       class="form-control"
+                       placeholder="min"
+                       type="number">
+            </div>
+            <div class="col">
+                <input :value="getMaxFilterValue" @input="(e) => setMaxFilterValue(filter.id, e.currentTarget.value)"
+                       class="form-control"
+                       placeholder="max"
+                       type="number">
             </div>
         </div>
     </div>
@@ -24,7 +22,7 @@
     import FilterMixin from "./FilterMixin";
 
     export default {
-        mixins: [FilterMixin],
+        mixins:   [FilterMixin],
         computed: {
             getMinFilterValue: function () {
                 return this.getFilterValue(this.filter.id + '-min');
@@ -33,7 +31,7 @@
                 return this.getFilterValue(this.filter.id + '-max');
             },
         },
-        methods: {
+        methods:  {
             setMinFilterValue: function (filterId, value) {
                 this.setFilterValue(filterId + '-min', value);
             },

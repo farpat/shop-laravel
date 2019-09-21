@@ -17,6 +17,7 @@ use Laravel\Passport\HasApiTokens;
  * @property string $email
  * @property string|null $email_verified_at
  * @property string $password
+ * @property string|null $stripe_id
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -43,6 +44,7 @@ use Laravel\Passport\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSelectedAddressId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereStripeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
  * @mixin \Eloquent
  */
@@ -51,7 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use Notifiable, HasApiTokens;
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'stripe_id', 'selected_address_id'
     ];
 
     protected $hidden = [
@@ -71,5 +73,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function visits ()
     {
         return $this->hasMany(Visit::class);
+    }
+
+    public function setPasswordAttribute(string $value) {
+        $this->attributes['password'] = bcrypt($value);
     }
 }

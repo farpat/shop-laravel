@@ -42,7 +42,8 @@ class AddVariablesOnView
     {
         $this->view->share([
             'currency'  => $this->moduleRepository->getParameter('home', 'currency')->value,
-            'cartItems' => $this->cartManager->getItems()
+            'cartItems' => $this->cartManager->getItems(),
+            'user' => $request->user()
         ]);
 
         return $next($request);

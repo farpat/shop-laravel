@@ -1,4 +1,6 @@
 .input-group-quantity {
+  display: flex;
+
   > span {
     user-select: none;
     -moz-user-input: none;
@@ -26,7 +28,6 @@
 
 .input-group-quantity-vertical {
   width: auto;
-  max-width: 1px;
   flex-direction: column-reverse;
 
   > button {
@@ -39,5 +40,9 @@
 
   > button {
     padding: 0 0.5rem;
+  }
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column-reverse;
   }
 }

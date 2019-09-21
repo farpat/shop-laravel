@@ -10,8 +10,6 @@ new Vue({
     components: {InputComponent, CheckboxComponent},
     mixins:     [FormMixin],
     mounted:    function () {
-        this.$submitButton = this.$el.querySelector('#submit');
-
         FormStore.setRules({
             email:    [new RequiredRule(), new EmailRule()],
             password: [new RequiredRule()],

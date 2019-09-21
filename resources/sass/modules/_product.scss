@@ -1,10 +1,15 @@
 .product {
     max-width: 15rem;
+    height: 100%;
+
+    .card-title {
+        font-size: 1.2rem;
+    }
 }
 
 .products-component {
-    .product {
-        height: 100%;
+    .row {
+        justify-content: space-between;
     }
 }
 

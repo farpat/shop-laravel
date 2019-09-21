@@ -1,12 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Front;
 
-use App\Models\ModuleParameter;
+use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\ProductField;
-use App\Models\ProductReference;
-use App\Repositories\ModuleRepository;
 use App\Repositories\ProductRepository;
 
 class ProductController extends Controller

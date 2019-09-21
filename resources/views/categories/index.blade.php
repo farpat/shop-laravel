@@ -5,11 +5,13 @@
 @section('description',__('All categories'))
 
 @section('content')
-    <h1>{{ __('All categories') }}</h1>
+    <div class="container">
+        <h1>{{ __('All categories') }}</h1>
 
-    {{ breadcrumb([['label' => trans_choice('category', 2)]]) }}
+        {{ breadcrumb([['label' => trans_choice('category', 2)]]) }}
 
-    <section id="category-index" class="category-index">
-        {{ $html }}
-    </section>
+        <section id="category-index" class="category-index">
+            {{ $html }}
+        </section>
+    </div>
 @endsection

@@ -142,8 +142,6 @@ return [
     */
 
     'attributes' => [
-        'card-cvc'              => 'card verification code',
-        'card-number'           => 'card number'
     ],
 
 ];

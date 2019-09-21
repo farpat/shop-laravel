@@ -21,12 +21,15 @@
 <div id="app">
     @include('_partials.nav')
 
-    <main class="py-5 container">
+    <main class="py-5">
+        @includeWhen(session('error'), '_partials.error', ['error' => session('error')])
+
+        @includeWhen(session('success'), '_partials.success', ['success' => session('success')])
+
         @yield('content')
     </main>
 </div>
 
-@stack('scripts')
 <script>
     window.CartStore = {
         state: {
@@ -39,6 +42,7 @@
         }
     };
 </script>
+@stack('scripts')
 <script src="{{ get_asset('app.js') }}"></script>
 </body>
 </html>

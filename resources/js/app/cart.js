@@ -12,7 +12,9 @@ new Vue({
     components: {HeaderCartComponent}
 });
 
-new Vue({
-    el:         '#cart-section',
-    components: {BodyCartComponent, PaymentComponent}
-});
+if (document.querySelector('#cart-section')) {
+    new Vue({
+        el:         '#cart-section',
+        components: {BodyCartComponent, PaymentComponent}
+    });
+}

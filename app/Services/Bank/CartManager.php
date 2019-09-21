@@ -183,4 +183,12 @@ class CartManager
     {
         return $this->cart;
     }
+
+    /**
+     * @return User|null
+     */
+    public function getUser (): ?User
+    {
+        return $this->user;
+    }
 }

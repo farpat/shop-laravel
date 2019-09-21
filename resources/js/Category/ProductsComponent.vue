@@ -15,7 +15,7 @@
         </nav>
 
         <div class="row" v-if="state.currentProducts.length > 0">
-            <ProductComponent v-for="product in getCurrentProducts" :product="product" :key="product.id"/>
+            <ProductComponent v-for="product in getCurrentProducts" :product="product" :key="product.id" />
         </div>
 
         <p v-else>

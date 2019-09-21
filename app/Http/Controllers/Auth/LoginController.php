@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use App\Services\CartManager;
+use App\Services\Bank\CartManager;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -75,12 +75,28 @@ class LoginController extends Controller
     {
         $cartManager = app(CartManager::class);
 
-        $cartManager->mergeItemsOnDatabase(collect($cartManager->getCookieItems()), $cartManager->getCart());
-
-        if ($request->input('purchase')) {
-            $this->redirectTo = route('cart.purchase');
+        if ($cartManager->getUser() === null) {
+            $cartManager->refresh($user);
         }
 
-        return redirect()->intended($this->redirectPath());
+        $cartManager->mergeItemsOnDatabase(collect($cartManager->getCookieItems()));
+
+        $this->redirectTo = $request->input('purchase') ? route('cart.purchase') : route('home.index');
+
+        return redirect()
+            ->intended($this->redirectPath())
+            ->with('success', __("You are connected"));
+    }
+
+    /**
+     * The user has logged out of the application.
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    protected function loggedOut (Request $request)
+    {
+        return redirect()->route('home.index')->with('success', __('You are offline'));
     }
 }

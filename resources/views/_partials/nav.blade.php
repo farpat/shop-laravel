@@ -20,20 +20,24 @@
         <section class="navbar-nav ml-auto mt-3 mt-xl-0">
             <ul class="navbar-nav">
                 @auth
-                    <li class="navbar-text mr-2 p-0">
+                    <li class="nav-item">
+                            <a href="{{ route('user.profile') }}" class="nav-link">{{ $user->name }}</a>
+                    </li>
+                    <li class="nav-item mr-2">
                         <form class="form-inline" action="{{ route('logout') }}" method="post">
                             @csrf
-                            <span>{{ Auth::user()->name }}</span>
-                            <button class="btn btn-link text-danger">{{ __('Logout') }}</button>
+                            <button class="btn nav-link text-danger">{{ __('Logout') }}</button>
                         </form>
                     </li>
                 @endauth
+
                 @guest
                     <li class="nav-item mr-2">
                         <a class="btn btn-outline-info" href="{{ route('register') }}">{{ __('Register') }}</a>
                         <a class="btn btn-link text-info" href="{{ route('login') }}">{{ __('Login') }}</a>
                     </li>
                 @endguest
+
                 <li id="cart-nav" class="nav-item">
                     <header-cart-component></header-cart-component>
                 </li>

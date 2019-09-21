@@ -7,6 +7,7 @@ use App\Services\Bank\CartManager;
 use App\Services\Bank\StripeService;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Foundation\Application;
+use Illuminate\Session\Store;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -41,7 +42,10 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
 
         $this->app->singleton(StripeService::class, function (Application $app) {
             ['key' => $key, 'secret' => $secret] = $app['config']['services']['stripe'];
-            return new StripeService($key, $secret, $app->make(ModuleRepository::class)->getParameter('home', 'currency')->value);
+            return new StripeService(
+                $key, $secret,
+                $app->make(ModuleRepository::class)->getParameter('home', 'currency')->value
+            );
         });
     }
 

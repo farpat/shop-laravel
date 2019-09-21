@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Front;
 
+use App\Http\Controllers\Controller;
 use App\Http\Middleware\MustXmlHttpRequest;
-use App\Http\Requests\StoreCartItemRequest;
-use App\Http\Requests\UpdateCartItemRequest;
+use App\Http\Requests\{PurchaseRequest, StoreCartItemRequest, UpdateCartItemRequest};
 use App\Repositories\ProductRepository;
-use App\Services\Bank\CartManager;
+use App\Services\Bank\{CartManager, StripeService};
 use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\{JsonResponse, Request};
 
 class CartController extends Controller
 {
@@ -24,8 +23,8 @@ class CartController extends Controller
 
     public function __construct (ProductRepository $productRepository)
     {
-        $this->middleware(MustXmlHttpRequest::class)->except(['purchase']);
-        $this->middleware(Authenticate::class)->only(['purchase']);
+        $this->middleware(MustXmlHttpRequest::class)->except(['purchase', 'showPurchaseForm']);
+        $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm']);
         $this->middleware(function (Request $request, $next) {
             $this->cartManager = app(CartManager::class);
             $this->cartManager->refresh($request->user());
@@ -60,14 +59,26 @@ class CartController extends Controller
         return new JsonResponse($responseData);
     }
 
-    public function purchase ()
+    public function showPurchaseForm ()
     {
         $cartItems = view()->shared('cartItems');
+
         if (empty($cartItems)) {
             return redirect()
                 ->route('home.index')
                 ->with('danger', __('Your cart is empty'));
         }
+
         return view('cart.purchase');
+    }
+
+    public function purchase (PurchaseRequest $request, StripeService $stripeService)
+    {
+        $cart = $this->cartManager->getCart();
+        $totalToPay = $cart->total_amount_including_taxes;
+
+        dd('720 360,05 €', $totalToPay);
+
+        $stripeService->charge($this->cartManager->getUser(), $totalToPay * 100, $request->input('token'));
     }
 }

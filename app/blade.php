@@ -1,7 +1,7 @@
 <?php
 
 use App\Repositories\NavigationRepository;
-use Illuminate\Support\{HtmlString, ViewErrorBag};
+use Illuminate\Support\{HtmlString, MessageBag, ViewErrorBag};
 
 function navigation ()
 {
@@ -32,7 +32,13 @@ function breadcrumb (array $links): HtmlString
     return new HtmlString("<nav aria-label=\"breadcrumb\"><ol class=\"breadcrumb\">$liHtml</ol></nav>");
 }
 
-function get_form_store (ViewErrorBag $errorBag, array $old): HtmlString
+/**
+ * @param ViewErrorBag|MessageBag $errorBag
+ * @param array $old
+ *
+ * @return HtmlString
+ */
+function get_form_store ($errorBag, array $old): HtmlString
 {
     $errors = json_encode(array_map(function ($errors) {
         return $errors[0];

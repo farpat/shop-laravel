@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-3 align-self-stretch mb-3">
+    <div class="col-md-auto align-self-stretch mb-3">
         <article class="card product">
             <a :href="product.url" v-if="product.main_image">
                 <img :src="product.main_image.url_thumbnail" class="card-img-top" :alt="product.label">
