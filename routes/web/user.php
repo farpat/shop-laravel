@@ -7,3 +7,5 @@ Route::post('/informations', 'Front\UserController@updateInformations');
 
 Route::get('/password', 'Front\UserController@showPasswordForm')->name('user.password');
 Route::post('/password', 'Front\UserController@updatePassword');
+
+Route::get('/billings', 'Front\UserController@billings')->name('user.billings');

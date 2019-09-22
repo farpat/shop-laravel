@@ -7,16 +7,22 @@ use App\Http\Requests\UserInformationsRequest;
 use App\Http\Requests\UserPasswordRequest;
 use App\Models\User;
 use App\Notifications\UserPasswordNotification;
+use App\Repositories\CartRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Http\Request;
-use Illuminate\Support\MessageBag;
 
 class UserController extends Controller
 {
-    public function __construct ()
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    public function __construct (UserRepository $userRepository)
     {
         $this->middleware('auth');
+        $this->userRepository = $userRepository;
     }
 
     public function profile ()
@@ -33,9 +39,9 @@ class UserController extends Controller
         return view('users.informations', compact('form'));
     }
 
-    public function updateInformations (UserInformationsRequest $request, UserRepository $userRepository)
+    public function updateInformations (UserInformationsRequest $request)
     {
-        $userRepository->update($request->user(), $request->only('name', 'email'));
+        $this->userRepository->update($request->user(), $request->only('name', 'email'));
 
         return redirect()->back()->with('success', __('User informations updated with success'));
     }
@@ -45,7 +51,7 @@ class UserController extends Controller
         return view('users.password');
     }
 
-    public function updatePassword (UserPasswordRequest $request, UserRepository $userRepository, Hasher $hasher)
+    public function updatePassword (UserPasswordRequest $request, Hasher $hasher)
     {
         /** @var User $user */
         $user = $request->user();
@@ -58,12 +64,19 @@ class UserController extends Controller
                 ->withErrors(['password' => __('auth.failed')]);
         }
 
-        $userRepository->update($user, ['password' => $newPassword]);
+        $this->userRepository->update($user, ['password' => $hasher->make($newPassword)]);
 
         $user->notify(new UserPasswordNotification());
 
         return redirect()
             ->back()
             ->with('success', __('User password updated with success'));
+    }
+
+    public function billings (Request $request, CartRepository $cartRepository)
+    {
+        $billings = $cartRepository->getBillings($request->user());
+
+        return view('users.billings', compact('billings'));
     }
 }

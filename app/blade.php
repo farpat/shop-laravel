@@ -2,13 +2,15 @@
 
 use App\Repositories\NavigationRepository;
 use Illuminate\Support\{HtmlString, MessageBag, ViewErrorBag};
+use Illuminate\Contracts\Support\Htmlable;
 
-function navigation ()
+function navigation (): Htmlable
 {
     return app(NavigationRepository::class);
 }
 
-function is_active(string $url) {
+function is_active (string $url): string
+{
     return url()->current() === $url ? 'active' : '';
 }
 

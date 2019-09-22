@@ -4,7 +4,7 @@
             <NumberComponent :min="1" :name="'quantity-outside-' + this.reference.id"></NumberComponent>
         </div>
         <div class="col-auto">
-            <button @click="() => addInCart()" class="btn btn-primary" type="button" v-show="!isLoading">
+            <button @click="addInCart" class="btn btn-primary" type="button" v-show="!isLoading">
                 <i class="fas fa-shopping-cart"></i> {{ __('Add in cart') }}
             </button>
 
@@ -51,6 +51,7 @@
         methods:    {
             addInCart: function () {
                 CartStore.addItem(this.reference.id, this.getQuantity);
+                FormStore.changeField('quantity-' + this.reference.id, this.getQuantity);
                 window.setTimeout(() => FormStore.changeField('quantity-outside-' + this.reference.id, 1), 500);
             }
         }

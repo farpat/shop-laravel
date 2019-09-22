@@ -15,6 +15,9 @@
             <li>
                 <a href="{{ route('user.password') }}">{{ __('Change my password') }}</a>
             </li>
+            <li>
+                <a href="{{ route('user.billings') }}">{{ __('See your billings') }}</a>
+            </li>
         </ul>
     </div>
 @endsection

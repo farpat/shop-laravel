@@ -6,13 +6,16 @@ namespace App\Services\Bank;
 use App\Models\{Cart, ProductReference, User};
 use App\Repositories\{CartRepository, ProductRepository};
 use Exception;
-use Illuminate\Auth\AuthManager;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 
 class CartManager
 {
+    /**
+     * @bool
+     */
+    private $isRefreshed = false;
+
     /**
      * @var Collection
      */
@@ -38,11 +41,11 @@ class CartManager
     {
         $this->cartRepository = $cartRepository;
         $this->productRepository = $productRepository;
-        $this->refresh(Auth::user());
     }
 
     public function refresh (?User $user = null): void
     {
+        $this->isRefreshed = true;
         if ($user) {
             $cart = $this->cartRepository->getCart($user);
 
@@ -149,9 +152,20 @@ class CartManager
         return $this->returnArrayForResponse($productReference);
     }
 
-    public function getItems (): array
+    public function mergeItemsOnDatabase (): void
+    {
+        $this->persistCookie(null);
+
+        $this->cartRepository->mergeItemsOnDatabase($this->getCookieItems(), $this->getItems(false), $this->cart);
+    }
+
+    public function getItems ($hydrate = true): array
     {
         $items = $this->items->all();
+
+        if (!$hydrate) {
+            return $items;
+        }
 
         if (!empty($items)) {
             $productReferences = $this->productRepository->getReferences(array_keys($items));
@@ -169,13 +183,6 @@ class CartManager
         return $items;
     }
 
-    public function mergeItemsOnDatabase (Collection $cookieItems): void
-    {
-        $this->persistCookie(null);
-
-        $this->cartRepository->mergeItemsOnDatabase($cookieItems, $this->cart);
-    }
-
     /**
      * @return Cart|null
      */
@@ -190,5 +197,15 @@ class CartManager
     public function getUser (): ?User
     {
         return $this->user;
+    }
+
+    public function updateCartOnOrderedStatus ()
+    {
+        $this->cartRepository->updateCartOnOrderedStatus($this->cart);
+    }
+
+    public function isRefreshed (): bool
+    {
+        return $this->isRefreshed;
     }
 }

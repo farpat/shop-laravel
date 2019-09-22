@@ -23,6 +23,11 @@ class FormStore {
         }
     }
 
+    deleteField(field) {
+        Vue.delete(this.state.datas, field);
+        this.checkField(field);
+    }
+
     checkField(field, value) {
         if (this.state.rules[field] !== undefined) {
             const fieldRules = this.state.rules[field];

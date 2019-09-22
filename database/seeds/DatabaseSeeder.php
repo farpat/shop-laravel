@@ -1,9 +1,8 @@
 <?php
 
-use App\Models\{Category, Image, Product, ProductReference, Tax, User};
+use App\Models\{Cart, Category, Image, Product, ProductReference, Tax, User};
 use App\Repositories\{CategoryRepository, ModuleRepository};
 use App\Services\Bank\CartManager;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -97,8 +96,8 @@ class DatabaseSeeder extends Seeder
         dump('Creation of carts');
         $start = microtime(true);
         foreach (factory(User::class, 10)->create() as $user) {
-            $this->cartManager->refresh($user);
-            $this->cartManager->addItem(random_int(1, 5), ProductReference::query()->inRandomOrder()->first());
+            $this->createOrderedCart($user, random_int(2, 5));
+            $this->createOrderingCart($user);
         }
         $end = microtime(true);
         dump('==> ' . round($end - $start, 2) . ' seconds');
@@ -275,6 +274,36 @@ class DatabaseSeeder extends Seeder
         }
 
         $product->update(['main_image_id' => $images[0]->id]);
+    }
+
+    private function createOrderedCart (User $user, int $count)
+    {
+        for ($j = 0; $j < $count; $j++) {
+            $this->cartManager->refresh($user);
+
+            $limit = random_int(2, 5);
+            $productReferences = ProductReference::query()->inRandomOrder()->limit($limit)->get();
+
+            for ($i = 0; $i < $limit; $i++) {
+                $this->cartManager->addItem(random_int(1, 5), $productReferences[$i]);
+            }
+
+            $this->cartManager->updateCartOnOrderedStatus();
+        }
+
+        $this->cartManager->refresh($user);
+    }
+
+    private function createOrderingCart (User $user)
+    {
+        $this->cartManager->refresh($user);
+        $limit = random_int(2, 5);
+
+        $productReferences = ProductReference::query()->inRandomOrder()->limit($limit)->get();
+
+        for ($i = 0; $i < $limit; $i++) {
+            $this->cartManager->addItem(random_int(1, 5), $productReferences[$i]);
+        }
     }
 
     private function createHomeModule ()

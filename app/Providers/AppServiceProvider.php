@@ -5,10 +5,11 @@ namespace App\Providers;
 use App\Repositories\ModuleRepository;
 use App\Services\Bank\CartManager;
 use App\Services\Bank\StripeService;
+use App\ViewComposers\CartStoreViewComposer;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Foundation\Application;
-use Illuminate\Session\Store;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -22,6 +23,8 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         Schema::defaultStringLength(191);
         Schema::enableForeignKeyConstraints();
+
+        View::composer('_partials.cart-store', CartStoreViewComposer::class);
     }
 
     /**

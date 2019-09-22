@@ -3,11 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\{Cart, CartItem, ProductReference, User};
-use Exception;
-use Illuminate\Auth\SessionGuard;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 
 class CartRepository
 {
@@ -36,7 +33,7 @@ class CartRepository
             ]);
     }
 
-    public function getItems(Cart $cart): array
+    public function getItems (Cart $cart): array
     {
         return CartItem::query()
             ->select(['quantity', 'product_reference_id'])
@@ -46,42 +43,13 @@ class CartRepository
             ->toArray();
     }
 
-    public function addItem (int $quantity, ProductReference $productReference, Cart $cart): void
+    public function getBillings (User $user): Collection
     {
-        $cartItem = new CartItem([
-            'quantity'               => $quantity,
-            'product_reference_id'   => $productReference->id,
-            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
-            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
-            'cart_id'                => $cart->id
-        ]);
-
-        $cart->total_amount_excluding_taxes += $cartItem->amount_excluding_taxes;
-        $cart->total_amount_including_taxes += $cartItem->amount_including_taxes;
-        $cart->items_count++;
-
-        $cartItem->save();
-        $cart->save();
-    }
-
-    public function updateItem (int $quantity, ProductReference $productReference, Cart $cart): void
-    {
-        $cartItem = CartItem::query()
-            ->where([
-                'product_reference_id' => $productReference->id,
-                'cart_id'              => $cart->id
-            ])
-            ->firstOrFail();
-
-        $cartItem->amount_excluding_taxes = $quantity * $productReference->unit_price_excluding_taxes;
-        $cartItem->amount_including_taxes = $quantity * $productReference->unit_price_including_taxes;
-        $cartItem->quantity = $quantity;
-
-        $cart->total_amount_excluding_taxes += -$cartItem->getOriginal('amount_excluding_taxes') + $cartItem->amount_excluding_taxes;
-        $cart->total_amount_including_taxes += -$cartItem->getOriginal('amount_including_taxes') + $cartItem->amount_including_taxes;
-
-        $cartItem->save();
-        $cart->save();
+        return Cart::query()
+            ->where('status', '!=', Cart::ORDERING_STATUS)
+            ->where('user_id', $user->id)
+            ->orderBy('updated_at', 'DESC')
+            ->get();
     }
 
     public function deleteItem (ProductReference $productReference, Cart $cart): void
@@ -105,16 +73,16 @@ class CartRepository
         }
     }
 
-    public function mergeItemsOnDatabase (Collection $cookieItems, Cart $cart): void
+    public function mergeItemsOnDatabase (array $cookieItems, array $databaseItems, Cart $cart): void
     {
-        if ($cookieItems->isEmpty()) {
+        if (empty($cookieItems)) {
             return;
         }
 
         $updates = [];
         $additions = [];
         foreach ($cookieItems as $productReferenceId => $cookieItem) {
-            $databaseItem = $this->items->get($productReferenceId);
+            $databaseItem = $databaseItems[$productReferenceId] ?? null;
 
             if ($databaseItem !== null && $cookieItem['quantity'] > $databaseItem['quantity']) { //database item present with quantity lower
                 $updates[$productReferenceId] = $cookieItem['quantity'];
@@ -138,5 +106,62 @@ class CartRepository
         foreach ($additions as $productReferenceId => $quantity) {
             $this->addItem($quantity, $productReferences->get($productReferenceId), $cart);
         }
+    }
+
+    public function updateItem (int $quantity, ProductReference $productReference, Cart $cart): void
+    {
+        $cartItem = CartItem::query()
+            ->where([
+                'product_reference_id' => $productReference->id,
+                'cart_id'              => $cart->id
+            ])
+            ->firstOrFail();
+
+        $cartItem->amount_excluding_taxes = $quantity * $productReference->unit_price_excluding_taxes;
+        $cartItem->amount_including_taxes = $quantity * $productReference->unit_price_including_taxes;
+        $cartItem->quantity = $quantity;
+
+        $cart->total_amount_excluding_taxes += -$cartItem->getOriginal('amount_excluding_taxes') + $cartItem->amount_excluding_taxes;
+        $cart->total_amount_including_taxes += -$cartItem->getOriginal('amount_including_taxes') + $cartItem->amount_including_taxes;
+
+        $cartItem->save();
+        $cart->save();
+    }
+
+    public function addItem (int $quantity, ProductReference $productReference, Cart $cart): void
+    {
+        $cartItem = new CartItem([
+            'quantity'               => $quantity,
+            'product_reference_id'   => $productReference->id,
+            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
+            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
+            'cart_id'                => $cart->id
+        ]);
+
+        $cart->total_amount_excluding_taxes += $cartItem->amount_excluding_taxes;
+        $cart->total_amount_including_taxes += $cartItem->amount_including_taxes;
+        $cart->items_count++;
+
+        $cartItem->save();
+        $cart->save();
+    }
+
+    public function updateCartOnOrderedStatus (Cart $cart)
+    {
+        $date = $cart->updated_at->format('Y-m');
+
+        $cartNumber = DB::table('cart_numbers')->where('date', $date)->first();
+
+        if ($cartNumber === null) {
+            $number = 1;
+            DB::table('cart_numbers')->insert(compact('date', 'number'));
+        }
+        else {
+            $number = $cartNumber->number + 1;
+            DB::table('cart_numbers')->where('date', $date)->update(compact('number'));
+        }
+
+        $cartNumber = $date . '-' .  $number;
+        $cart->update(['status' => Cart::ORDERED_STATUS, 'number' => $cartNumber]);
     }
 }

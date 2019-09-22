@@ -74,8 +74,4 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Visit::class);
     }
-
-    public function setPasswordAttribute(string $value) {
-        $this->attributes['password'] = bcrypt($value);
-    }
 }

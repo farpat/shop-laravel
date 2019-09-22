@@ -33,14 +33,19 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/';
+    /**
+     * @var CartManager
+     */
+    private $cartManager;
 
     /**
      * Create a new controller instance.
      *
      */
-    public function __construct ()
+    public function __construct (CartManager $cartManager)
     {
         $this->middleware('guest')->except('logout');
+        $this->cartManager = $cartManager;
     }
 
     /**
@@ -73,13 +78,11 @@ class LoginController extends Controller
      */
     protected function authenticated (Request $request, $user)
     {
-        $cartManager = app(CartManager::class);
-
-        if ($cartManager->getUser() === null) {
-            $cartManager->refresh($user);
+        if (!$this->cartManager->isRefreshed()) {
+            $this->cartManager->refresh($user);
         }
 
-        $cartManager->mergeItemsOnDatabase(collect($cartManager->getCookieItems()));
+        $this->cartManager->mergeItemsOnDatabase();
 
         $this->redirectTo = $request->input('purchase') ? route('cart.purchase') : route('home.index');
 

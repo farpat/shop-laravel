@@ -44,6 +44,7 @@ class CartStore {
                 this.state.cartItemsLength--;
                 Vue.delete(this.state.cartItems, productReferenceId);
                 Vue.set(this.state.isLoading, productReferenceId, false);
+                FormStore.deleteField('quantity-' + productReferenceId);
             });
     }
 

@@ -30,18 +30,7 @@
     </main>
 </div>
 
-<script>
-    window.CartStore = {
-        state: {
-            cartItems: @json($cartItems, JSON_FORCE_OBJECT),
-            cartItemsLength: {{ count($cartItems) }},
-        },
-        data:  {
-            currency:    '{{ $currency }}',
-            purchaseUrl: '{{ route('cart.purchase') }}',
-        }
-    };
-</script>
+@include('_partials.cart-store')
 @stack('scripts')
 <script src="{{ get_asset('app.js') }}"></script>
 </body>

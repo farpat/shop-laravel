@@ -8,7 +8,8 @@
     <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a href="{{ route('categories.index') }}" class="nav-link {{ is_active(route('categories.index')) }}">{{ __('All categories') }}</a>
+                <a href="{{ route('categories.index') }}"
+                   class="nav-link {{ is_active(route('categories.index')) }}">{{ __('All categories') }}</a>
             </li>
             {{ navigation() }}
         </ul>
@@ -20,8 +21,9 @@
         <section class="navbar-nav ml-auto mt-3 mt-xl-0">
             <ul class="navbar-nav">
                 @auth
+                    @php($user = Auth::user())
                     <li class="nav-item">
-                            <a href="{{ route('user.profile') }}" class="nav-link">{{ $user->name }}</a>
+                        <a href="{{ route('user.profile') }}" class="nav-link">{{ $user->name }}</a>
                     </li>
                     <li class="nav-item mr-2">
                         <form class="form-inline" action="{{ route('logout') }}" method="post">

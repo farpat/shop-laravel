@@ -61,7 +61,7 @@ class CartController extends Controller
 
     public function showPurchaseForm ()
     {
-        $cartItems = view()->shared('cartItems');
+        $cartItems = $this->cartManager->getItems();
 
         if (empty($cartItems)) {
             return redirect()
