@@ -15,15 +15,15 @@ filter      ?= tests
 dir         ?=
 
 php_dusk := docker-compose -f docker-compose-dusk.yml run --rm php php
-mariadb_dusk := docker-compose -f docker-compose-dusk.yml exec mariadb mysql -uroot -proot -e
+mariadb_dusk := docker-compose -f docker-compose-dusk.yml exec mariadb mysql --login-path=root -e
 php := docker-compose run --rm php php
-mariadb := docker-compose exec mariadb mysql -uroot -proot -e
+mariadb := docker-compose exec mariadb mysql --login-path=root -e
 bash := docker-compose run --rm php bash
 composer := docker-compose run --rm php composer
 npm := docker-compose run --rm node npm
 
 node_modules: package.json
-	@$(npm) i
+	@$(npm) install
 
 vendor: composer.json
 	@$(composer) install
@@ -33,7 +33,7 @@ install: vendor node_modules ## Install the composer dependencies and npm depend
 update: ## Update the composer dependencies and npm dependencies
 	@$(composer) update
 	@$(npm) run update
-	@$(npm) i
+	@$(npm) install
 	@(php) artisan app:build-translations
 
 clean: ## Remove composer dependencies (vendor folder) and npm dependencies (node_modules folder)
@@ -52,8 +52,7 @@ test: install ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php ||
 
 dusk: install stop-dev ## Run dusk tests (parameters : build=1 to build assets before run dusk tests)
 ifdef build
-	@$(npm) run build
-	@(php) artisan app:build-translations
+	@make build
 endif
 	@docker-compose -f docker-compose-dusk.yml up -d
 	@$(mariadb_dusk) "drop database if exists shop_test; create database shop_test;"
