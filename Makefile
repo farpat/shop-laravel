@@ -34,6 +34,7 @@ update: ## Update the composer dependencies and npm dependencies
 	@$(composer) update
 	@$(npm) run update
 	@$(npm) i
+	@(php) artisan app:build-translations
 
 clean: ## Remove composer dependencies (vendor folder) and npm dependencies (node_modules folder)
 	@echo "$(DANGER_COLOR) ### Delete the composer and npm files/directories$(NO_COLOR)"
