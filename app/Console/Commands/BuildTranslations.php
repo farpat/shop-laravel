@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 class BuildTranslations extends Command
 {
@@ -25,14 +24,6 @@ class BuildTranslations extends Command
     protected $description = 'Build translations in resources';
 
     /**
-     * @return string
-     */
-    public function getDescription (): string
-    {
-        return $this->description . '/' . self::JS_LANG;
-    }
-
-    /**
      * Create a new command instance.
      *
      * @return void
@@ -40,6 +31,14 @@ class BuildTranslations extends Command
     public function __construct ()
     {
         parent::__construct();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription (): string
+    {
+        return $this->description . '/' . self::JS_LANG;
     }
 
     /**
@@ -52,30 +51,17 @@ class BuildTranslations extends Command
         $this->deleteDirectoryIfExist(resource_path(self::JS_LANG));
 
         foreach ($this->getPathsInLangDirectory() as $path) {
-            $files = $this->getLangFiles($path);
-
-            foreach ($files as $file) {
+            foreach ($this->getLangFiles($path) as $file) {
                 $this->compileTranslation($file);
             }
         }
     }
 
-    private function compileTranslation (string $file)
+    private function deleteDirectoryIfExist (string $path)
     {
-        $this->makeDirectoryIfNotExist($langPath = resource_path(self::JS_LANG));
-        $compilationPath = $this->getCompilationPath($file, $langPath);
-
-        if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-            $data = json_encode(require($file));
+        if (is_dir($path)) {
+            $this->recursiveRemoveDirectory($path);
         }
-        else {
-            ob_start();
-            require($file);
-            $ob = ob_get_clean();
-            $data = json_encode(json_decode($ob));
-        }
-
-        file_put_contents($compilationPath, $data);
     }
 
     private function recursiveRemoveDirectory ($directory)
@@ -90,11 +76,43 @@ class BuildTranslations extends Command
         rmdir($directory);
     }
 
-    private function deleteDirectoryIfExist (string $path)
+    private function getPathsInLangDirectory ()
     {
-        if (is_dir($path)) {
-            $this->recursiveRemoveDirectory($path);
+        $files = [];
+
+        foreach (array_slice(scandir(resource_path('lang')), 2) as $file) {
+            $files[] = resource_path('lang/' . $file);
         }
+
+        return $files;
+    }
+
+    private function getLangFiles (string $fileOrDirectory)
+    {
+        if (is_file($fileOrDirectory)) {
+            return [$fileOrDirectory];
+        }
+
+        return array_slice(array_map(function (string $langFile) use ($fileOrDirectory) {
+            return $fileOrDirectory . '/' . $langFile;
+        }, scandir($fileOrDirectory)), 2);
+    }
+
+    private function compileTranslation (string $file)
+    {
+        $this->makeDirectoryIfNotExist($langPath = resource_path(self::JS_LANG));
+        $compilationPath = $this->getCompilationPath($file, $langPath);
+
+        if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+            $data = json_encode(require($file));
+        } else {
+            ob_start();
+            require($file);
+            $ob = ob_get_clean();
+            $data = json_encode(json_decode($ob));
+        }
+
+        file_put_contents($compilationPath, $data);
     }
 
     private function makeDirectoryIfNotExist (string $path)
@@ -112,38 +130,5 @@ class BuildTranslations extends Command
         $this->makeDirectoryIfNotExist(pathinfo($path, PATHINFO_DIRNAME));
 
         return str_replace('.php', '.json', $path);
-    }
-
-    private function getLangFiles (string $fileOrDirectory)
-    {
-        if (is_file($fileOrDirectory)) {
-            return [$fileOrDirectory];
-        }
-
-        return array_slice(array_map(function (string $langFile) use ($fileOrDirectory) {
-            return $fileOrDirectory . '/' . $langFile;
-        }, scandir($fileOrDirectory)), 2);
-    }
-
-    private function getPathsInLangDirectory ()
-    {
-        $files = [];
-
-        foreach (array_slice(scandir(resource_path('lang')), 2) as $file) {
-            if ($this->isLangDirectory($file)) {
-                $files[] = resource_path('lang/' . $file);
-            }
-        }
-
-        return $files;
-    }
-
-    private function isLangDirectory (string $path)
-    {
-        if (in_array($path, ['.', '..'])) {
-            return false;
-        }
-
-        return true;
     }
 }
