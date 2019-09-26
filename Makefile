@@ -43,10 +43,8 @@ clean: ## Remove composer dependencies (vendor folder) and npm dependencies (nod
 help:
 	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 
-test: ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
+test: install ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
 	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
-	@sleep 1
-	@reset
 	@$(php) vendor/bin/phpunit $(dir) --filter $(filter) --stop-on-failure
 
 dusk: install ## Run dusk tests (parameters : build=1 to build assets before run dusk tests)
@@ -55,8 +53,6 @@ ifdef build
 endif
 	@docker-compose -f docker-compose-dusk.yml up -d
 	@$(mariadb_dusk) "drop database if exists shop_test; create database shop_test;"
-#	@sleep 1
-#	@reset
 	@$(php_dusk) artisan dusk
 	@docker-compose -f docker-compose-dusk.yml down --remove-orphans
 	@echo "$(PRIMARY_COLOR)End of browser tests$(NO_COLOR)"
