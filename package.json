@@ -14,20 +14,20 @@
         "defaults"
     ],
     "dependencies": {
-        "@farpat/api": "^1.0.5",
+        "@farpat/api": "^1.0.6",
         "bootstrap": "^4.3.1",
         "core-js": "^3.2.1",
         "jquery": "^3.4.1",
-        "laravel-echo": "^1.5.4",
+        "laravel-echo": "^1.6.0",
         "lodash": "^4.17.15",
-        "multiple-select": "^1.4.0",
+        "multiple-select": "^1.4.1",
         "popper.js": "^1.15.0",
         "socket.io-client": "^2.3.0",
         "stripe": "^7.9.1",
         "vue": "^2.6.10"
     },
     "devDependencies": {
-        "@babel/core": "^7.6.0",
+        "@babel/core": "^7.6.2",
         "@babel/plugin-proposal-class-properties": "^7.5.5",
         "@babel/plugin-proposal-decorators": "^7.6.0",
         "@babel/plugin-proposal-export-namespace-from": "^7.5.2",
@@ -56,11 +56,11 @@
         "vue-loader": "^15.7.1",
         "vue-style-loader": "^4.1.2",
         "vue-template-compiler": "^2.6.10",
-        "webpack": "^4.40.2",
-        "webpack-bundle-analyzer": "^3.5.1",
+        "webpack": "^4.41.0",
+        "webpack-bundle-analyzer": "^3.5.2",
         "webpack-cli": "^3.3.9",
         "webpack-dev-server": "^3.8.1",
         "webpack-hot-middleware": "^2.25.0",
-        "webpack-manifest-plugin": "^2.0.4"
+        "webpack-manifest-plugin": "^2.1.2"
     }
 }

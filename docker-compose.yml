@@ -33,6 +33,8 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - /var/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
   maildev:
     image: djfarrelly/maildev
     ports:
