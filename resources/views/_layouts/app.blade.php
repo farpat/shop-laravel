@@ -17,15 +17,20 @@
     <link rel="stylesheet" href="{{ get_asset('app.css') }}">
     @stack('styles')
 </head>
-<body data-js-require="@yield('js-require')">
+<body>
 <div id="app">
     @include('_partials.nav')
 
-    <main class="py-4 container">
+    <main class="py-5">
+        @includeWhen(session('error'), '_partials.error', ['error' => session('error')])
+
+        @includeWhen(session('success'), '_partials.success', ['success' => session('success')])
+
         @yield('content')
     </main>
 </div>
 
+@include('_partials.cart-store')
 @stack('scripts')
 <script src="{{ get_asset('app.js') }}"></script>
 </body>

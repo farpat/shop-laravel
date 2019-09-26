@@ -33,13 +33,14 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - /var/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
   maildev:
     image: djfarrelly/maildev
     ports:
       - "1080:80"
   node:
     build: ${DOCKER_PATH}/node
-    expose: ["${WEBPACK_DEV_SERVER_PORT}"]
     ports:
       - "${WEBPACK_DEV_SERVER_PORT}:${WEBPACK_DEV_SERVER_PORT}"
     volumes:

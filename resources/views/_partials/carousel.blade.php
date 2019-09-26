@@ -1,19 +1,19 @@
-@php($carouselId = 'carouselExampleCaptions')
+@php($carouselId = 'carousel-home')
 
-<section id="{{ $carouselId }}" class="carousel slide" data-ride="carousel">
+<div id="{{ $carouselId }}" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
         @for($i=0; $i < $slides->count(); $i++)
-            <li data-target="#{{ $carouselId }}" data-slide-to="{{ $i }}" class="{{ $i === 0 ? 'active' : '' }}"></li>
+            <li data-target="#{{ $carouselId }}" data-slide-to="{{ $i }}" @if($i === 0) class="active" @endif></li>
         @endfor
     </ol>
     <div class="carousel-inner">
         @foreach($slides as $slide)
-            <div class="carousel-item{{ $loop->first ? ' active' : '' }}">
-                <img src="{{ $slide['img'] }}" alt="{{ $slide['title'] }}" class="d-block w-100"
+            <div class="carousel-item @if($loop->first)active @endif">
+                <img src="{{ $slide->img }}" alt="{{ $slide->title }}" class="d-block w-100"
                      style="max-height: 350px;">
                 <div class="carousel-caption">
-                    <h3>{{ $slide['title'] }}</h3>
-                    <p>{{ $slide['description'] }}</p>
+                    <h3>{{ $slide->title }}</h3>
+                    <p>{{ $slide->description }}</p>
                 </div>
             </div>
         @endforeach
@@ -26,4 +26,4 @@
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">{{ __('Next') }}</span>
     </a>
-</section>
+</div>

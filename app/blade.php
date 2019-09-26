@@ -1,46 +1,57 @@
 <?php
 
-use Illuminate\Support\{Str, ViewErrorBag};
+use App\Repositories\NavigationRepository;
+use Illuminate\Support\{HtmlString, MessageBag, ViewErrorBag};
+use Illuminate\Contracts\Support\Htmlable;
 
-/**
- * @param string $prefixPath Nom de la route
- *
- * @param string $echo
- *
- * @return string
- */
-function is_active (string $prefixPath, string $echo): string
+function navigation (): Htmlable
 {
-    if (Str::startsWith(request()->path(), $prefixPath)) {
-        return $echo;
+    return app(NavigationRepository::class);
+}
+
+function is_active (string $url): string
+{
+    return url()->current() === $url ? 'active' : '';
+}
+
+function breadcrumb (array $links): HtmlString
+{
+    $linksCount = count($links);
+
+    if ($linksCount === 0) {
+        return new HtmlString('');
     }
 
-    return '';
+    $liHtml = '';
+    for ($i = 0; $i < $linksCount; $i++) {
+        if ($i + 1 < $linksCount) {
+            $liHtml .= "<li class=\"breadcrumb-item\"><a href=\"{$links[$i]['url']}\">{$links[$i]['label']}</a></li>";
+        } else {
+            $liHtml .= "<li class=\"breadcrumb-item active\" aria-current=\"page\">{$links[$i]['label']}</li>";
+        }
+    }
+
+    return new HtmlString("<nav aria-label=\"breadcrumb\"><ol class=\"breadcrumb\">$liHtml</ol></nav>");
 }
 
 /**
- * @param ViewErrorBag $errorBag
+ * @param ViewErrorBag|MessageBag $errorBag
  * @param array $old
  *
- * @return string
+ * @return HtmlString
  */
-function get_form_store (ViewErrorBag $errorBag, array $old): string
+function get_form_store ($errorBag, array $old): HtmlString
 {
     $errors = json_encode(array_map(function ($errors) {
         return $errors[0];
-    }, $errorBag->getMessages()));
+    }, $errorBag->getMessages()), JSON_FORCE_OBJECT);
 
     unset($old['_token']);
-    $datas = json_encode($old);
+    $datas = json_encode($old, JSON_FORCE_OBJECT);
 
-    return "window.formStore = { errors : $errors, datas : $datas}";
+    return new HtmlString("window._FormStore = { errors : $errors, datas : $datas, rules : {}}");
 }
 
-/**
- * @param string $asset
- *
- * @return string
- */
 function get_asset (string $asset): string
 {
     static $json;

@@ -48,7 +48,7 @@ return [
         'string'  => 'Le champ :attribute doit faire plus que :value caractères.',
         'array'   => 'Le champ :attribute doit posséder plus que :value items.',
     ],
-    'gte'                   => [
+    'gte'                  => [
         'numeric' => 'Le champ :attribute doit être plus grand ou égal à :value.',
         'file'    => 'Le champ :attribute doit peser au moins :value kilobytes.',
         'string'  => 'Le champ :attribute doit faire exactement ou plus que :value caractères.',
@@ -121,7 +121,7 @@ return [
     |
     */
 
-    'custom'               => [
+    'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
@@ -138,39 +138,44 @@ return [
     |
     */
 
-    'attributes'           => [
-        'name'                  => 'nom',
-        'login'                 => 'nom d\'utilisateur',
-        'username'              => 'nom d\'utilisateur',
-        'email'                 => 'adresse e-mail',
-        'first_name'            => 'prénom',
-        'last_name'             => 'nom',
-        'password'              => 'mot de passe',
-        'password_confirmation' => 'confirmation du mot de passe',
-        'city'                  => 'ville',
-        'country'               => 'pays',
-        'address'               => 'adresse',
-        'phone'                 => 'téléphone',
-        'mobile'                => 'portable',
-        'age'                   => 'âge',
-        'sex'                   => 'sexe',
-        'gender'                => 'genre',
-        'day'                   => 'jour',
-        'month'                 => 'mois',
-        'year'                  => 'année',
-        'hour'                  => 'heure',
-        'minute'                => 'minute',
-        'second'                => 'seconde',
-        'title'                 => 'titre',
-        'content'               => 'contenu',
-        'description'           => 'description',
-        'excerpt'               => 'extrait',
-        'date'                  => 'date',
-        'time'                  => 'heure',
-        'available'             => 'disponible',
-        'size'                  => 'taille',
-        'quantity'              => 'quantité',
-        'accept'                => 'd\'acceptation'
+    'attributes' => [
+        'name'                      => 'nom',
+        'login'                     => 'nom d\'utilisateur',
+        'username'                  => 'nom d\'utilisateur',
+        'email'                     => 'adresse e-mail',
+        'first_name'                => 'prénom',
+        'last_name'                 => 'nom',
+        'password'                  => 'mot de passe',
+        'password_confirmation'     => 'confirmation du mot de passe',
+        'new_password'              => 'nouveau mot de passe',
+        'new_password_confirmation' => 'confirmation du mot de passe',
+        'city'                      => 'ville',
+        'country'                   => 'pays',
+        'address'                   => 'adresse',
+        'phone'                     => 'téléphone',
+        'mobile'                    => 'portable',
+        'age'                       => 'âge',
+        'sex'                       => 'sexe',
+        'gender'                    => 'genre',
+        'day'                       => 'jour',
+        'month'                     => 'mois',
+        'year'                      => 'année',
+        'hour'                      => 'heure',
+        'minute'                    => 'minute',
+        'second'                    => 'seconde',
+        'title'                     => 'titre',
+        'content'                   => 'contenu',
+        'description'               => 'description',
+        'excerpt'                   => 'extrait',
+        'date'                      => 'date',
+        'time'                      => 'heure',
+        'available'                 => 'disponible',
+        'size'                      => 'taille',
+        'quantity'                  => 'quantité',
+        'accept'                    => 'acceptation',
+        'card-cvc'                  => 'cryptograme visuel',
+        'card-number'               => 'numéro de carte',
+        'token'                     => 'jeton',
     ],
 
 ];

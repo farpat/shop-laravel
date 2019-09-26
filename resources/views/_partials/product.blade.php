@@ -1,7 +1,8 @@
-<div class="card product">
-    <img src="https://picsum.photos/300" class="card-img-top" alt="{{ $product->label }}">
+<article class="card product">
+    @if($product->main_image)
+    <img src="{{ $product->main_image->url_thumbnail }}" class="card-img-top" alt="{{ $product->label }}">
+    @endif
     <div class="card-body">
-        <h3 class="card-title">{{ $product->label }}</h3>
-        <p class="card-text">{{ $product->excerpt }}</p>
+        <h3 class="card-title"><a href="{{ $product->url }}">{{ $product->label }}</a></h3>
     </div>
-</div>
+</article>

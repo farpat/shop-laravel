@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\Cart;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCartsTable extends Migration
 {
@@ -11,15 +12,16 @@ class CreateCartsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up ()
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('number')->nullable();
             $table->unsignedInteger('items_count')->default(0);
             $table->unsignedDecimal('total_amount_excluding_taxes', 10, 2)->default(0);
             $table->unsignedDecimal('total_amount_including_taxes', 10, 2)->default(0);
-            $table->enum('status', ['ORDERING', 'ORDERED', 'DELIVRED']);
-            $table->text('comment');
+            $table->enum('status', [Cart::ORDERING_STATUS, Cart::ORDERED_STATUS, Cart::DELIVRED_STATUS]);
+            $table->text('comment')->nullable();
 
             $table->unsignedBigInteger('user_id');
             //Replicate user informations
@@ -39,7 +41,7 @@ class CreateCartsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down ()
     {
         Schema::dropIfExists('carts');
     }

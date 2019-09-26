@@ -15,7 +15,7 @@ class CreateModulesTable extends Migration
     {
         Schema::create('modules', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('label')->unique();
+            $table->string('label')->unique()->index();
             $table->text('description')->nullable();
             $table->boolean('is_active');
             $table->softDeletes();

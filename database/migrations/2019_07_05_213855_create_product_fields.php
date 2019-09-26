@@ -16,7 +16,7 @@ class CreateProductFields extends Migration
     {
         Schema::create('product_fields', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->json('type');
+            $table->text('type');
             $table->string('label');
             $table->boolean('is_required');
             $table->unsignedBigInteger('category_id');

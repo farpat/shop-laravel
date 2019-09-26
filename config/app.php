@@ -158,7 +158,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class
+        App\Providers\RouteServiceProvider::class,
     ],
 
     /*
@@ -210,5 +210,5 @@ return [
 
     ],
 
-    'webpack_port' => env('WEBPACK_DEV_SERVER_PORT')
+    'webpack_port' => env('WEBPACK_DEV_SERVER_PORT'),
 ];

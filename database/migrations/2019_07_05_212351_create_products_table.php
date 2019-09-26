@@ -18,10 +18,12 @@ class CreateProductsTable extends Migration
             $table->string('label');
             $table->string('slug')->unique();
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('main_image_id')->nullable();
             $table->text('excerpt')->nullable();
             $table->text('description')->nullable();
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+            $table->foreign('main_image_id')->references('id')->on('images')->onDelete('set null');
         });
     }
 

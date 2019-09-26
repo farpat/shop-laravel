@@ -32,6 +32,8 @@ services:
     build: ${DOCKER_PATH}/mariadb
     volumes:
       - /var/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
   maildev:
     image: djfarrelly/maildev
   localhost: # Hack for broadcast.js (it's in reality laravel-echo-server service)

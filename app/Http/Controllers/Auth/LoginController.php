@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Repositories\ModuleRepository;
+use App\Repositories\UserRepository;
+use App\Services\Bank\CartManager;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -31,40 +33,73 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/';
+    /**
+     * @var CartManager
+     */
+    private $cartManager;
 
     /**
      * Create a new controller instance.
      *
-     * @return void
      */
-    public function __construct ()
+    public function __construct (CartManager $cartManager)
     {
-        $this->middleware('guest')->except('logout', 'auth');
+        $this->middleware('guest')->except('logout');
+        $this->cartManager = $cartManager;
     }
 
     /**
      * Show the application's login form.
      *
-     * @param ModuleRepository $userRepository
+     * @param Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function showLoginForm (ModuleRepository $userRepository)
+    public function showLoginForm (Request $request, Session $session, UserRepository $userRepository)
     {
-        $users = $userRepository->getAll(null);
-        $usersInThreeChunks = $users->chunk($users->count() / 2);
+        $wantPurchase = $session->previousUrl() === route('cart.purchase');
+        $users = $userRepository->getAll();
+        return view('auth.login', compact('wantPurchase', 'users'));
+    }
 
-        return view('auth.login', compact('usersInThreeChunks'));
+    public function spy (User $user, Request $request)
+    {
+        Auth::login($user);
+        return $this->sendLoginResponse($request);
     }
 
     /**
-     * @param User $user
+     * The user has been authenticated.
      *
-     * @return RedirectResponse
+     * @param Request $request
+     * @param mixed $user
+     *
+     * @return mixed
      */
-    public function auth (User $user)
+    protected function authenticated (Request $request, $user)
     {
-        Auth::login($user);
-        return redirect()->route('home.index');
+        if (!$this->cartManager->isRefreshed()) {
+            $this->cartManager->refresh($user);
+        }
+
+        $this->cartManager->mergeItemsOnDatabase();
+
+        $this->redirectTo = $request->input('purchase') ? route('cart.purchase') : route('home.index');
+
+        return redirect()
+            ->intended($this->redirectPath())
+            ->with('success', __("You are connected"));
+    }
+
+    /**
+     * The user has logged out of the application.
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    protected function loggedOut (Request $request)
+    {
+        return redirect()->route('home.index')->with('success', __('You are offline'));
     }
 }

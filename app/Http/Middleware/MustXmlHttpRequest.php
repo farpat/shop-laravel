@@ -19,7 +19,7 @@ class MustXmlHttpRequest
     public function handle ($request, Closure $next)
     {
         if (!$request->isXmlHttpRequest()) {
-            return new JsonResponse(['message' => 'Not found'], 404);
+            return new JsonResponse(['message' => __('Page not found')], 404);
         }
 
         return $next($request);

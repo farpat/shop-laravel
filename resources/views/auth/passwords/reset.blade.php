@@ -4,11 +4,9 @@
 
 @section('description', __('Reset Password'))
 
-@section('js-require', 'resetPasswordForm')
-
 @push('scripts')
     <script>
-        {!! get_form_store($errors, old()) !!}
+        {{ get_form_store($errors, old()) }}
     </script>
 @endpush
 
@@ -20,7 +18,7 @@
                     <div class="card-header">{{ __('Reset Password') }}</div>
 
                     <div class="card-body">
-                        <form id="reset-password-form" method="POST" action="{{ route('password.request') }}"
+                        <form id="reset-password-form" method="post" action="{{ route('password.request') }}"
                               aria-label="{{ __('Reset Password') }}">
                             @csrf
 

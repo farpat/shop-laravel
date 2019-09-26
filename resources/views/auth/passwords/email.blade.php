@@ -4,11 +4,9 @@
 
 @section('description', __('Reset Password'))
 
-@section('js-require', 'sendTokenPasswordForm')
-
 @push('scripts')
     <script>
-        {!! get_form_store($errors, old()) !!}
+        {{ get_form_store($errors, old()) }}
     </script>
 @endpush
 
@@ -26,7 +24,7 @@
                             </div>
                         @endif
 
-                        <form id="send-token-password-form" method="POST" action="{{ route('password.email') }}"
+                        <form id="send-token-password-form" @change="onChange($event)" @submit="onSubmit($event)" method="post" action="{{ route('password.email') }}"
                               aria-label="{{ __('Reset Password') }}">
                             @csrf
 
@@ -34,7 +32,7 @@
                                              autofocus></input-component>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" id="submit" class="btn btn-primary">
                                     {{ __('Send Password Reset Link') }}
                                 </button>
                             </div>

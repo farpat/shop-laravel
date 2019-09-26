@@ -47,9 +47,7 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm ()
     {
-        $dataRegister = ['name' => 'test', 'email' => 'test@local.dev', 'password' => 'secret', 'password_confirmation' => 'secret', 'accept' => true];
-        $dataRegister = [];
-        return view('auth.register', compact('dataRegister'));
+        return view('auth.register', ['modalContent' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi aperiam aspernatur corporis debitis dignissimos distinctio ea earum, facilis illo perspiciatis, porro qui soluta tempore velit. Ad consequuntur magni repellendus?']);
     }
 
     /**

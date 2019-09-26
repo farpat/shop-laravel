@@ -3,8 +3,12 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Foundation\Exceptions\WhoopsHandler;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Whoops\Handler\HandlerInterface;
 
 class Handler extends ExceptionHandler
 {
@@ -33,8 +37,9 @@ class Handler extends ExceptionHandler
      * @param Exception $exception
      *
      * @return void
+     * @throws Exception
      */
-    public function report(Exception $exception)
+    public function report (Exception $exception)
     {
         parent::report($exception);
     }
@@ -42,13 +47,22 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @param Exception $exception
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function render($request, Exception $exception)
+    public function render ($request, Exception $exception)
     {
         return parent::render($request, $exception);
+    }
+
+    protected function whoopsHandler ()
+    {
+        try {
+            return app(HandlerInterface::class);
+        } catch (BindingResolutionException $e) {
+            return (new WhoopsHandler)->forDebug();
+        }
     }
 }

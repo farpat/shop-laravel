@@ -18,8 +18,8 @@ class CreateCartItemsTable extends Migration
             $table->unsignedBigInteger('cart_id');
             $table->unsignedInteger('quantity');
 
-            $table->unsignedBigInteger('product_reference_id');
-//            Replicate product_reference_id
+            $table->unsignedBigInteger('product_reference_id')->nullable();
+//            Replicate product_reference informations
 //            Replicate product informations
 //            when cart is " locked "
 

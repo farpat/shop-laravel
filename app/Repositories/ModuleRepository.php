@@ -6,15 +6,19 @@ namespace App\Repositories;
 use App\Models\Module;
 use App\Models\ModuleParameter;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 class ModuleRepository
 {
-    public function createModule (string $moduleLabel, bool $is_active = false, string $description = null): Module
+    private $cache = [];
+
+    public function createModule (string $moduleLabel, bool $isActive = false, string $description = null): Module
     {
         $module = new Module([
             'label'       => $moduleLabel,
-            'is_active'   => $is_active,
+            'is_active'   => $isActive,
             'description' => $description
         ]);
 
@@ -25,32 +29,32 @@ class ModuleRepository
 
     public function getParameter (string $moduleLabel, string $parameterLabel): ?ModuleParameter
     {
-        $module = $this->getModule($moduleLabel);
+        if (isset($this->cache[$moduleLabel][$parameterLabel])) {
+            return $this->cache[$moduleLabel][$parameterLabel];
+        }
 
         /** @var ModuleParameter $moduleParameter */
-        $moduleParameter = $module->parameters()->where('label', $parameterLabel)->first();
+        $moduleParameter = ModuleParameter::query()
+            ->whereHas('module', function (Builder $query) use ($moduleLabel) {
+                $query->where('label', $moduleLabel);
+            })
+            ->where('label', $parameterLabel)
+            ->first();
         if ($moduleParameter) {
-            $this->transformValue($moduleParameter);
+            $this->transformValueToGet($moduleParameter);
         }
+
+        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
 
         return $moduleParameter;
     }
 
-    public function getModule (string $moduleLabel): Module
-    {
-        if (!$module = Module::where('label', $moduleLabel)->first()) {
-            throw new Exception("The module << $moduleLabel >> doesn't exist!");
-        }
-
-        return $module;
-    }
-
-    private function transformValue (ModuleParameter $moduleParameter)
+    private function transformValueToGet (ModuleParameter $moduleParameter)
     {
         $value = $moduleParameter->value;
 
         if (Str::startsWith($value, ['{', '['])) {
-            $newValue = json_decode($value, true);
+            $newValue = json_decode($value);
             if (json_last_error() === JSON_ERROR_NONE) {
                 $value = $newValue;
             }
@@ -65,11 +69,25 @@ class ModuleRepository
             $value = json_encode($value);
         }
 
-        return $this->getModule($moduleLabel)->parameters()->create([
+        $moduleParameter = ModuleParameter::create([
             'label'       => $parameterLabel,
             'value'       => $value,
-            'description' => $description
+            'description' => $description,
+            'module_id'   => $this->getModule($moduleLabel)->id
         ]);
+
+        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
+
+        return $moduleParameter;
+    }
+
+    public function getModule (string $moduleLabel): Module
+    {
+        if (!$module = Module::where('label', $moduleLabel)->first()) {
+            throw new Exception("The module << $moduleLabel >> doesn't exist!");
+        }
+
+        return $module;
     }
 
     public function isActive (string $moduleLabel): bool
@@ -95,5 +113,16 @@ class ModuleRepository
     public function deactivate (string $moduleLabel)
     {
         $this->updateModule($moduleLabel, ['is_active' => false]);
+    }
+
+    private function transformValueToSave (ModuleParameter $moduleParameter)
+    {
+        $value = $moduleParameter->value;
+
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+
+        $moduleParameter->value = $value;
     }
 }
