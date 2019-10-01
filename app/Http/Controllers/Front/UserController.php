@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserInformationsRequest;
 use App\Http\Requests\UserPasswordRequest;
+use App\Models\Cart;
 use App\Models\User;
 use App\Notifications\UserPasswordNotification;
 use App\Repositories\CartRepository;

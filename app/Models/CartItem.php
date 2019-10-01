@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\Bank\StringUtility;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,21 +16,27 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $product_reference_id
  * @property float $amount_excluding_taxes
  * @property float $amount_including_taxes
- * @property-read \App\Models\Cart $cart
- * @property-read \App\Models\ProductReference|null $product_reference
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereAmountExcludingTaxes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereAmountIncludingTaxes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereCartId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereProductReferenceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereQuantity($value)
- * @mixin \Eloquent
+ * @property-read Cart $cart
+ * @property-read ProductReference|null $product_reference
+ * @method static Builder|CartItem newModelQuery()
+ * @method static Builder|CartItem newQuery()
+ * @method static Builder|CartItem query()
+ * @method static Builder|CartItem whereAmountExcludingTaxes($value)
+ * @method static Builder|CartItem whereAmountIncludingTaxes($value)
+ * @method static Builder|CartItem whereCartId($value)
+ * @method static Builder|CartItem whereId($value)
+ * @method static Builder|CartItem whereProductReferenceId($value)
+ * @method static Builder|CartItem whereQuantity($value)
+ * @mixin Eloquent
  */
 class CartItem extends Model
 {
+    public $timestamps = false;
+
+    protected $fillable = [
+        'id', 'cart_id', 'quantity', 'product_reference_id', 'amount_excluding_taxes', 'amount_including_taxes'
+    ];
+
     public function __construct (array $attributes = [])
     {
         $attributes = array_merge([
@@ -38,13 +47,18 @@ class CartItem extends Model
         parent::__construct($attributes);
     }
 
-    public $timestamps = false;
+    public function getFormattedAmountIncludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->amount_including_taxes);
+    }
 
-    protected $fillable = [
-        'id', 'cart_id', 'quantity', 'product_reference_id', 'amount_excluding_taxes', 'amount_including_taxes'
-    ];
+    public function getFormattedAmountExcludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->amount_excluding_taxes);
+    }
 
-    public function product_reference() {
+    public function product_reference ()
+    {
         return $this->belongsTo(ProductReference::class);
     }
 

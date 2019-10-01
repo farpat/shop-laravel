@@ -24,7 +24,12 @@
                     <td>{{ $billing->number }}</td>
                     <td>{{ $billing->formatted_total_amount_including_taxes }}</td>
                     <td> {{ $billing->items_count }}</td>
-                    <td>export</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{{ route('cart.export_billing', ['billing' => $billing->number]) }}" class="btn btn-light"><i class="fas fa-file-pdf fa-1x"></i></a>
+                            <a href="#" class="btn btn-light"><i class="far fa-eye fa-1x"></i></a>
+                        </div>
+                    </td>
                 </tr>
             @endforeach
             </tbody>

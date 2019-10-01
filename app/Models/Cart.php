@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Services\Bank\HasPriceAttributes;
 use App\Services\Bank\StringUtility;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -62,6 +64,31 @@ class Cart extends Model
         return StringUtility::getFormattedPrice($this->total_amount_including_taxes);
     }
 
+    public function getFormattedTotalAmountExcludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->total_amount_excluding_taxes);
+    }
+
+    public function getIncludingTaxesAttribute ()
+    {
+        return $this->total_amount_including_taxes - $this->total_amount_excluding_taxes;
+    }
+
+    public function getFormattedIncludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->including_taxes);
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'number';
+    }
+
     public function address ()
     {
         return $this->belongsTo(Address::class);
@@ -75,5 +102,9 @@ class Cart extends Model
     public function items ()
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function getBillingPathAttribute() {
+        return Storage::disk('public')->path('billings/' . $this->number . '.pdf');
     }
 }

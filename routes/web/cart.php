@@ -18,3 +18,5 @@ Route::get('/purchase', 'Front\CartController@showPurchaseForm')
     ->name('cart.purchase');
 
 Route::post('/purchase', 'Front\CartController@purchase');
+
+Route::get('/billing/{billing}', 'Front\CartController@exportBilling')->name('cart.export_billing');

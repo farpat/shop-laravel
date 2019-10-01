@@ -49,6 +49,7 @@ class CartRepository
             ->where('status', '!=', Cart::ORDERING_STATUS)
             ->where('user_id', $user->id)
             ->orderBy('updated_at', 'DESC')
+            ->orderBy('id', 'DESC')
             ->get();
     }
 
@@ -148,20 +149,17 @@ class CartRepository
 
     public function updateCartOnOrderedStatus (Cart $cart)
     {
-        $date = $cart->updated_at->format('Y-m');
-
-        $cartNumber = DB::table('cart_numbers')->where('date', $date)->first();
+        $cartNumber = DB::table('cart_numbers')->first();
 
         if ($cartNumber === null) {
             $number = 1;
-            DB::table('cart_numbers')->insert(compact('date', 'number'));
-        }
-        else {
+            DB::table('cart_numbers')->insert(compact('number'));
+        } else {
             $number = $cartNumber->number + 1;
-            DB::table('cart_numbers')->where('date', $date)->update(compact('number'));
+            DB::table('cart_numbers')->update(compact('number'));
         }
 
-        $cartNumber = $date . '-' .  $number;
+        $cartNumber = $cart->updated_at->format('Y-m') . '-' . $number;
         $cart->update(['status' => Cart::ORDERED_STATUS, 'number' => $cartNumber]);
     }
 }

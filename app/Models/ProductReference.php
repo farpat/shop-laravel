@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\Bank\HasPriceAttributes;
+use App\Services\Bank\StringUtility;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -46,6 +48,16 @@ class ProductReference extends Model
     protected $fillable = [
         'product_id', 'label', 'unit_price_excluding_taxes', 'unit_price_including_taxes', 'filled_product_fields', 'main_image_id'
     ];
+
+    public function getFormattedUnitPriceExcludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->unit_price_excluding_taxes);
+    }
+
+    public function getFormattedUnitPriceIncludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->unit_price_including_taxes);
+    }
 
     public function product ()
     {

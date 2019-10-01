@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\MustXmlHttpRequest;
+use App\Models\Cart;
+use App\Pdf\BillingPdf;
+use mikehaertl\wkhtmlto\Pdf;
 use App\Http\Requests\{PurchaseRequest, StoreCartItemRequest, UpdateCartItemRequest};
 use App\Repositories\ProductRepository;
 use App\Services\Bank\{CartManager, StripeService};
@@ -23,7 +26,7 @@ class CartController extends Controller
 
     public function __construct (ProductRepository $productRepository)
     {
-        $this->middleware(MustXmlHttpRequest::class)->except(['purchase', 'showPurchaseForm']);
+        $this->middleware(MustXmlHttpRequest::class)->except(['purchase', 'showPurchaseForm', 'exportBilling']);
         $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm']);
         $this->middleware(function (Request $request, $next) {
             $this->cartManager = app(CartManager::class);
@@ -80,5 +83,16 @@ class CartController extends Controller
         dd('720 360,05 €', $totalToPay);
 
         $stripeService->charge($this->cartManager->getUser(), $totalToPay * 100, $request->input('token'));
+    }
+
+
+    public function exportBilling (Cart $billing)
+    {
+        if (!file_exists($billing->billing_path)) {
+            $billingPdf = new BillingPdf($billing);
+            $billingPdf->save();
+        }
+
+        return response()->file($billing->billing_path);
     }
 }

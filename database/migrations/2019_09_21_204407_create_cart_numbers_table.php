@@ -14,8 +14,7 @@ class CreateCartNumbersTable extends Migration
     public function up()
     {
         Schema::create('cart_numbers', function (Blueprint $table) {
-            $table->string('date', 7)->index();
-            $table->integer('number');
+            $table->bigIncrements('number');
         });
     }
 

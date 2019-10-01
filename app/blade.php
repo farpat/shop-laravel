@@ -52,7 +52,7 @@ function get_form_store ($errorBag, array $old): HtmlString
     return new HtmlString("window._FormStore = { errors : $errors, datas : $datas, rules : {}}");
 }
 
-function get_asset (string $asset): string
+function get_asset (string $asset, bool $absolute = false): string
 {
     static $json;
 
@@ -67,8 +67,13 @@ function get_asset (string $asset): string
         }
 
         $return = $json->{$asset};
-        return $return ?
-            asset($return, config('app.env') === 'production') :
-            '';
+
+        if (!$return) {
+            return '';
+        }
+
+        return $absolute ?
+            public_path($return) :
+            asset($return, config('app.env') === 'production');
     }
 }
