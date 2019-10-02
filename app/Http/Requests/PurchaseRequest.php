@@ -24,7 +24,7 @@ class PurchaseRequest extends FormRequest
     public function rules()
     {
         return [
-            'ltoken' => 'required|regex:/tok_[[:alnum:]]*$/'
+            'stripe_token' => 'required'
         ];
     }
 }

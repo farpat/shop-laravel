@@ -21,7 +21,7 @@
             @foreach($billings as $billing)
                 <tr>
                     <td>
-                        <a href="{{ route('cart.export_billing', ['billing' => $billing->number]) }}">{{ $billing->number }}</a>
+                        <a href="{{ route('billing.export', ['billing' => $billing->number]) }}">{{ $billing->number }}</a>
                     </td>
                     <td>{{ $billing->formatted_total_amount_including_taxes }}</td>
                     <td> {{ $billing->items_count }}</td>

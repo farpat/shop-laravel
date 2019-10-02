@@ -17,4 +17,5 @@ require 'web/home.php';
 require 'web/category.php';
 require 'web/product.php';
 require 'web/cart.php';
+require 'web/billing.php';
 require 'web/user.php';

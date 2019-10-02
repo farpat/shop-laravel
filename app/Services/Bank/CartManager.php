@@ -15,11 +15,14 @@ class CartManager
      * @bool
      */
     private $isRefreshed = false;
-
     /**
      * @var Collection
      */
     private $items;
+    /**
+     * @var array
+     */
+    private $hydratedItems;
     /**
      * @var Cart|null
      */
@@ -167,20 +170,24 @@ class CartManager
             return $items;
         }
 
-        if (!empty($items)) {
-            $productReferences = $this->productRepository->getReferences(array_keys($items));
+        if ($this->hydratedItems === null) {
+            if (!empty($items)) {
+                $productReferences = $this->productRepository->getReferences(array_keys($items));
 
-            //obliged to re-compute the keys " product_reference and amounts " because the informations can change in the meantime
-            foreach ($items as $productReferenceId => $item) {
-                $productReference = $productReferences->get($productReferenceId);
+                //obliged to re-compute the keys " product_reference and amounts " because the informations can change in the meantime
+                foreach ($items as $productReferenceId => $item) {
+                    $productReference = $productReferences->get($productReferenceId);
 
-                $items[$productReferenceId]['product_reference'] = $productReference;
-                $items[$productReferenceId]['amount_excluding_taxes'] = $item['quantity'] * $productReference->unit_price_excluding_taxes;
-                $items[$productReferenceId]['amount_including_taxes'] = $item['quantity'] * $productReference->unit_price_including_taxes;
+                    $items[$productReferenceId]['product_reference'] = $productReference;
+                    $items[$productReferenceId]['amount_excluding_taxes'] = $item['quantity'] * $productReference->unit_price_excluding_taxes;
+                    $items[$productReferenceId]['amount_including_taxes'] = $item['quantity'] * $productReference->unit_price_including_taxes;
+                }
             }
+
+            $this->hydratedItems = $items;
         }
 
-        return $items;
+        return $this->hydratedItems;
     }
 
     /**

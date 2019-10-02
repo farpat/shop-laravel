@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\MustXmlHttpRequest;
-use App\Models\Cart;
-use App\Pdf\BillingPdf;
-use mikehaertl\wkhtmlto\Pdf;
 use App\Http\Requests\{PurchaseRequest, StoreCartItemRequest, UpdateCartItemRequest};
 use App\Repositories\ProductRepository;
 use App\Services\Bank\{CartManager, StripeService};
@@ -27,7 +24,7 @@ class CartController extends Controller
     public function __construct (ProductRepository $productRepository)
     {
         $this->middleware(MustXmlHttpRequest::class)->only(['storeItem', 'updateItem', 'destroyItem']);
-        $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm', 'exportBilling', 'viewBilling']);
+        $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm']);
         $this->middleware(function (Request $request, $next) {
             $this->cartManager = app(CartManager::class);
             $this->cartManager->refresh($request->user());
@@ -69,7 +66,7 @@ class CartController extends Controller
         if (empty($cartItems)) {
             return redirect()
                 ->route('home.index')
-                ->with('danger', __('Your cart is empty'));
+                ->with('error', __('Your cart is empty'));
         }
 
         return view('cart.purchase');
@@ -77,29 +74,16 @@ class CartController extends Controller
 
     public function purchase (PurchaseRequest $request, StripeService $stripeService)
     {
-        $cart = $this->cartManager->getCart();
-        $totalToPay = $cart->total_amount_including_taxes;
+        $totalToPay = $this->cartManager->getCart()->total_amount_including_taxes;
 
-        dd('720 360,05 €', $totalToPay);
+        $stripeService
+            ->setToken($request->input('stripe_token'))
+            ->charge($this->cartManager->getUser(), $totalToPay * 100);
 
-        $stripeService->charge($this->cartManager->getUser(), $totalToPay * 100, $request->input('token'));
-    }
+        $this->cartManager->updateCartOnOrderedStatus();
 
-    public function exportBilling (Cart $billing)
-    {
-        if (!file_exists($billing->billing_path)) {
-            $billing->load(['items.product_reference']);
-
-            $billingPdf = new BillingPdf($billing);
-            $billingPdf->save();
-        }
-
-        return response()->file($billing->billing_path);
-    }
-
-    public function viewBilling (Cart $billing)
-    {
-        $billing->load(['items.product_reference']);
-        return view('cart.billing', compact('billing'));
+        return redirect()
+            ->route('home.index')
+            ->with('success', __('Your cart is purchased'));
     }
 }
