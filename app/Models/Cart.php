@@ -2,47 +2,10 @@
 
 namespace App\Models;
 
-use App\Services\Bank\HasPriceAttributes;
 use App\Services\Bank\StringUtility;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
-/**
- * App\Models\Cart
- *
- * @property int $id
- * @property int|null $items_count
- * @property float $total_amount_excluding_taxes
- * @property float $total_amount_including_taxes
- * @property string $status
- * @property string|null $comment
- * @property int $user_id
- * @property int|null $address_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Address|null $address
- * @property-read Collection|CartItem[] $items
- * @property-read User $user
- * @method static Builder|Cart newModelQuery()
- * @method static Builder|Cart newQuery()
- * @method static Builder|Cart query()
- * @method static Builder|Cart whereAddressId($value)
- * @method static Builder|Cart whereComment($value)
- * @method static Builder|Cart whereCreatedAt($value)
- * @method static Builder|Cart whereId($value)
- * @method static Builder|Cart whereItemsCount($value)
- * @method static Builder|Cart whereStatus($value)
- * @method static Builder|Cart whereTotalAmountExcludingTaxes($value)
- * @method static Builder|Cart whereTotalAmountIncludingTaxes($value)
- * @method static Builder|Cart whereUpdatedAt($value)
- * @method static Builder|Cart whereUserId($value)
- * @mixin Eloquent
- */
 class Cart extends Model
 {
     const ORDERING_STATUS = 'ORDERING';

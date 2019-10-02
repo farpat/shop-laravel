@@ -2,29 +2,39 @@
 
 namespace App\Services\Pdf;
 
-use Illuminate\Support\Facades\Storage;
+use Exception;
+use mikehaertl\wkhtmlto\Pdf as WkPdf;
 
 abstract class Pdf
 {
-    private function beforeAction() {
-        config(['app.webpack_port' => null]);
-    }
+    protected $options = [];
 
     public function send (string $filename = null): bool
     {
-        $this->beforeAction();
-        $pdf = new \mikehaertl\wkhtmlto\Pdf($this->render());
+        $pdf = $this->makePdfObject();
         return $pdf->send($filename);
     }
 
-    protected abstract function render ();
-
-    public function save (string $filepath): bool
+    private function makePdfObject ()
     {
-        $this->beforeAction();
-        $pdf = new \mikehaertl\wkhtmlto\Pdf($this->render());
-        return $pdf->saveAs($filepath);
+        config(['app.webpack_port' => null]);
+        $pdf = new WkPdf();
+        foreach ($this->getPages() as $page) {
+            $pdf->addPage($page);
+        }
+
+        return $pdf;
     }
 
+    protected abstract function getPages (): array;
 
+    public function save (): bool
+    {
+        $pdf = $this->makePdfObject();
+        if (!method_exists($this, 'getFilePath')) {
+            $class = get_class($this);
+            throw new Exception("You must define getFilePath() method in << $class >>");
+        }
+        return $pdf->saveAs($this->getFilePath());
+    }
 }

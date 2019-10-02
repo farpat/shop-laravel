@@ -26,8 +26,8 @@ class CartController extends Controller
 
     public function __construct (ProductRepository $productRepository)
     {
-        $this->middleware(MustXmlHttpRequest::class)->except(['purchase', 'showPurchaseForm', 'exportBilling']);
-        $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm']);
+        $this->middleware(MustXmlHttpRequest::class)->only(['storeItem', 'updateItem', 'destroyItem']);
+        $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm', 'exportBilling', 'viewBilling']);
         $this->middleware(function (Request $request, $next) {
             $this->cartManager = app(CartManager::class);
             $this->cartManager->refresh($request->user());
@@ -85,14 +85,21 @@ class CartController extends Controller
         $stripeService->charge($this->cartManager->getUser(), $totalToPay * 100, $request->input('token'));
     }
 
-
     public function exportBilling (Cart $billing)
     {
         if (!file_exists($billing->billing_path)) {
+            $billing->load(['items.product_reference']);
+
             $billingPdf = new BillingPdf($billing);
             $billingPdf->save();
         }
 
         return response()->file($billing->billing_path);
+    }
+
+    public function viewBilling (Cart $billing)
+    {
+        $billing->load(['items.product_reference']);
+        return view('cart.billing', compact('billing'));
     }
 }

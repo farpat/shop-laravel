@@ -1,7 +1,7 @@
 @extends('_layouts.pdf')
 
 @section('content')
-    <div class="container">
+    <div class="container my-5">
         <div class="row">
             <div class="col">
                 <img src="https://mondrian.mashable.com/uploads%252Fcard%252Fimage%252F918220%252F316bce31-4c38-4f3b-b743-a17406175286.png%252F950x534__filters%253Aquality%252880%2529.png"
@@ -46,8 +46,8 @@
                 <tr>
                     <td>{{ $item->product_reference->label }}</td>
                     <td>{{ $item->quantity }}</td>
-                    <td>{{ $item->product_reference->formatted_unit_price_excluding_taxes }}</td>
-                    <td>{{ $item->formatted_amount_excluding_taxes }}</td>
+                    <td class="text-right">{{ $item->product_reference->formatted_unit_price_excluding_taxes }}</td>
+                    <td class="text-right">{{ $item->formatted_amount_excluding_taxes }}</td>
                 </tr>
             @endforeach
             </tbody>

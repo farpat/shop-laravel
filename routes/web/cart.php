@@ -14,9 +14,14 @@ Route::delete('/cart-items/{productReferenceId}', 'Front\CartController@destroyI
 
 
 //Form
-Route::get('/purchase', 'Front\CartController@showPurchaseForm')
-    ->name('cart.purchase');
-
+Route::get('/purchase', 'Front\CartController@showPurchaseForm')->name('cart.purchase');
 Route::post('/purchase', 'Front\CartController@purchase');
 
-Route::get('/billing/{billing}', 'Front\CartController@exportBilling')->name('cart.export_billing');
+//Billing
+Route::get('/billing/export/{billing}', 'Front\CartController@exportBilling')
+    ->where('billing', '\d{4}-\d{2}-\d+')
+    ->name('cart.export_billing');
+
+Route::get('/billing/view/{billing}', 'Front\CartController@viewBilling')
+    ->where('billing', '\d{4}-\d{2}-\d+')
+    ->name('cart.view_billing');

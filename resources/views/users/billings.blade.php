@@ -14,22 +14,17 @@
                 <th>#</th>
                 <th>{{ __('Total amount including taxes') }}</th>
                 <th>{{ __('Number of items') }}</th>
-                <th></th>
             </tr>
             </thead>
             <tbody>
             <?php /** @var App\Models\Cart $billing */ ?>
             @foreach($billings as $billing)
                 <tr>
-                    <td>{{ $billing->number }}</td>
+                    <td>
+                        <a href="{{ route('cart.export_billing', ['billing' => $billing->number]) }}">{{ $billing->number }}</a>
+                    </td>
                     <td>{{ $billing->formatted_total_amount_including_taxes }}</td>
                     <td> {{ $billing->items_count }}</td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <a href="{{ route('cart.export_billing', ['billing' => $billing->number]) }}" class="btn btn-light"><i class="fas fa-file-pdf fa-1x"></i></a>
-                            <a href="#" class="btn btn-light"><i class="far fa-eye fa-1x"></i></a>
-                        </div>
-                    </td>
                 </tr>
             @endforeach
             </tbody>
