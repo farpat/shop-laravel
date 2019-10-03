@@ -16,7 +16,7 @@
             </div>
 
             <div class="input-group-append" v-if="isDisplayingDeleteButton">
-                <button class="btn btn-outline-danger" type="button" @click="onDeleteFile">&times;</button>
+                <button class="btn btn-outline-secondary" type="button" @click="onDeleteFile">&times;</button>
             </div>
         </div>
 

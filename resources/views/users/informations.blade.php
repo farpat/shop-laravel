@@ -13,32 +13,39 @@
 @section('content')
     <div class="container">
         <section>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">{{ __('My informations') }}</div>
+            <h1 class="row justify-content-center">
+                <h1 class="mb-5">{{ __('My informations') }}</h1>
 
-                        <div class="card-body">
+                <form id="informations-form"
+                      @change="onChange($event)" @submit="onSubmit($event)"
+                      method="post" action="{{ route('user.informations') }}">
+                    @csrf
 
-                            <form id="informations-form" @change="onChange($event)" @submit="onSubmit($event)" method="post"
-                                  action="{{ route('user.informations') }}">
-                                @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input-component name="name" label="{{ __('Name') }}" autofocus></input-component>
+                        </div>
 
-                                <input-component name="name" label="{{ __('Name') }}" autofocus></input-component>
-
-                                <input-component name="email" label="{{ __('E-Mail Address') }}"
-                                                 type="email"></input-component>
-
-                                <div class="form-group mt-5">
-                                    <button type="submit" id="submit" class="btn btn-primary">
-                                        {{ __('Change my informations') }}
-                                    </button>
-                                </div>
-                            </form>
+                        <div class="col-md-6">
+                            <input-component name="email" label="{{ __('E-Mail Address') }}"
+                                             type="email"></input-component>
                         </div>
                     </div>
-                </div>
-            </div>
+
+
+                    <h2 class="mt-3">{{ __('Addresses') }}</h2>
+                    <addresses-component></addresses-component>
+
+                    <div class="form-group mt-5">
+                        <a type="button" class="btn btn-link">
+                            {{ __('Cancel') }}
+                        </a>
+
+                        <button type="submit" id="submit" class="btn btn-primary">
+                            {{ __('Change my informations') }}
+                        </button>
+                    </div>
+                </form>
         </section>
     </div>
 @endsection

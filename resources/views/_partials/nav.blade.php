@@ -15,7 +15,7 @@
         </ul>
         <ul class="navbar-nav">
             <li class="nav-item form-search" id="form-search">
-                <input type="text" data-url="{{ route('home.search') }}" class="form-control form-search-input">
+                <input type="search" data-url="{{ route('home.search') }}" class="form-control form-search-input">
             </li>
         </ul>
         <section class="navbar-nav ml-auto mt-3 mt-xl-0">

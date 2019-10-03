@@ -1,13 +1,14 @@
 import Vue from "vue";
 
 import {CheckboxComponent, InputComponent, NumberComponent} from "../src/Bootstrap";
+import AddressesComponent from "../Profile/AddressesComponent";
 import FormStore from "../src/Bootstrap/FormStore";
 import {EmailRule, RequiredRule} from "../src/Security";
 import FormMixin from "../src/Bootstrap/FormMixin";
 
 new Vue({
     el:         '#informations-form',
-    components: {InputComponent, CheckboxComponent, NumberComponent},
+    components: {InputComponent, CheckboxComponent, NumberComponent, AddressesComponent},
     mixins:     [FormMixin],
     mounted:    function () {
         this.$submitButton = this.$el.querySelector('#submit');
