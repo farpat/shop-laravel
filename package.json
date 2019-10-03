@@ -18,7 +18,7 @@
         "bootstrap": "^4.3.1",
         "core-js": "^3.2.1",
         "jquery": "^3.4.1",
-        "laravel-echo": "^1.6.0",
+        "laravel-echo": "^1.6.1",
         "lodash": "^4.17.15",
         "multiple-select": "^1.4.1",
         "places.js": "^1.16.5",
@@ -60,8 +60,8 @@
         "webpack": "^4.41.0",
         "webpack-bundle-analyzer": "^3.5.2",
         "webpack-cli": "^3.3.9",
-        "webpack-dev-server": "^3.8.1",
+        "webpack-dev-server": "^3.8.2",
         "webpack-hot-middleware": "^2.25.0",
-        "webpack-manifest-plugin": "^2.1.2"
+        "webpack-manifest-plugin": "^2.2.0"
     }
 }
