@@ -210,5 +210,7 @@ return [
 
     ],
 
-    'webpack_port' => env('WEBPACK_DEV_SERVER_PORT'),
+    'webpack_port'    => env('WEBPACK_DEV_SERVER_PORT'),
+    'algolia_app_id'  => env('ALGOLIA_APP_ID'),
+    'algolia_api_key' => env('ALGOLIA_API_KEY'),
 ];

@@ -26,12 +26,16 @@
     export default {
         components: {InputComponent},
         mixins:     [TranslationMixin],
+        props:      {
+            appId:  {type: String, required: true},
+            apiKey: {type: String, required: true},
+        },
         mounted:    function () {
             const lang = document.querySelector('html').getAttribute('lang');
 
             let placesAutocomplete = places({
-                appId:     'pl9V2DE5GILO',
-                apiKey:    '01daf404b179e00b0d49f944fba53341',
+                appId:     this.appId,
+                apiKey:    this.apiKey,
                 container: document.querySelector('#address-input')
             })
                 .configure({language: lang});

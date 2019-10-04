@@ -34,7 +34,7 @@
 
 
                     <h2 class="mt-3">{{ __('Addresses') }}</h2>
-                    <addresses-component></addresses-component>
+                    <addresses-component api-key="{{ config('app.algolia_api_key') }}" app-id="{{ config('app.algolia_app_id') }}"></addresses-component>
 
                     <div class="form-group mt-5">
                         <a type="button" class="btn btn-link">
