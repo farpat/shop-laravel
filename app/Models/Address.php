@@ -9,7 +9,12 @@ class Address extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'line1', 'line2', 'postal_code', 'city', 'country', 'latitude', 'longitude', 'user_id'
+        'text', 'line1', 'line2', 'postal_code', 'city', 'country', 'latitude', 'longitude', 'user_id'
+    ];
+
+    protected $casts = [
+        'latitude'  => 'float',
+        'longitude' => 'float'
     ];
 
     public function user ()

@@ -24,11 +24,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Address::class);
     }
 
-    public function selected_address ()
-    {
-        return $this->hasOne(Address::class);
-    }
-
     public function visits ()
     {
         return $this->hasMany(Visit::class);

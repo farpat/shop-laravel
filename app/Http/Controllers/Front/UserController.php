@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserInformationsRequest;
-use App\Http\Requests\UserPasswordRequest;
-use App\Models\Cart;
+use App\Models\Address;
+use App\Http\Requests\{UserInformationsRequest, UserPasswordRequest};
 use App\Models\User;
 use App\Notifications\UserPasswordNotification;
-use App\Repositories\CartRepository;
-use App\Repositories\UserRepository;
+use App\Repositories\{AddressRepository, CartRepository, UserRepository};
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Http\Request;
 
@@ -36,13 +34,26 @@ class UserController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $form = array_merge($user->only(['name', 'email']), $request->old());
+        $old = $request->old();
+        if ($old) {
+            $form = array_merge($user->only(['name', 'email']), $old);
+        } else {
+            $form = $user->only(['name', 'email']);
+            $form['addresses'] = $user->addresses
+                ->map(function (Address $address, $index) {
+                    return array_merge($address->toArray(), ['index' => $index]);
+                })->toArray();
+        }
+
         return view('users.informations', compact('form'));
     }
 
-    public function updateInformations (UserInformationsRequest $request)
+    public function updateInformations (UserInformationsRequest $request, AddressRepository $addressRepository)
     {
-        $this->userRepository->update($request->user(), $request->only('name', 'email'));
+        $user = $request->user();
+
+        $this->userRepository->update($user, $request->only('name', 'email'));
+        $addressRepository->setAddresses($user, $request->input('addresses', []));
 
         return redirect()->back()->with('success', __('User informations updated with success'));
     }
