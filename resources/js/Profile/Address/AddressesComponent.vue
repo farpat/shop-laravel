@@ -15,10 +15,11 @@
     import AddressComponent from "./AddressComponent";
     import {InputComponent} from "../../src/Bootstrap";
     import TranslationMixin from "../../src/Translation/TranslationMixin";
+    import FormMixin from "../../src/Bootstrap/FormMixin";
 
     export default {
         components: {InputComponent, AddressComponent},
-        mixins:     [TranslationMixin],
+        mixins:     [TranslationMixin, FormMixin],
         data:       function () {
             return {
                 addresses: this.initialAddresses

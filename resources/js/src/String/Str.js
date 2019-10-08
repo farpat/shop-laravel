@@ -1,6 +1,10 @@
 const units = ['o', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo'];
 
 class Str {
+    looksLikeArray(str) {
+        return (str.includes('[') && str.includes(']'));
+    }
+
     formatCardNumber(text) {
         text = text.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
 

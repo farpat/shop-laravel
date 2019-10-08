@@ -1,3 +1,5 @@
+import Arr from "../Array/Arr";
+
 class Translation {
     constructor() {
         this.lang = document.querySelector('html').getAttribute('lang') || 'en';
@@ -47,22 +49,6 @@ class Translation {
         }
     }
 
-    _returnNestedProperty(obj) {
-        const args = Array.prototype.slice.call(arguments, 1);
-
-        for (let i = 0; i < args.length; i++) {
-            if (!obj || !obj.hasOwnProperty(args[i])) {
-                return undefined;
-            }
-
-            obj = (i + 1 === args.length) ?
-                obj[args[i]] :
-                Object.assign({}, obj[args[i]]);
-        }
-
-        return obj;
-    }
-
     _getMainTranslation(key) {
         this.loadMainTranslation();
 
@@ -75,7 +61,7 @@ class Translation {
         if (regex.test(key)) {
             const keys = key.split('.');
             this.loadTranslation(keys.slice(0, 1));
-            return this._returnNestedProperty(this.translations[this.lang], ...keys);
+            return Arr.returnNestedProperty(this.translations[this.lang], ...keys);
         } else {
             return key;
         }

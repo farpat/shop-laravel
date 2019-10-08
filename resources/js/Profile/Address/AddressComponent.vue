@@ -2,20 +2,20 @@
     <li :class="{'d-none':address.isDeleted}" class="list-group-item">
         <div class="row align-items-center">
             <div class="col">
-                <input :name="getName('id')" type="hidden" v-model="address.id">
-                <input :name="getName('line1')" type="hidden" v-model="address.line1">
-                <input :name="getName('postal_code')" type="hidden" v-model="address.postalCode">
-                <input :name="getName('city')" type="hidden" v-model="address.city">
-                <input :name="getName('country')" type="hidden" v-model="address.country">
-                <input :name="getName('longitude')" type="hidden" v-model="address.longitude">
-                <input :name="getName('latitude')" type="hidden" v-model="address.latitude">
-                <input :name="getName('is_deleted')" type="hidden" v-model="address.isDeleted">
+                <!--                <input :name="getName('id')" type="hidden" v-model="address.id">-->
+                <!--                <input :name="getName('line1')" type="hidden" v-model="address.line1">-->
+                <!--                <input :name="getName('postal_code')" type="hidden" v-model="address.postalCode">-->
+                <!--                <input :name="getName('city')" type="hidden" v-model="address.city">-->
+                <!--                <input :name="getName('country')" type="hidden" v-model="address.country">-->
+                <!--                <input :name="getName('longitude')" type="hidden" v-model="address.longitude">-->
+                <!--                <input :name="getName('latitude')" type="hidden" v-model="address.latitude">-->
+                <!--                <input :name="getName('is_deleted')" type="hidden" v-model="address.isDeleted">-->
 
-                <input :name="getName('text')" :placeholder="__('Type complete address')" @change="changeAddress($event)"
-                       data-algolia-input v-model="address.text" required class="form-control"
-                       type="search"/>
+                <InputComponent :data-attributes="{'algolia-input':true}" :name="getName('text')"
+                                :placeholder="__('Type complete address')" @change="changeAddress($event)"
+                                type="search"></InputComponent>
 
-                <input :name="getName('line2')" type="text" v-model="address.line2" class="form-control">
+                <InputComponent :name="getName('line2')"></InputComponent>
             </div>
             <div class="col-auto">
                 <button @click="deleteAddress" class="btn btn-link" style="font-size: 1.5rem;" type="button">&times;
@@ -51,6 +51,8 @@
                 container: this.$el.querySelector('[data-algolia-input]')
             })
                 .configure({language: this.lang});
+
+            placesAutocomplete.setVal(this.initialAddress.text);
 
             placesAutocomplete.on('change', e => {
                 this.address = {
