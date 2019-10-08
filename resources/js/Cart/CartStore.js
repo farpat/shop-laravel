@@ -16,7 +16,7 @@ class CartStore {
 
         for (let productReferenceId in this.state.cartItems) {
             let quantity = this.state.cartItems[productReferenceId].quantity;
-            FormStore.changeField('quantity-' + productReferenceId, quantity);
+            FormStore.changeField('quantity[' + productReferenceId + ']', quantity);
         }
     }
 
@@ -44,7 +44,7 @@ class CartStore {
                 this.state.cartItemsLength--;
                 Vue.delete(this.state.cartItems, productReferenceId);
                 Vue.set(this.state.isLoading, productReferenceId, false);
-                FormStore.deleteField('quantity-' + productReferenceId);
+                FormStore.deleteField('quantity[' + productReferenceId + ']');
             });
     }
 

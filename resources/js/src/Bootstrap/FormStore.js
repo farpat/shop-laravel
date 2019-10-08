@@ -1,5 +1,7 @@
 import Vue from "vue";
 import Security from "../Security/Security";
+import Str from "../String/Str";
+import Arr from "../Array/Arr";
 
 class FormStore {
     constructor() {
@@ -12,7 +14,33 @@ class FormStore {
         };
     }
 
+    getData(field) {
+        if (Str.looksLikeArray(field)) {
+            const matches = field.matchAll(/\[?([\w_-]+)\]?/g);
+            return Arr.getNestedProperty(this.state.datas, Array.from(matches).map(match => match[1]));
+        }
+
+        return this.state.datas[this.name] || '';
+    }
+
+    getError(field) {
+        if (Str.looksLikeArray(field)) {
+            const matches = field.matchAll(/\[?([\w_-]+)\]?/g);
+            return Arr.getNestedProperty(this.state.errors, Array.from(matches).map(match => match[1])) || '';
+        }
+
+        return this.state.errors[this.name] || '';
+    }
+
+
     changeField(field, value) {
+        if (Str.looksLikeArray(field)) {
+            const arr = Arr.createNestedObject(field, value);
+
+            field = Arr.firstKey(arr);
+            value = {...this.state.datas[field], ...arr[field]};
+        }
+
         Vue.set(this.state.datas, field, value);
 
         this.checkField(field, value);

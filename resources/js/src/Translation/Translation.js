@@ -61,7 +61,7 @@ class Translation {
         if (regex.test(key)) {
             const keys = key.split('.');
             this.loadTranslation(keys.slice(0, 1));
-            return Arr.returnNestedProperty(this.translations[this.lang], ...keys);
+            return Arr.getNestedProperty(this.translations[this.lang], keys);
         } else {
             return key;
         }

@@ -1,7 +1,7 @@
 <template>
     <tr class="header-cart-item">
         <td>
-            <NumberComponent :min="1" :name="'quantity-' + this.item.product_reference_id"
+            <NumberComponent :min="1" :name="'quantity[' + this.item.product_reference_id + ']'"
                              @decrease="updateItem($event)"
                              @increase="updateItem($event)"
                              direction="horizontal">

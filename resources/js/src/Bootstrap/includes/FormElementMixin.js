@@ -1,36 +1,46 @@
 import FormStore from "../FormStore";
-import Str from "../../String/Str";
-import Arr from "../../Array/Arr";
 
 export default {
     props:    {
-        id:    {type: String, required: false},
-        name:  {type: String, required: true},
-        label: {type: String, default: ''},
+        id:             {type: String, required: false},
+        name:           {type: String, required: true},
+        label:          {type: String, default: ''},
+        dataAttributes: {
+            type: Object, default: function () {
+                return {};
+            }
+        },
     },
     computed: {
-        getName:    function () {
+        getDataAttributes: function () {
+            let dataAttributes = {};
+            if (JSON.stringify(this.dataAttributes) !== '{}') {
+                for (let key in this.dataAttributes) {
+                    const realKey = key.startsWith('data-') ? key : 'data-' + key;
+                    dataAttributes[realKey] = this.dataAttributes[key];
+                }
+            }
+
+            return dataAttributes;
+        },
+        getName:           function () {
             return this.name + (this.multiple ? '[]' : '');
         },
-        getId:      function () {
+        getId:             function () {
             return this.id || this.name;
         },
-        isRequired: function () {
+        isRequired:        function () {
             if (FormStore.state.rules === {} || !FormStore.state.rules[this.name]) {
                 return false;
             }
 
             return FormStore.state.rules[this.name].find(rule => rule.name === 'required') !== undefined;
         },
-        getValue:   function () {
-            if (Str.looksLikeArray(this.name)) {
-                const matches = this.name.matchAll(/\[?(\w+)\]?/g);
-                return Arr.returnNestedProperty(FormStore.state.datas, Array.from(matches).map(match => match[1]));
-            }
-            return FormStore.state.datas[this.name];
+        getValue:          function () {
+            return FormStore.getData(this.name);
         },
-        getError:   function () {
-            return FormStore.state.errors[this.name] || '';
+        getError:          function () {
+            return FormStore.getError(this.name);
         },
     },
 

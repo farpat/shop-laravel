@@ -38,24 +38,8 @@
             length:         {type: Number, required: false},
             styleCSS:       {type: Object, required: false},
             displayError:   {type: Boolean, default: true},
-            dataAttributes: {
-                type: Object, default: function () {
-                    return {};
-                }
-            },
         },
         computed:   {
-            getDataAttributes: function () {
-                let dataAttributes = {};
-                if (JSON.stringify(this.dataAttributes) !== '{}') {
-                    for (let key in this.dataAttributes) {
-                        const realKey = key.startsWith('data-') ? key : 'data-' + key;
-                        dataAttributes[realKey] = this.dataAttributes[key];
-                    }
-                }
-
-                return dataAttributes;
-            },
             getStyleCSS:       function () {
                 if (this.length) {
                     return {width: ((this.length * 2) + 1) + 'rem', ...this.styleCSS};
