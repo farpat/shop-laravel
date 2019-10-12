@@ -12,8 +12,8 @@
                 <input :name="getName('is_deleted')" type="hidden" v-model="getCurrentAddress.is_deleted">
 
                 <InputComponent :data-attributes="{'algolia-input':true}" :name="getName('text')"
-                                :placeholder="__('Type complete address')"
-                                rules="required|min:10" type="search"></InputComponent>
+                                :placeholder="__('Type complete address')" rules="required|min:10"
+                                type="search"></InputComponent>
 
                 <InputComponent :name="getName('line2')"></InputComponent>
             </div>
@@ -51,7 +51,6 @@
             }
         },
         mounted:    function () {
-            console.log(this.$children);
             this.$rules = this.$children[0].$rules;
 
             let placesAutocomplete = places({
@@ -64,7 +63,7 @@
             placesAutocomplete.setVal(this.getCurrentAddress.text);
 
             placesAutocomplete.on('change', event => {
-                Store.setCustomData(Store.getData()['addresses'], this.index, {
+                Store.set(Store.getData('addresses'), this.index, {
                     city:        event.suggestion.city,
                     country:     event.suggestion.country,
                     index:       this.index,
@@ -79,7 +78,7 @@
             });
 
             placesAutocomplete.on('clear', () => {
-                Store.setCustomData(Store.getData()['addresses'], this.index, {
+                Store.set(Store.getData('addresses'), this.index, {
                     city:        null,
                     country:     null,
                     index:       this.index,
@@ -98,7 +97,8 @@
                 return `addresses[${this.index}][${key}]`;
             },
             deleteAddress: function () {
-                Store.setCustomData(Store.getData()['addresses'], this.index, {is_deleted: true, index: this.index});
+                Store.set(Store.getData('addresses'), this.index, {is_deleted: true, index: this.index});
+                Store.set(Store.getError('addresses'), this.index, {text: undefined});
             },
         }
     }

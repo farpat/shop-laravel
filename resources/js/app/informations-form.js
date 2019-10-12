@@ -21,6 +21,7 @@ new Vue({
         },
 
         onChange: function () {
+            console.log('change has errors', FormStore.hasErrors());
             this.$submitButton.disabled = FormStore.hasErrors();
         }
     }

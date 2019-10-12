@@ -14,7 +14,7 @@ class Arr {
     }
 
     setNestedObject(arr, string, value) {
-        let nestedObject = Object.assign({}, arr);
+        let nestedObject = {...arr};
         let nextObject = {};
 
         const matches = Array.from(string.matchAll(/\[?([\w_-]+)\]?/g));

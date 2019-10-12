@@ -29,15 +29,19 @@ class Store {
         if (field === undefined) {
             return this.state.datas;
         }
+
         return this.get('datas', field);
     }
 
     getError(field) {
-        // console.log(field, 'getError');
+        if (field === undefined) {
+            return this.state.errors;
+        }
+
         return this.get('errors', field) || '';
     }
 
-    setCustomData(object, key, value) {
+    set(object, key, value) {
         Vue.set(object, key, value);
     }
 
@@ -46,14 +50,7 @@ class Store {
 
         if (Array.isArray(keys)) {
             const parsedValue = Arr.setNestedObject(this.state.datas, field, value);
-            if (keys.length === 2) {
-                Vue.set(this.state.datas, keys[0], parsedValue[keys[0]]);
-            }
-
-            if (keys.length === 3) {
-                Vue.set(this.state.datas[keys[0]], keys[1], parsedValue[keys[0]][keys[1]]);
-            }
-
+            Vue.set(this.state.datas, keys[0], {...parsedValue[keys[0]]});
         } else {
             Vue.set(this.state.datas, field, value);
         }
@@ -64,7 +61,7 @@ class Store {
 
         if (Array.isArray(keys)) {
             const parsedValue = Arr.setNestedObject(this.state.errors, field, value);
-            Vue.set(this.state.errors, keys[0], parsedValue[keys[0]]);
+            Vue.set(this.state.errors, keys[0], {...parsedValue[keys[0]]});
         } else {
             Vue.set(this.state.errors, field, value);
         }
@@ -87,10 +84,28 @@ class Store {
         return error;
     }
 
-    hasErrors() {
-        for (const field in this.state.errors) {
-            if (this.getError(field)) {
-                return true;
+    hasErrors(fields) {
+        if (fields === undefined) {
+            fields = this.state.errors;
+        }
+
+        const keys = Object.keys(fields);
+
+        if (keys.length === 0) {
+            console.trace('toto');
+            return false;
+        }
+
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+
+            if (typeof fields[key] === 'object') {
+                return this.hasErrors(fields[key]);
+            } else {
+                if (typeof fields[key] === 'string') {
+                    console.log('erreur donc true', fields[key]);
+                    return true;
+                }
             }
         }
 

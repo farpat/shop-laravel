@@ -8,6 +8,9 @@ class AddressRepository
 {
     public function setAddresses (User $user, array $addressesArray)
     {
+        if (empty($addressArray)) {
+            return;
+        }
 
         $deletedIds = [];
         foreach ($addressesArray as $addressArray) {
