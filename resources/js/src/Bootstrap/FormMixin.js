@@ -1,9 +1,12 @@
-import FormStore from "./FormStore";
+import FormStore from "./Store";
 
 export default {
-    data:       function () {
+    data:    function () {
         return {
-            state: FormStore.state
+            sharedState: FormStore.state
         }
     },
+    mounted: function () {
+        this.$store = FormStore;
+    }
 };

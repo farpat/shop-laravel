@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Requestor from "@farpat/api";
-import FormStore from "../src/Bootstrap/FormStore";
+import FormStore from "../src/Bootstrap/Store";
 
 class CartStore {
     constructor() {
@@ -16,7 +16,7 @@ class CartStore {
 
         for (let productReferenceId in this.state.cartItems) {
             let quantity = this.state.cartItems[productReferenceId].quantity;
-            FormStore.changeField('quantity[' + productReferenceId + ']', quantity);
+            FormStore.setData('quantity[' + productReferenceId + ']', quantity);
         }
     }
 
@@ -44,7 +44,7 @@ class CartStore {
                 this.state.cartItemsLength--;
                 Vue.delete(this.state.cartItems, productReferenceId);
                 Vue.set(this.state.isLoading, productReferenceId, false);
-                FormStore.deleteField('quantity[' + productReferenceId + ']');
+                FormStore.deleteData('quantity[' + productReferenceId + ']');
             });
     }
 

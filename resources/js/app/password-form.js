@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 import {CheckboxComponent, InputComponent, NumberComponent} from "../src/Bootstrap";
-import FormStore from "../src/Bootstrap/FormStore";
+import FormStore from "../src/Bootstrap/Store";
 import {ConfirmedRule, MinRule, RequiredRule} from "../src/Security";
 import FormMixin from "../src/Bootstrap/FormMixin";
 

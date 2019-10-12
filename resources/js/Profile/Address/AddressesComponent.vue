@@ -1,10 +1,10 @@
 <template>
     <section>
         <ul class="list-group">
-            <AddressComponent :api-key="apiKey" :app-id="appId" :initial-address="address"
+            <AddressComponent :api-key="apiKey" :app-id="appId" :index="address.index"
                               :key="address.index"
                               :lang="lang"
-                              v-for="address in addresses"></AddressComponent>
+                              v-for="address in getAddresses"></AddressComponent>
         </ul>
 
         <button @click="addAddress" class="btn btn-link text-success" type="button">{{ __('Add address')}}</button>
@@ -16,35 +16,43 @@
     import {InputComponent} from "../../src/Bootstrap";
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import FormMixin from "../../src/Bootstrap/FormMixin";
+    import Store from "../../src/Bootstrap/Store";
 
     export default {
         components: {InputComponent, AddressComponent},
         mixins:     [TranslationMixin, FormMixin],
-        data:       function () {
-            return {
-                addresses: this.initialAddresses
-            };
-        },
         props:      {
-            initialAddresses: {
-                type: Array, default: function () {
-                    return [];
-                }
+            appId:  {type: String, required: true},
+            apiKey: {type: String, required: true},
+            lang:   {type: String, default: 'en'}
+        },
+        computed:   {
+            getAddresses:   function () {
+                return Store.getData('addresses');
             },
-            appId:            {type: String, required: true},
-            apiKey:           {type: String, required: true},
-            lang:             {type: String, default: 'en'}
+            getLastAddress: function () {
+                const keys = Object.keys(this.getAddresses);
+                if (keys.length === 0) {
+                    return null;
+                }
+
+                return this.getAddresses[keys[keys.length - 1]];
+            }
         },
         methods:    {
             addAddress: function () {
-                const index = this.addresses.length === 0 ?
-                    0 :
-                    this.addresses[this.addresses.length - 1].index + 1;
+                const lastAddress = this.getLastAddress;
+                const index = lastAddress ? lastAddress.index + 1 : 0;
 
-                this.addresses.push({
+                Store.setCustomData(Store.getData()['addresses'], index, {
+                    city:        null,
+                    country:     null,
+                    id:          null,
                     index,
-                    id:        null,
-                    isDeleted: 0,
+                    latitude:    null,
+                    longitude:   null,
+                    postal_code: null,
+                    text:        null,
                 });
             }
         }

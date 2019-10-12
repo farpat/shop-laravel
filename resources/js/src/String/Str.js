@@ -1,8 +1,18 @@
 const units = ['o', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo'];
 
 class Str {
-    looksLikeArray(str) {
-        return (str.includes('[') && str.includes(']'));
+    static parseKeysCache = {};
+
+    parseKeysInString(str) {
+        if (!Str.parseKeysCache.hasOwnProperty(str)) {
+            const keys = Array.from(str.matchAll(/\[?([\w_-]+)\]?/g));
+
+            Str.parseKeysCache[str] = keys.length === 1 ?
+                keys[0][1] :
+                keys.map(key => key[1]);
+        }
+
+        return Str.parseKeysCache[str];
     }
 
     formatCardNumber(text) {

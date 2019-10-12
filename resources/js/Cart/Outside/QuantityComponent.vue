@@ -23,7 +23,7 @@
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import CartStore from "../CartStore";
     import NumberComponent from "../../src/Bootstrap/components/NumberComponent";
-    import FormStore from "../../src/Bootstrap/FormStore";
+    import FormStore from "../../src/Bootstrap/Store";
 
     export default {
         mixins:     [TranslationMixin],
@@ -51,8 +51,8 @@
         methods:    {
             addInCart: function () {
                 CartStore.addItem(this.reference.id, this.getQuantity);
-                FormStore.changeField('quantity[' + this.reference.id + ']', this.getQuantity);
-                window.setTimeout(() => FormStore.changeField('quantity-outside[' + this.reference.id + ']', 1), 500);
+                FormStore.setData('quantity[' + this.reference.id + ']', this.getQuantity);
+                window.setTimeout(() => FormStore.setData('quantity-outside[' + this.reference.id + ']', 1), 500);
             }
         }
     }

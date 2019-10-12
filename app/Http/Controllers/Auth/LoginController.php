@@ -64,7 +64,7 @@ class LoginController extends Controller
 
     public function spy (User $user, Request $request)
     {
-        Auth::login($user);
+        Auth::login($user, true);
         return $this->sendLoginResponse($request);
     }
 

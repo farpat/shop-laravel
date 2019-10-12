@@ -1,4 +1,5 @@
 import Translation from "../Translation/Translation";
+import Str from "../String/Str";
 
 class Security {
     constructor() {
@@ -34,6 +35,9 @@ class Security {
         for (let i = 0; i < rulesLength; i++) {
             let rule = rules[i];
             if (!rule.check(value)) {
+                const parseKeys = Str.parseKeysInString(name);
+                name = typeof parseKeys === 'string' ? parseKeys : parseKeys[parseKeys.length - 1];
+
                 let error = Translation.get('validation.' + rule.name);
                 const attribute = this.attributes[name] || name;
                 if (this._isMinMaxRule(rule.name)) {

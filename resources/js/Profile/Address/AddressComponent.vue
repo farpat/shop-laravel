@@ -1,19 +1,19 @@
 <template>
-    <li :class="{'d-none':address.isDeleted}" class="list-group-item">
+    <li :class="{'d-none':getCurrentAddress.is_deleted}" class="list-group-item">
         <div class="row align-items-center">
             <div class="col">
-                <!--                <input :name="getName('id')" type="hidden" v-model="address.id">-->
-                <!--                <input :name="getName('line1')" type="hidden" v-model="address.line1">-->
-                <!--                <input :name="getName('postal_code')" type="hidden" v-model="address.postalCode">-->
-                <!--                <input :name="getName('city')" type="hidden" v-model="address.city">-->
-                <!--                <input :name="getName('country')" type="hidden" v-model="address.country">-->
-                <!--                <input :name="getName('longitude')" type="hidden" v-model="address.longitude">-->
-                <!--                <input :name="getName('latitude')" type="hidden" v-model="address.latitude">-->
-                <!--                <input :name="getName('is_deleted')" type="hidden" v-model="address.isDeleted">-->
+                <input :name="getName('id')" type="hidden" v-model="getCurrentAddress.id">
+                <input :name="getName('line1')" type="hidden" v-model="getCurrentAddress.line1">
+                <input :name="getName('postal_code')" type="hidden" v-model="getCurrentAddress.postal_code">
+                <input :name="getName('city')" type="hidden" v-model="getCurrentAddress.city">
+                <input :name="getName('country')" type="hidden" v-model="getCurrentAddress.country">
+                <input :name="getName('longitude')" type="hidden" v-model="getCurrentAddress.longitude">
+                <input :name="getName('latitude')" type="hidden" v-model="getCurrentAddress.latitude">
+                <input :name="getName('is_deleted')" type="hidden" v-model="getCurrentAddress.is_deleted">
 
                 <InputComponent :data-attributes="{'algolia-input':true}" :name="getName('text')"
-                                :placeholder="__('Type complete address')" @change="changeAddress($event)"
-                                type="search"></InputComponent>
+                                :placeholder="__('Type complete address')"
+                                rules="required|min:10" type="search"></InputComponent>
 
                 <InputComponent :name="getName('line2')"></InputComponent>
             </div>
@@ -29,22 +29,31 @@
     import places from "places.js";
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import {InputComponent} from "../../src/Bootstrap";
+    import Store from "../../src/Bootstrap/Store";
 
     export default {
         components: {InputComponent},
         mixins:     [TranslationMixin],
         data:       function () {
             return {
-                address: this.initialAddress,
+                sharedState: Store.state
             }
         },
         props:      {
-            appId:          {type: String, required: true},
-            apiKey:         {type: String, required: true},
-            lang:           {type: String, required: true},
-            initialAddress: {type: Object, required: true},
+            appId:  {type: String, required: true},
+            apiKey: {type: String, required: true},
+            lang:   {type: String, required: true},
+            index:  {type: Number, required: true},
+        },
+        computed:   {
+            getCurrentAddress: function () {
+                return Store.getData('addresses[' + this.index + ']');
+            }
         },
         mounted:    function () {
+            console.log(this.$children);
+            this.$rules = this.$children[0].$rules;
+
             let placesAutocomplete = places({
                 appId:     this.appId,
                 apiKey:    this.apiKey,
@@ -52,29 +61,45 @@
             })
                 .configure({language: this.lang});
 
-            placesAutocomplete.setVal(this.initialAddress.text);
+            placesAutocomplete.setVal(this.getCurrentAddress.text);
 
-            placesAutocomplete.on('change', e => {
-                this.address = {
-                    ...this.address,
-                    line1:      e.suggestion.name,
-                    postalCode: e.suggestion.postcode,
-                    city:       e.suggestion.city,
-                    country:    e.suggestion.country,
-                    longitude:  e.suggestion.latlng.lng,
-                    latitude:   e.suggestion.latlng.lat,
-                };
+            placesAutocomplete.on('change', event => {
+                Store.setCustomData(Store.getData()['addresses'], this.index, {
+                    city:        event.suggestion.city,
+                    country:     event.suggestion.country,
+                    index:       this.index,
+                    line1:       event.suggestion.name,
+                    latitude:    event.suggestion.latlng.lat,
+                    longitude:   event.suggestion.latlng.lng,
+                    postal_code: event.suggestion.postcode,
+                    text:        event.suggestion.value,
+                });
+
+                Store.checkData('addresses[' + this.index + '][text]', event.suggestion.value, this.$rules);
             });
+
+            placesAutocomplete.on('clear', () => {
+                Store.setCustomData(Store.getData()['addresses'], this.index, {
+                    city:        null,
+                    country:     null,
+                    index:       this.index,
+                    line1:       null,
+                    latitude:    null,
+                    longitude:   null,
+                    postal_code: null,
+                    text:        null,
+                });
+
+                Store.checkData('addresses[' + this.index + '][text]', null, this.$rules);
+            })
         },
         methods:    {
-            changeAddress(event) {
-            },
             getName:       function (key) {
-                return `addresses[${this.address.index}][${key}]`;
+                return `addresses[${this.index}][${key}]`;
             },
             deleteAddress: function () {
-                this.$set(this.address, 'isDeleted', 1);
-            }
+                Store.setCustomData(Store.getData()['addresses'], this.index, {is_deleted: true, index: this.index});
+            },
         }
     }
 </script>

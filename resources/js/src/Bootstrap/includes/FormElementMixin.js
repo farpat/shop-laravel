@@ -1,15 +1,19 @@
-import FormStore from "../FormStore";
+import FormStore from "../Store";
 
 export default {
     props:    {
         id:             {type: String, required: false},
         name:           {type: String, required: true},
         label:          {type: String, default: ''},
+        rules:          {type: String, default: ''},
         dataAttributes: {
             type: Object, default: function () {
                 return {};
             }
         },
+    },
+    mounted:  function () {
+        this.setRules();
     },
     computed: {
         getDataAttributes: function () {
@@ -30,11 +34,10 @@ export default {
             return this.id || this.name;
         },
         isRequired:        function () {
-            if (FormStore.state.rules === {} || !FormStore.state.rules[this.name]) {
-                return false;
-            }
-
-            return FormStore.state.rules[this.name].find(rule => rule.name === 'required') !== undefined;
+            this.setRules();
+            return !!this.$rules.find(function(rule) {
+                rule.name === 'required';
+            });
         },
         getValue:          function () {
             return FormStore.getData(this.name);
@@ -45,8 +48,26 @@ export default {
     },
 
     methods: {
-        change: function (value) {
-            FormStore.changeField(this.name, value);
+        setRules: function () {
+            if (this.$rules === undefined) {
+                this.$rules = [];
+
+                if (this.rules !== '') {
+                    this.rules.split('|').forEach(rule => {
+                        const explodedRule = rule.split(':');
+                        let ruleString = explodedRule[0].charAt(0).toUpperCase() + explodedRule[0].substring(1);
+                        const RuleClass = require(`../../Security/Rules/${ruleString}Rule`).default;
+                        this.$rules.push(new RuleClass(explodedRule[1]));
+                    });
+                }
+            }
+        },
+        change:   function (value) {
+            FormStore.setData(this.name, value);
+
+            if (this.$rules.length > 1) {
+                FormStore.checkData(this.name, value, this.$rules);
+            }
         },
     }
 };

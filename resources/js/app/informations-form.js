@@ -2,8 +2,7 @@ import Vue from "vue";
 
 import {CheckboxComponent, InputComponent, NumberComponent} from "../src/Bootstrap";
 import AddressesComponent from "../Profile/Address/AddressesComponent";
-import FormStore from "../src/Bootstrap/FormStore";
-import {EmailRule, RequiredRule} from "../src/Security";
+import FormStore from "../src/Bootstrap/Store";
 import FormMixin from "../src/Bootstrap/FormMixin";
 
 new Vue({
@@ -12,16 +11,9 @@ new Vue({
     mixins:     [FormMixin],
     mounted:    function () {
         this.$submitButton = this.$el.querySelector('#submit');
-
-        FormStore.setRules({
-            name:  [new RequiredRule()],
-            email: [new RequiredRule(), new EmailRule()],
-        });
     },
     methods:    {
         onSubmit: function (event) {
-            FormStore.checkForm();
-
             if (FormStore.hasErrors()) {
                 this.$submitButton.disabled = true;
                 event.preventDefault();

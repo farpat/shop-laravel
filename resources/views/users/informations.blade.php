@@ -21,12 +21,12 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <input-component name="name" label="{{ __('Name') }}" autofocus></input-component>
+                    <input-component name="name" label="{{ __('Name') }}" autofocus rules="required|min:4"></input-component>
                 </div>
 
                 <div class="col-md-6">
                     <input-component name="email" label="{{ __('E-Mail Address') }}"
-                                     type="email"></input-component>
+                                     type="email" rules="required|email"></input-component>
                 </div>
             </div>
 

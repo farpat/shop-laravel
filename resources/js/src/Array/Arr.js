@@ -1,28 +1,20 @@
 class Arr {
-    firstKey(arr) {
-        return Object.keys(arr)[0];
-    }
+    getNestedProperty(object, keys) {
+        for (let i = 0; i < keys.length; i++) {
+            let key = keys[i];
 
-    getNestedProperty(obj) {
-        const args = Array.isArray(arguments[1]) ?
-            arguments[1] :
-            Array.from(arguments).slice(1);
-
-        for (let i = 0; i < args.length; i++) {
-            let key = args[i];
-
-            if (!obj || !obj.hasOwnProperty(key)) {
+            if (!object || !object.hasOwnProperty(key)) {
                 return undefined;
             }
 
-            obj = obj[key];
+            object = object[key];
         }
 
-        return obj;
+        return object;
     }
 
-    createNestedObject(string, value) {
-        let nestedObject = {};
+    setNestedObject(arr, string, value) {
+        let nestedObject = Object.assign({}, arr);
         let nextObject = {};
 
         const matches = Array.from(string.matchAll(/\[?([\w_-]+)\]?/g));
@@ -30,16 +22,17 @@ class Arr {
         for (let i = 0; i < matches.length; i++) {
             let key = matches[i][1];
 
-            if (i === 0) {
-                nestedObject[key] = {};
+            if (i === 0) { //start
+                if (nestedObject[key] === undefined) {
+                    nestedObject[key] = {};
+                }
                 nextObject = nestedObject[key];
-            }
-
-            else if (i === matches.length - 1) {
+            } else if (i === matches.length - 1) { //end
                 nextObject[key] = value;
-            }
-            else {
-                nextObject[key] = {};
+            } else { //middle
+                if (nextObject[key] === undefined) {
+                    nextObject[key] = {};
+                }
                 nextObject = nextObject[key];
             }
         }
