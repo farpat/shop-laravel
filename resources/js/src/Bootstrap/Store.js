@@ -7,11 +7,11 @@ class Store {
     static rulesCache = {};
 
     constructor() {
-        let formStore = window._FormStore || {};
+        let store = window._Store || {};
 
         this.state = {
-            datas:  formStore.datas || {},
-            errors: formStore.errors || {},
+            datas:  store.datas || {},
+            errors: store.errors || {},
         };
 
         this.rules = {};

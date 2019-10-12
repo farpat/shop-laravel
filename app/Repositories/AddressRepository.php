@@ -12,11 +12,9 @@ class AddressRepository
             return;
         }
 
-        dd($addressesArray);
-
         $deletedIds = [];
         foreach ($addressesArray as $addressArray) {
-            if ($addressArray['is_deleted'] && is_int($addressArray['id'])) {
+            if ($addressArray['is_deleted'] == 1 && is_numeric($addressArray['id'])) {
                 $deletedIds[] = $addressArray['id'];
                 continue;
             }

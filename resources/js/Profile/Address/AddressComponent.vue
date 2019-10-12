@@ -3,13 +3,14 @@
         <div class="row align-items-center">
             <div class="col">
                 <input :name="getName('id')" type="hidden" v-model="getCurrentAddress.id">
+                <input :name="getName('index')" type="hidden" v-model="getCurrentAddress.index">
                 <input :name="getName('line1')" type="hidden" v-model="getCurrentAddress.line1">
                 <input :name="getName('postal_code')" type="hidden" v-model="getCurrentAddress.postal_code">
                 <input :name="getName('city')" type="hidden" v-model="getCurrentAddress.city">
                 <input :name="getName('country')" type="hidden" v-model="getCurrentAddress.country">
                 <input :name="getName('longitude')" type="hidden" v-model="getCurrentAddress.longitude">
                 <input :name="getName('latitude')" type="hidden" v-model="getCurrentAddress.latitude">
-                <input :name="getName('is_deleted')" type="hidden" v-model="getCurrentAddress.is_deleted">
+                <input :name="getName('is_deleted')" type="hidden" v-model="getCurrentAddress.is_deleted ? 1 : 0">
 
                 <InputComponent :data-attributes="{'algolia-input':true}" :name="getName('text')"
                                 :placeholder="__('Type complete address')" rules="required|min:10"

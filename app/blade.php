@@ -46,8 +46,7 @@ function get_form_store ($errorBag, array $old): HtmlString
     foreach ($errorBag->getMessages() as $key => $message) {
         if (Str::contains($key, '.')) {
             Arr::set($errors, $key, $message[0]);
-        }
-        else {
+        } else {
             $errors[$key] = $message[0];
         }
     }
@@ -55,9 +54,9 @@ function get_form_store ($errorBag, array $old): HtmlString
 
 
     unset($old['_token']);
-    $datas = json_encode($old, JSON_FORCE_OBJECT);
+    $datas = json_encode($old, JSON_FORCE_OBJECT | JSON_NUMERIC_CHECK);
 
-    return new HtmlString("window._FormStore = { errors : $errors, datas : $datas, rules : {}}");
+    return new HtmlString("window._Store = { errors : $errors, datas : $datas, rules : {}}");
 }
 
 function get_asset (string $asset, bool $absolute = false): string
