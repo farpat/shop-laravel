@@ -49,7 +49,7 @@ class Store {
         let keys = Str.parseKeysInString(field);
 
         if (Array.isArray(keys)) {
-            const parsedValue = Arr.setNestedObject(this.state.datas, field, value);
+            const parsedValue = Arr.returnNestedObject(this.state.datas, field, value);
             Vue.set(this.state.datas, keys[0], {...parsedValue[keys[0]]});
         } else {
             Vue.set(this.state.datas, field, value);
@@ -60,7 +60,7 @@ class Store {
         let keys = Str.parseKeysInString(field);
 
         if (Array.isArray(keys)) {
-            const parsedValue = Arr.setNestedObject(this.state.errors, field, value);
+            const parsedValue = Arr.returnNestedObject(this.state.errors, field, value);
             Vue.set(this.state.errors, keys[0], {...parsedValue[keys[0]]});
         } else {
             Vue.set(this.state.errors, field, value);

@@ -13,8 +13,8 @@ class Arr {
         return object;
     }
 
-    setNestedObject(arr, string, value) {
-        let nestedObject = {...arr};
+    returnNestedObject(arr, string, value) {
+        let nestedObject = {...arr}; //To ensure don't reset arr's reference
         let nextObject = {};
 
         const matches = Array.from(string.matchAll(/\[?([\w_-]+)\]?/g));
