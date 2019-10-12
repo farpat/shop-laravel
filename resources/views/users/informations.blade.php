@@ -14,14 +14,14 @@
     <div class="container">
         <h1 class="mb-5">{{ __('My informations') }}</h1>
         <form id="informations-form"
-              @change="onChange($event)" @submit="onSubmit($event)"
               method="post" action="{{ route('user.informations') }}">
             @csrf
             @method('PUT')
 
             <div class="row">
                 <div class="col-md-6">
-                    <input-component name="name" label="{{ __('Name') }}" autofocus rules="required|min:4"></input-component>
+                    <input-component name="name" label="{{ __('Name') }}" autofocus
+                                     rules="required|min:4"></input-component>
                 </div>
 
                 <div class="col-md-6">

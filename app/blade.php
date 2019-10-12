@@ -1,8 +1,8 @@
 <?php
 
 use App\Repositories\NavigationRepository;
-use Illuminate\Support\{HtmlString, MessageBag, ViewErrorBag};
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\{Arr, HtmlString, MessageBag, Str, ViewErrorBag};
 
 function navigation (): Htmlable
 {
@@ -42,9 +42,17 @@ function breadcrumb (array $links): HtmlString
  */
 function get_form_store ($errorBag, array $old): HtmlString
 {
-    $errors = json_encode(array_map(function ($errors) {
-        return $errors[0];
-    }, $errorBag->getMessages()), JSON_FORCE_OBJECT);
+    $errors = [];
+    foreach ($errorBag->getMessages() as $key => $message) {
+        if (Str::contains($key, '.')) {
+            Arr::set($errors, $key, $message[0]);
+        }
+        else {
+            $errors[$key] = $message[0];
+        }
+    }
+    $errors = json_encode($errors, JSON_FORCE_OBJECT);
+
 
     unset($old['_token']);
     $datas = json_encode($old, JSON_FORCE_OBJECT);

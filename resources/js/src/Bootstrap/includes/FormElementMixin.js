@@ -35,9 +35,8 @@ export default {
         },
         isRequired:        function () {
             this.setRules();
-            return !!this.$rules.find(function(rule) {
-                rule.name === 'required';
-            });
+
+            return !!this.$rules.find(rule => rule.name === 'required');
         },
         getValue:          function () {
             return FormStore.getData(this.name);

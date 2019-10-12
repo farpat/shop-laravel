@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace App\Repositories;
 
@@ -8,13 +8,15 @@ class AddressRepository
 {
     public function setAddresses (User $user, array $addressesArray)
     {
-        if (empty($addressArray)) {
+        if (empty($addressesArray)) {
             return;
         }
 
+        dd($addressesArray);
+
         $deletedIds = [];
         foreach ($addressesArray as $addressArray) {
-            if ($addressArray['is_deleted']) {
+            if ($addressArray['is_deleted'] && is_int($addressArray['id'])) {
                 $deletedIds[] = $addressArray['id'];
                 continue;
             }

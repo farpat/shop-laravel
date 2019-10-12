@@ -51,6 +51,7 @@
             }
         },
         mounted:    function () {
+            this.$input = this.$children[0].$el.querySelector('input');
             this.$rules = this.$children[0].$rules;
 
             let placesAutocomplete = places({
@@ -72,6 +73,7 @@
                     longitude:   event.suggestion.latlng.lng,
                     postal_code: event.suggestion.postcode,
                     text:        event.suggestion.value,
+                    is_deleted:  false
                 });
 
                 Store.checkData('addresses[' + this.index + '][text]', event.suggestion.value, this.$rules);
@@ -87,6 +89,7 @@
                     longitude:   null,
                     postal_code: null,
                     text:        null,
+                    is_deleted:  false
                 });
 
                 Store.checkData('addresses[' + this.index + '][text]', null, this.$rules);
@@ -97,8 +100,16 @@
                 return `addresses[${this.index}][${key}]`;
             },
             deleteAddress: function () {
-                Store.set(Store.getData('addresses'), this.index, {is_deleted: true, index: this.index});
-                Store.set(Store.getError('addresses'), this.index, {text: undefined});
+                this.$input.removeAttribute('required');
+
+                Store.set(Store.getData('addresses'), this.index, {
+                    ...this.getCurrentAddress,
+                    is_deleted: true
+                });
+
+                if (Store.getError(`addresses[${this.index}]`)) {
+                    Store.set(Store.getError('addresses'), this.index, {text: undefined});
+                }
             },
         }
     }
