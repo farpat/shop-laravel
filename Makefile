@@ -63,7 +63,7 @@ dev: install ## Run development servers
 	@echo "Mail server launched on $(PRIMARY_COLOR)http://localhost:1080$(NO_COLOR)"
 
 stop-dev: ## Stop development servers
-	@docker-compose down --remove-orphans
+	@docker-compose stop
 	@echo "Dev server stopped : $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
 
 build: install ## Build assets projects for production

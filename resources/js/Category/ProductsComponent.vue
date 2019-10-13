@@ -27,7 +27,7 @@
 
 <script>
     import CategoryStore from './CategoryStore';
-    import {range} from 'lodash';
+    import range from 'lodash/range';
     import ProductComponent from "./ProductComponent";
     import TranslationMixin from "../src/Translation/TranslationMixin";
 

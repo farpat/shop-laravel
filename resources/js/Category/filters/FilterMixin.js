@@ -1,5 +1,5 @@
 import CategoryStore from "../CategoryStore";
-import {throttle} from "lodash";
+import throttle from "lodash/throttle";
 
 const wait = 1000; //seconds
 
