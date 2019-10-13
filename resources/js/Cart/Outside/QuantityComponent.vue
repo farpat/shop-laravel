@@ -45,17 +45,15 @@
                 return this.cartState.isLoading[this.reference.id];
             },
             getQuantity: function () {
-                return Store.getData(`quantity-outsite[${this.reference.id}]`);
+                return Store.getData(`quantity-outside[${this.reference.id}]`);
             }
         },
         methods:    {
             addInCart: function () {
-                console.log(1);
                 CartStore.addItem(this.reference.id, this.getQuantity);
                 Store.setData(`quantity[${this.reference.id}]`, this.getQuantity);
                 window.setTimeout(() => {
                     Store.setData(`quantity-outside[${this.reference.id}]`, 1);
-                    console.log(2);
                 }, 500);
             }
         }

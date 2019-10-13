@@ -44,7 +44,7 @@ class Store {
 
         if (Array.isArray(keys)) {
             const parsedValue = Arr.returnNestedObject(this.state[stateKey], field, value);
-            Vue.set(this.state[stateKey], keys[0], {...parsedValue[keys[0]]});
+            Vue.set(this.state[stateKey], keys[0], {...parsedValue[keys[0]]}); //to force a new reference for object
         } else {
             Vue.set(this.state[stateKey], field, value);
         }
