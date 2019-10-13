@@ -50,7 +50,7 @@ let configWebpack = {
     output:       {
         path:       path.resolve('./public/assets'),
         filename:   isDebug ? '[name].js' : '[name].[chunkhash:4].js',
-        publicPath: (isDebug ? ('http://localhost:' + process.env.WEBPACK_DEV_SERVER_PORT) : '') + '/assets/',
+        publicPath: `${isDebug ? ('http://localhost:' + process.env.WEBPACK_DEV_SERVER_PORT) : ''}/assets/`,
     },
     resolve:      {
         extensions: ['.js', '.vue', '.json'],

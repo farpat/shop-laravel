@@ -20,14 +20,14 @@ class CategoryStore {
 
     _addQueryString(key, value) {
         let prefix = this.data.currentQueryString.length === 0 ? '?' : '&';
-        this.data.currentQueryString += prefix + key + '=' + value;
+        this.data.currentQueryString += `${prefix + key}=${value}`;
     }
 
     _refreshUrl() {
         this.data.currentQueryString = '';
 
         for (const filterId in this.state.filterValues) {
-            this._addQueryString('f[' + filterId + ']', this.getFilterValue(filterId));
+            this._addQueryString(`f[${filterId}]`, this.getFilterValue(filterId));
         }
 
         if (this.state.currentPage > 1) {

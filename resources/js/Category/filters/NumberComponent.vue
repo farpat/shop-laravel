@@ -25,18 +25,18 @@
         mixins:   [FilterMixin],
         computed: {
             getMinFilterValue: function () {
-                return this.getFilterValue(this.filter.id + '-min');
+                return this.getFilterValue(`${this.filter.id}-min`);
             },
             getMaxFilterValue: function () {
-                return this.getFilterValue(this.filter.id + '-max');
+                return this.getFilterValue(`${this.filter.id}-max`);
             },
         },
         methods:  {
             setMinFilterValue: function (filterId, value) {
-                this.setFilterValue(filterId + '-min', value);
+                this.setFilterValue(`${filterId}-min`, value);
             },
             setMaxFilterValue: function (filterId, value) {
-                this.setFilterValue(filterId + '-max', value);
+                this.setFilterValue(`${filterId}-max`, value);
             }
         }
     }

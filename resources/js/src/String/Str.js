@@ -57,7 +57,7 @@ class Str {
             ++i;
         }
 
-        return bytes.toFixed(2) + ' ' + units[i];
+        return `${bytes.toFixed(2)} ${units[i]}`;
     }
 
     sizeToBytes(size) {
@@ -74,7 +74,7 @@ class Str {
 
     markValueIntoText(neddle, haystack) {
         neddle = neddle.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        let regex = new RegExp("(" + neddle.split(' ').join('|') + ")", "gi");
+        let regex = new RegExp(`(${neddle.split(' ').join('|')})`, "gi");
         return haystack.replace(regex, "<mark>$1</mark>");
     }
 }

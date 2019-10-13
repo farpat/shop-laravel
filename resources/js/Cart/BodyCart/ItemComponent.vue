@@ -1,7 +1,7 @@
 <template>
     <tr class="header-cart-item">
         <td>
-            <NumberComponent :min="1" :name="'quantity[' + this.item.product_reference_id + ']'"
+            <NumberComponent :min="1" :name="`quantity[${this.item.product_reference_id}]`"
                              @decrease="updateItem($event)"
                              @increase="updateItem($event)">
             </NumberComponent>
@@ -9,8 +9,9 @@
         <td>
             <img :alt="item.product_reference.label" :src="item.product_reference.main_image.url_thumbnail"
                  v-if="item.product_reference.main_image" width="85">
-            <a :href="item.product_reference.url">{{ item.product_reference.product.label + ' | ' +
-                item.product_reference.label }}</a>
+            <a :href="item.product_reference.url">
+                {{ item.product_reference.product.label }} | {{ item.product_reference.label }}
+            </a>
         </td>
         <td>
             {{ getAmountIncludingTaxes }}

@@ -1,28 +1,28 @@
 <template>
     <div class="form-group">
-        <label v-if="label" class="col-form-label" v-html="label"></label>
+        <label class="col-form-label" v-html="label" v-if="label"></label>
 
         <required-component :label="label" :required="isRequired"></required-component>
 
         <div :class="getContainerClass">
 
             <div class="custom-file">
-                <input type="file" :name="getName" :required="isRequired"
-                       @change="change(Array.from($event.target.files))"
-                       :multiple="multiple" :accept="getAccept"
-                       :id="getId" :class="getInputClass">
+                <input :accept="getAccept" :class="getInputClass" :id="getId"
+                       :multiple="multiple"
+                       :name="getName" :required="isRequired"
+                       @change="change(Array.from($event.target.files))" type="file">
 
                 <label class="custom-file-label">{{ getIndicator }}</label>
             </div>
 
             <div class="input-group-append" v-if="isDisplayingDeleteButton">
-                <button class="btn btn-outline-secondary" type="button" @click="onDeleteFile">&times;</button>
+                <button @click="onDeleteFile" class="btn btn-outline-secondary" type="button">&times;</button>
             </div>
         </div>
 
         <error-component :error="getError"></error-component>
 
-        <file-previewer-component v-if="preview" :files="getFiles" :preview="preview"></file-previewer-component>
+        <file-previewer-component :files="getFiles" :preview="preview" v-if="preview"></file-previewer-component>
     </div>
 </template>
 
@@ -39,21 +39,21 @@
             RequiredComponent,
             FilePreviewerComponent
         },
-        mixins: [FormElementMixin],
-        data: function () {
+        mixins:     [FormElementMixin],
+        data:       function () {
             return {
                 rules: [],
             };
         },
-        props: {
-            preview: {type: String, default: ''},
-            multiple: {type: Boolean, default: false},
+        props:      {
+            preview:          {type: String, default: ''},
+            multiple:         {type: Boolean, default: false},
             initialIndicator: {type: String, required: true},
         },
-        mounted: function () {
+        mounted:    function () {
             this.$inputFile = this.$el.querySelector('input');
         },
-        methods: {
+        methods:    {
             onDeleteFile: function () {
                 this.$inputFile.value = '';
                 this.change([]);
@@ -61,10 +61,10 @@
         },
 
         computed: {
-            getFiles: function () {
+            getFiles:                 function () {
                 return this.getValue || [];
             },
-            getAccept: function () {
+            getAccept:                function () {
                 if (this.rules.find(rule => rule.name === 'image') !== undefined) {
                     return 'image/*';
                 } else if (this.rules.find(rule => rule.name === 'audio') !== undefined) {
@@ -76,18 +76,18 @@
             isDisplayingDeleteButton: function () {
                 return !this.isRequired && this.getFiles.length > 0
             },
-            getContainerClass: function () {
+            getContainerClass:        function () {
                 return {
                     'input-group': this.isDisplayingDeleteButton,
                 };
             },
-            getInputClass: function () {
+            getInputClass:            function () {
                 return {
                     'custom-file-input': true,
-                    'is-invalid': this.getError
+                    'is-invalid':        this.getError
                 };
             },
-            getIndicator: function () {
+            getIndicator:             function () {
                 const filesCount = this.getFiles.length;
 
                 if (filesCount === 0) {
@@ -95,9 +95,9 @@
                 }
 
                 const totalSize = this.getFiles.reduce((acc, file) => acc + file.size, 0);
-                const information = filesCount === 1 ? this.getFiles[0].name : filesCount + ' files';
+                const information = filesCount === 1 ? this.getFiles[0].name : `${filesCount} files`;
 
-                return information + ' (' + Str.bytesToSize(totalSize) + ')';
+                return `${information} (${Str.bytesToSize(totalSize)})`;
             }
         }
     }

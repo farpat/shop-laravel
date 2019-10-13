@@ -42,7 +42,7 @@
         computed:   {
             getStyleCSS:       function () {
                 if (this.length) {
-                    return {width: ((this.length * 2) + 1) + 'rem', ...this.styleCSS};
+                    return {width: `${(this.length * 2) + 1}rem`, ...this.styleCSS};
                 }
 
                 return this.styleCSS;

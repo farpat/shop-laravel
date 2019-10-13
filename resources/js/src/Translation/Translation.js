@@ -9,7 +9,7 @@ class Translation {
     loadMainTranslation() {
         let json;
 
-        if (this.translations[this.lang + '.json'] === undefined) {
+        if (this.translations[`${this.lang}.json`] === undefined) {
             try {
                 json = require(`../../../js-lang/${this.lang}.json`);
             } catch (e) {
@@ -22,7 +22,7 @@ class Translation {
                 }
             }
 
-            this.translations[this.lang + '.json'] = json;
+            this.translations[`${this.lang}.json`] = json;
         }
     }
 
@@ -52,7 +52,7 @@ class Translation {
     _getMainTranslation(key) {
         this.loadMainTranslation();
 
-        return this.translations[this.lang + '.json'][key];
+        return this.translations[`${this.lang}.json`][key];
     }
 
     _getTranslation(key) {

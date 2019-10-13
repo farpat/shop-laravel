@@ -13,10 +13,11 @@
                 <input :name="getName('is_deleted')" type="hidden" v-model="getCurrentAddress.is_deleted ? 1 : 0">
 
                 <InputComponent :data-attributes="{'algolia-input':true}" :name="getName('text')"
-                                :placeholder="__('Type complete address')" rules="required|min:10"
+                                :placeholder="__('Street address, P.O., box, company name')" rules="required|min:10"
                                 type="search"></InputComponent>
 
-                <InputComponent :name="getName('line2')"></InputComponent>
+                <InputComponent :name="getName('line2')"
+                                :placeholder="__('Apartment, suite, unit, building, floor, etc.')"></InputComponent>
             </div>
             <div class="col-auto">
                 <button @click="deleteAddress" class="btn btn-link" style="font-size: 1.5rem;" type="button">&times;
@@ -48,7 +49,7 @@
         },
         computed:   {
             getCurrentAddress: function () {
-                return Store.getData('addresses[' + this.index + ']');
+                return Store.getData(`addresses[${this.index}]`);
             }
         },
         mounted:    function () {
@@ -60,7 +61,7 @@
                 apiKey:    this.apiKey,
                 container: this.$el.querySelector('[data-algolia-input]')
             })
-                .configure({language: this.lang});
+                .configure({language: this.lang, type: 'address'});
 
             placesAutocomplete.setVal(this.getCurrentAddress.text);
 
@@ -77,7 +78,7 @@
                     is_deleted:  false
                 });
 
-                Store.checkData('addresses[' + this.index + '][text]', event.suggestion.value, this.$rules);
+                Store.checkData(`addresses[${this.index}][text]`, event.suggestion.value, this.$rules);
             });
 
             placesAutocomplete.on('clear', () => {
@@ -93,7 +94,7 @@
                     is_deleted:  false
                 });
 
-                Store.checkData('addresses[' + this.index + '][text]', null, this.$rules);
+                Store.checkData(`addresses[${this.index}][text]`, null, this.$rules);
             })
         },
         methods:    {

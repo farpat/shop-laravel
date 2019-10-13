@@ -40,9 +40,9 @@ export default class Input {
 
     updateScreen(resizeEvent, nextElement) {
         var rect = this.element.getBoundingClientRect();
-        this.containerElement.style.left = Math.round(rect.left + window.pageXOffset + this.options.offsetLeft) + 'px';
-        this.containerElement.style.top = Math.round(rect.bottom + window.pageYOffset + this.options.offsetTop) + 'px';
-        this.containerElement.style.width = Math.round(rect.right - rect.left) + 'px'; // outerWidth
+        this.containerElement.style.left = `${Math.round(rect.left + window.pageXOffset + this.options.offsetLeft)}px`;
+        this.containerElement.style.top = `${Math.round(rect.bottom + window.pageYOffset + this.options.offsetTop)}px`;
+        this.containerElement.style.width = `${Math.round(rect.right - rect.left)}px`; // outerWidth
 
         if (resizeEvent === null) {
             this.containerElement.style.display = 'block';

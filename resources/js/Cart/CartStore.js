@@ -16,7 +16,7 @@ class CartStore {
 
         for (let productReferenceId in this.state.cartItems) {
             let quantity = this.state.cartItems[productReferenceId].quantity;
-            FormStore.setData('quantity[' + productReferenceId + ']', quantity);
+            FormStore.setData(`quantity[${productReferenceId}]`, quantity);
         }
     }
 
@@ -25,7 +25,7 @@ class CartStore {
 
         const request = Requestor.newRequest();
         return request
-            .patch(this.data.endPoint + '/' + productReferenceId, {
+            .patch(`${this.data.endPoint}/${productReferenceId}`, {
                 quantity
             })
             .then(cartItem => {
@@ -39,12 +39,12 @@ class CartStore {
 
         const request = Requestor.newRequest();
         return request
-            .delete(this.data.endPoint + '/' + productReferenceId)
+            .delete(`${this.data.endPoint}/${productReferenceId}`)
             .then(() => {
                 this.state.cartItemsLength--;
                 Vue.delete(this.state.cartItems, productReferenceId);
                 Vue.set(this.state.isLoading, productReferenceId, false);
-                FormStore.deleteData('quantity[' + productReferenceId + ']');
+                FormStore.deleteData(`quantity[${productReferenceId}]`);
             });
     }
 

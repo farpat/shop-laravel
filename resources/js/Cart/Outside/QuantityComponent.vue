@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-center" v-if="getItem === undefined">
         <div class="col-auto">
-            <NumberComponent :min="1" :name="'quantity-outside[' + this.reference.id + ']'"></NumberComponent>
+            <NumberComponent :min="1" :name="`quantity-outside[${this.reference.id}]`"></NumberComponent>
         </div>
         <div class="col-auto">
             <button @click="addInCart" class="btn btn-primary" type="button" v-show="!isLoading">
@@ -51,8 +51,8 @@
         methods:    {
             addInCart: function () {
                 CartStore.addItem(this.reference.id, this.getQuantity);
-                FormStore.setData('quantity[' + this.reference.id + ']', this.getQuantity);
-                window.setTimeout(() => FormStore.setData('quantity-outside[' + this.reference.id + ']', 1), 500);
+                FormStore.setData(`quantity[${this.reference.id}]`, this.getQuantity);
+                window.setTimeout(() => FormStore.setData(`quantity-outside[${this.reference.id}]`, 1), 500);
             }
         }
     }
