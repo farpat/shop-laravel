@@ -1,4 +1,4 @@
-import FormStore from "../Store";
+import Store from "../Store";
 
 export default {
     props:    {
@@ -39,10 +39,10 @@ export default {
             return !!this.$rules.find(rule => rule.name === 'required');
         },
         getValue:          function () {
-            return FormStore.getData(this.name);
+            return Store.getData(this.name);
         },
         getError:          function () {
-            return FormStore.getError(this.name) || '';
+            return Store.getError(this.name) || '';
         },
     },
 
@@ -62,10 +62,10 @@ export default {
             }
         },
         change:   function (value) {
-            FormStore.setData(this.name, value);
+            Store.setData(this.name, value);
 
             if (this.$rules.length > 1) {
-                FormStore.checkData(this.name, value, this.$rules);
+                Store.checkData(this.name, value, this.$rules);
             }
         },
     }

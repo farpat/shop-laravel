@@ -23,7 +23,7 @@
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import CartStore from "../CartStore";
     import NumberComponent from "../../src/Bootstrap/components/NumberComponent";
-    import FormStore from "../../src/Bootstrap/Store";
+    import Store from "../../src/Bootstrap/Store";
 
     export default {
         mixins:     [TranslationMixin],
@@ -34,7 +34,7 @@
         data:       function () {
             return {
                 cartState: CartStore.state,
-                formState: FormStore.state
+                formState: Store.state
             };
         },
         computed:   {
@@ -45,14 +45,18 @@
                 return this.cartState.isLoading[this.reference.id];
             },
             getQuantity: function () {
-                return this.formState.datas['quantity-outside'][this.reference.id]
+                return Store.getData(`quantity-outsite[${this.reference.id}]`);
             }
         },
         methods:    {
             addInCart: function () {
+                console.log(1);
                 CartStore.addItem(this.reference.id, this.getQuantity);
-                FormStore.setData(`quantity[${this.reference.id}]`, this.getQuantity);
-                window.setTimeout(() => FormStore.setData(`quantity-outside[${this.reference.id}]`, 1), 500);
+                Store.setData(`quantity[${this.reference.id}]`, this.getQuantity);
+                window.setTimeout(() => {
+                    Store.setData(`quantity-outside[${this.reference.id}]`, 1);
+                    console.log(2);
+                }, 500);
             }
         }
     }
