@@ -1,3 +1,5 @@
+import Arr from "../src/Array/Arr";
+
 class ProductStore {
     constructor() {
         this.state = {
@@ -10,27 +12,7 @@ class ProductStore {
             filledProductFields: {}
         };
 
-        this.setCurrentReference(this.getFirstReference());
-    }
-
-    getFirstReference() {
-        const firstKey = Object.keys(this.data.productReferences)[0];
-        return this.data.productReferences[firstKey];
-    }
-
-    getFilledProductValue(reference) {
-        if (this.data.filledProductFields[reference.id] === undefined) {
-            this.data.filledProductFields[reference.id] = {};
-
-            for (let productFieldId in this.data.productFields) {
-                this.data.filledProductFields[reference.id][productFieldId] = {
-                    ...this.data.productFields[productFieldId],
-                    value: reference.filled_product_fields[productFieldId]
-                };
-            }
-        }
-
-        return this.data.filledProductFields[reference.id];
+        this.setCurrentReference(Arr.first(this.data.productReferences));
     }
 
     setCurrentReference(reference) {

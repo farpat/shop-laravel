@@ -83,7 +83,7 @@ class Store {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
 
-            if (typeof fields[key] === 'object' && Object.keys(fields).length !== 0) { //if different from {}
+            if (!Arr.isEmpty(fields[key])) {
                 if (this.hasErrors(fields[key])) {
                     return true;
                 }

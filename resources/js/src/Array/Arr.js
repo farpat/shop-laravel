@@ -13,6 +13,28 @@ class Arr {
         return object;
     }
 
+    first(arr) {
+        const keys = Object.keys(this.data.productReferences);
+
+        if (keys.length === 0) {
+            return null;
+        }
+
+        return this.data.productReferences[keys[0]];
+    }
+
+    isEmpty(arr) {
+        if (arr.length !== undefined && arr.length === 0) {
+            return true;
+        }
+
+        if (typeof arr === 'object' && Object.keys(arr).length === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     returnNestedObject(arr, string, value) {
         let nestedObject = {...arr}; //To ensure don't reset arr's reference
         let nextObject = {};

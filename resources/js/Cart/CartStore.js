@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Requestor from "@farpat/api";
-import FormStore from "../src/Bootstrap/Store";
+import Store from "../src/Bootstrap/Store";
 
 class CartStore {
     constructor() {
@@ -15,8 +15,7 @@ class CartStore {
         };
 
         for (let productReferenceId in this.state.cartItems) {
-            let quantity = this.state.cartItems[productReferenceId].quantity;
-            FormStore.setData(`quantity[${productReferenceId}]`, quantity);
+            Store.setData(`quantity[${productReferenceId}]`, this.state.cartItems[productReferenceId].quantity);
         }
     }
 
@@ -25,13 +24,9 @@ class CartStore {
 
         const request = Requestor.newRequest();
         return request
-            .patch(`${this.data.endPoint}/${productReferenceId}`, {
-                quantity
-            })
-            .then(cartItem => {
-                Vue.set(this.state.cartItems, productReferenceId, cartItem);
-                Vue.set(this.state.isLoading, productReferenceId, false);
-            });
+            .patch(`${this.data.endPoint}/${productReferenceId}`, {quantity})
+            .then(cartItem => Vue.set(this.state.cartItems, productReferenceId, cartItem))
+            .finally(() => Vue.set(this.state.isLoading, productReferenceId, false));
     }
 
     deleteItem(productReferenceId) {
@@ -43,9 +38,9 @@ class CartStore {
             .then(() => {
                 this.state.cartItemsLength--;
                 Vue.delete(this.state.cartItems, productReferenceId);
-                Vue.set(this.state.isLoading, productReferenceId, false);
-                FormStore.deleteData(`quantity[${productReferenceId}]`);
-            });
+                Store.deleteData(`quantity[${productReferenceId}]`);
+            })
+            .finally(() => Vue.set(this.state.isLoading, productReferenceId, false));
     }
 
     addItem(productReferenceId, quantity) {
@@ -53,15 +48,12 @@ class CartStore {
 
         const request = Requestor.newRequest();
         return request
-            .post(this.data.endPoint, {
-                product_reference_id: productReferenceId,
-                quantity
-            })
+            .post(this.data.endPoint, {product_reference_id: productReferenceId, quantity})
             .then(cartItem => {
                 this.state.cartItemsLength++;
                 Vue.set(this.state.cartItems, productReferenceId, cartItem);
-                Vue.set(this.state.isLoading, productReferenceId, false);
-            });
+            })
+            .finally(() => Vue.set(this.state.isLoading, productReferenceId, false));
     }
 
     getItem(productReferenceId) {
