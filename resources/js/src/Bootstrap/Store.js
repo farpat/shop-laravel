@@ -4,10 +4,8 @@ import Str from "../String/Str";
 import Arr from "../Array/Arr";
 
 class Store {
-    static rulesCache = {};
-
     constructor() {
-        let store = window._Store || {};
+        const store = window._Store || {};
 
         this.state = {
             datas:  store.datas || {},
@@ -18,7 +16,11 @@ class Store {
     }
 
     get(stateKey, field) {
-        let keys = Str.parseKeysInString(field);
+        if (field === undefined) {
+            return this.state[stateKey];
+        }
+
+        const keys = Str.parseKeysInString(field);
 
         return Array.isArray(keys) ?
             Arr.getNestedProperty(this.state[stateKey], keys) :
@@ -26,45 +28,34 @@ class Store {
     }
 
     getData(field) {
-        if (field === undefined) {
-            return this.state.datas;
-        }
-
         return this.get('datas', field);
     }
 
     getError(field) {
-        if (field === undefined) {
-            return this.state.errors;
-        }
-
-        return this.get('errors', field) || '';
+        return this.get('errors', field);
     }
 
     set(object, key, value) {
         Vue.set(object, key, value);
     }
 
-    setData(field, value) {
-        let keys = Str.parseKeysInString(field);
+    _privateSet(stateKey, field, value) {
+        const keys = Str.parseKeysInString(field);
 
         if (Array.isArray(keys)) {
-            const parsedValue = Arr.returnNestedObject(this.state.datas, field, value);
-            Vue.set(this.state.datas, keys[0], {...parsedValue[keys[0]]});
+            const parsedValue = Arr.returnNestedObject(this.state[stateKey], field, value);
+            Vue.set(this.state[stateKey], keys[0], {...parsedValue[keys[0]]});
         } else {
-            Vue.set(this.state.datas, field, value);
+            Vue.set(this.state[stateKey], field, value);
         }
     }
 
-    setError(field, value) {
-        let keys = Str.parseKeysInString(field);
+    setData(field, value) {
+        this._privateSet('datas', field, value);
+    }
 
-        if (Array.isArray(keys)) {
-            const parsedValue = Arr.returnNestedObject(this.state.errors, field, value);
-            Vue.set(this.state.errors, keys[0], {...parsedValue[keys[0]]});
-        } else {
-            Vue.set(this.state.errors, field, value);
-        }
+    setError(field, value) {
+        this._privateSet('errors', field, value);
     }
 
     deleteData(field) {
@@ -85,35 +76,23 @@ class Store {
     }
 
     hasErrors(fields) {
-        if (fields === undefined) {
-            fields = this.state.errors;
-        }
+        fields = fields || this.state.errors;
 
         const keys = Object.keys(fields);
-
-        if (keys.length === 0) {
-            console.trace('toto');
-            return false;
-        }
 
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
 
-            if (typeof fields[key] === 'object') {
-                return this.hasErrors(fields[key]);
-            } else {
-                if (typeof fields[key] === 'string') {
-                    console.log('erreur donc true', fields[key]);
+            if (typeof fields[key] === 'object' && Object.keys(fields).length !== 0) { //if different from {}
+                if (this.hasErrors(fields[key])) {
                     return true;
                 }
+            } else if (typeof fields[key] === 'string') {
+                return true;
             }
         }
 
         return false;
-    }
-
-    setRules(field, rules) {
-        this.rules[field] = rules;
     }
 }
 

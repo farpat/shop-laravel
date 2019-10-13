@@ -13,7 +13,7 @@
 @section('content')
     <div class="container">
         <h1 class="mb-5">{{ __('My informations') }}</h1>
-        <form id="informations-form"
+        <form id="informations-form" @change="onChange($event)"
               method="post" action="{{ route('user.informations') }}">
             @csrf
             @method('PUT')

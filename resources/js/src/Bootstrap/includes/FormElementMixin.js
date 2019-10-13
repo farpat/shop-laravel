@@ -42,7 +42,7 @@ export default {
             return FormStore.getData(this.name);
         },
         getError:          function () {
-            return FormStore.getError(this.name);
+            return FormStore.getError(this.name) || '';
         },
     },
 
@@ -53,10 +53,10 @@ export default {
 
                 if (this.rules !== '') {
                     this.rules.split('|').forEach(rule => {
-                        const explodedRule = rule.split(':');
-                        let ruleString = explodedRule[0].charAt(0).toUpperCase() + explodedRule[0].substring(1);
+                        const [ruleName, ruleParameter] = rule.split(':');
+                        const ruleString = ruleName.charAt(0).toUpperCase() + ruleName.substring(1);
                         const RuleClass = require(`../../Security/Rules/${ruleString}Rule`).default;
-                        this.$rules.push(new RuleClass(explodedRule[1]));
+                        this.$rules.push(new RuleClass(ruleParameter));
                     });
                 }
             }

@@ -44,7 +44,7 @@
                 const lastAddress = this.getLastAddress;
                 const index = lastAddress ? lastAddress.index + 1 : 0;
 
-                Store.set(Store.getData()['addresses'], index, {
+                Store.set(Store.getData('addresses'), index, {
                     city:        null,
                     country:     null,
                     id:          null,
