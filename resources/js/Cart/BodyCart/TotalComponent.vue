@@ -30,7 +30,7 @@
                 let totalPriceIncludingVat = 0;
 
                 for (let productReferenceId in this.items) {
-                    totalPriceIncludingVat += this.items[productReferenceId]['amount_including_taxes'];
+                    totalPriceIncludingVat += this.items[productReferenceId].amount_including_taxes;
                 }
                 return totalPriceIncludingVat;
             },
