@@ -4,6 +4,8 @@
 
 @section('description', $category->meta_description)
 
+@section('script', 'category-show')
+
 @section('content')
     <div class="container">
         {{ breadcrumb($breadcrumb) }}

@@ -7,5 +7,11 @@ import FormMixin from "../src/Bootstrap/FormMixin";
 new Vue({
     el:         '#informations-form',
     components: {InputComponent, CheckboxComponent, NumberComponent, AddressesComponent},
-    mixins:     [FormMixin]
+    mixins:     [FormMixin],
+    methods:    {
+        onChange() {
+            console.log('!!!! CHECK STORE !!!!');
+            this.$store.checkStore();
+        }
+    }
 });

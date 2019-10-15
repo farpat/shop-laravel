@@ -4,6 +4,8 @@
 
 @section('description', __('Login'))
 
+@section('script', 'auth-login')
+
 @push('scripts')
     <script>
         {{ get_form_store($errors, old()) }}

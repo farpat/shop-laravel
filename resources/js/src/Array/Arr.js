@@ -14,13 +14,23 @@ class Arr {
     }
 
     first(arr) {
-        const keys = Object.keys(this.data.productReferences);
+        const keys = Object.keys(arr);
 
         if (keys.length === 0) {
             return null;
         }
 
-        return this.data.productReferences[keys[0]];
+        return arr[keys[0]];
+    }
+
+    last(arr) {
+        const keys = Object.keys(arr);
+
+        if (keys.length === 0) {
+            return null;
+        }
+
+        return arr[keys[keys.length - 1]];
     }
 
     isEmpty(arr) {

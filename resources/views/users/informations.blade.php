@@ -10,6 +10,8 @@
     </script>
 @endpush
 
+@section('script', 'user-informations')
+
 @section('content')
     <div class="container">
         <h1 class="mb-5">{{ __('My informations') }}</h1>

@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ get_asset('app.css') }}">
     @stack('styles')
 </head>
-<body>
+<body data-script="@yield('script')">
 <div id="app">
     @include('_partials.nav')
 

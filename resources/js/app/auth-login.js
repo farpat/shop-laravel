@@ -9,10 +9,4 @@ new Vue({
     el:         '#login-form',
     components: {InputComponent, CheckboxComponent},
     mixins:     [FormMixin],
-    mounted:    function () {
-        FormStore.setRules({
-            email:    [new RequiredRule(), new EmailRule()],
-            password: [new RequiredRule()],
-        });
-    },
 });

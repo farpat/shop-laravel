@@ -68,6 +68,7 @@ class Store {
     }
 
     checkData(field, value, rules) {
+        console.log('check ' + field);
         const error = Security.getError(rules, field, value);
 
         this.setError(field, error);
@@ -93,6 +94,35 @@ class Store {
         }
 
         return false;
+    }
+
+    checkStore(fields) {
+        if (fields === undefined) {
+            fields = this.getRuleKeys();
+        }
+
+        fields.forEach(field => {
+            const rules = this.getRules(field);
+            if (rules.length > 0) {
+                this.checkData(field, this.getData(field), rules);
+            } else {
+                const fieldsToCheck = [];
+
+                console.log(field, rules);
+            }
+        });
+    }
+
+    setRules(field, rules) {
+        this.rules[field] = rules;
+    }
+
+    getRules(field) {
+        return this.rules[field];
+    }
+
+    getRuleKeys() {
+        return Object.keys(this.rules);
     }
 }
 

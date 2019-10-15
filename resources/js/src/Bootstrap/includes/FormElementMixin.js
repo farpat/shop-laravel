@@ -1,4 +1,5 @@
 import Store from "../Store";
+import Str from "../../String/Str";
 
 export default {
     props:    {
@@ -48,18 +49,25 @@ export default {
 
     methods: {
         setRules: function () {
-            if (this.$rules === undefined) {
-                this.$rules = [];
+            const transformedField = Str.transformKeysToStar(this.name);
+            let rules = Store.getRules(transformedField);
+
+            if (rules === undefined) {
+                rules = [];
 
                 if (this.rules !== '') {
                     this.rules.split('|').forEach(rule => {
                         const [ruleName, ruleParameter] = rule.split(':');
                         const ruleString = ruleName.charAt(0).toUpperCase() + ruleName.substring(1);
                         const RuleClass = require(`../../Security/Rules/${ruleString}Rule`).default;
-                        this.$rules.push(new RuleClass(ruleParameter));
+                        rules.push(new RuleClass(ruleParameter));
                     });
                 }
+
+                Store.setRules(transformedField, rules);
             }
+
+            this.$rules = rules;
         },
         change:   function (value) {
             Store.setData(this.name, value);

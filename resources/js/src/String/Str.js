@@ -1,7 +1,31 @@
+import Arr from "../Array/Arr";
+
 const units = ['o', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo'];
 
 class Str {
     static parseKeysCache = {};
+
+    isNumeric(number) {
+        return !isNaN(number);
+    }
+
+    transformKeysToStar(str) {
+        const keys = this.parseKeysInString(str);
+
+        if (typeof keys === 'string') {
+            return str;
+        }
+
+        let transformedKey = keys[0];
+        for (let i = 1; i + 1 < keys.length; i++) {
+            transformedKey += '.*';
+        }
+
+        const lastKey = Arr.last(keys);
+        transformedKey += (this.isNumeric(lastKey)) ? '.*' : `.${lastKey}`;
+
+        return transformedKey;
+    }
 
     parseKeysInString(str) {
         if (!Str.parseKeysCache.hasOwnProperty(str)) {

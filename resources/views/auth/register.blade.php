@@ -10,6 +10,8 @@
     </script>
 @endpush
 
+@section('script', 'auth-register')
+
 @section('content')
     <div class="container">
         <section>

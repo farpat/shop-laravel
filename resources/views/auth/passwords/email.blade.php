@@ -10,6 +10,8 @@
     </script>
 @endpush
 
+@section('script', 'auth-email')
+
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
@@ -24,7 +26,7 @@
                             </div>
                         @endif
 
-                        <form id="send-token-password-form" @change="onChange($event)" @submit="onSubmit($event)" method="post" action="{{ route('password.email') }}"
+                        <form id="send-token-password-form" method="post" action="{{ route('password.email') }}"
                               aria-label="{{ __('Reset Password') }}">
                             @csrf
 

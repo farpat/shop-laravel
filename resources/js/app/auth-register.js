@@ -10,31 +10,6 @@ new Vue({
     el:         '#register-form',
     components: {InputComponent, CheckboxComponent, NumberComponent},
     mixins: [FormMixin],
-    mounted:    function () {
-        this.$submitButton = this.$el.querySelector('#submit');
-
-        FormStore.setRules({
-            name:                  [new RequiredRule()],
-            email:                 [new RequiredRule(), new EmailRule()],
-            password:              [new RequiredRule(), new MinRule(6)],
-            password_confirmation: [new RequiredRule(), new ConfirmedRule('#password')],
-            accept:                [new RequiredRule()]
-        });
-    },
-    methods:    {
-        onSubmit: function (event) {
-            FormStore.checkForm();
-
-            if (FormStore.hasErrors()) {
-                this.$submitButton.disabled = true;
-                event.preventDefault();
-            }
-        },
-
-        onChange: function () {
-            this.$submitButton.disabled = FormStore.hasErrors();
-        }
-    }
 });
 
 const modalButton = document.querySelector('#terms-of-use-modal-button');
