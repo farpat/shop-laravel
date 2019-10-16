@@ -114,7 +114,7 @@ class CategoryStore {
         }
 
         refreshUrl.call(this);
-        refreshProducts();
+        refreshProducts.call(this);
     }
 
     /**
