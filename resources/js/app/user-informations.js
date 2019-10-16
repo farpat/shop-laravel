@@ -10,7 +10,6 @@ new Vue({
     mixins:     [FormMixin],
     methods:    {
         onChange() {
-            console.log('!!!! CHECK STORE !!!!');
             this.$store.checkStore();
         }
     }

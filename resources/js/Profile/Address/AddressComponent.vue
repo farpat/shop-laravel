@@ -110,7 +110,7 @@
                 });
 
                 if (Store.getError(`addresses[${this.index}]`)) {
-                    Store.set(Store.getError('addresses'), this.index, {text: undefined});
+                    Store.set(Store.getError('addresses'), this.index, undefined);
                 }
             },
         }

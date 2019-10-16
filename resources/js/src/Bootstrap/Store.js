@@ -3,6 +3,28 @@ import Security from "../Security/Security";
 import Str from "../String/Str";
 import Arr from "../Array/Arr";
 
+const set = function (stateKey, field, value) {
+    const keys = Str.parseKeysInString(field);
+
+    if (Array.isArray(keys)) {
+        const parsedValue = Arr.returnNestedObject(this.state[stateKey], field, value);
+        Vue.set(this.state[stateKey], keys[0], {...parsedValue[keys[0]]}); //to force a new reference for object
+    } else {
+        Vue.set(this.state[stateKey], field, value);
+    }
+};
+const get = function (stateKey, field) {
+    if (field === undefined) {
+        return this.state[stateKey];
+    }
+
+    const keys = Str.parseKeysInString(field);
+
+    return Array.isArray(keys) ?
+        Arr.getNestedProperty(this.state[stateKey], keys) :
+        this.state[stateKey][field];
+};
+
 class Store {
     constructor() {
         const store = window._Store || {};
@@ -15,47 +37,24 @@ class Store {
         this.rules = {};
     }
 
-    get(stateKey, field) {
-        if (field === undefined) {
-            return this.state[stateKey];
-        }
-
-        const keys = Str.parseKeysInString(field);
-
-        return Array.isArray(keys) ?
-            Arr.getNestedProperty(this.state[stateKey], keys) :
-            this.state[stateKey][field];
-    }
-
     getData(field) {
-        return this.get('datas', field);
+        return get.call(this, 'datas', field);
     }
 
     getError(field) {
-        return this.get('errors', field);
+        return get.call(this, 'errors', field);
     }
 
     set(object, key, value) {
         Vue.set(object, key, value);
     }
 
-    _privateSet(stateKey, field, value) {
-        const keys = Str.parseKeysInString(field);
-
-        if (Array.isArray(keys)) {
-            const parsedValue = Arr.returnNestedObject(this.state[stateKey], field, value);
-            Vue.set(this.state[stateKey], keys[0], {...parsedValue[keys[0]]}); //to force a new reference for object
-        } else {
-            Vue.set(this.state[stateKey], field, value);
-        }
-    }
-
     setData(field, value) {
-        this._privateSet('datas', field, value);
+        set.call(this, 'datas', field, value);
     }
 
     setError(field, value) {
-        this._privateSet('errors', field, value);
+        set.call(this, 'errors', field, value);
     }
 
     deleteData(field) {
@@ -68,7 +67,6 @@ class Store {
     }
 
     checkData(field, value, rules) {
-        console.log('check ' + field);
         const error = Security.getError(rules, field, value);
 
         this.setError(field, error);
@@ -104,11 +102,21 @@ class Store {
         fields.forEach(field => {
             const rules = this.getRules(field);
             if (rules.length > 0) {
-                this.checkData(field, this.getData(field), rules);
-            } else {
-                const fieldsToCheck = [];
+                const splitedField = field.split('.');
 
-                console.log(field, rules);
+                if (splitedField.length === 1) {
+                    this.checkData(field, this.getData(field), rules);
+                } else {
+                    const object = this.getData(splitedField[0]);
+
+                    if (Arr.isAssociative(object)) {
+                        for (let key in object) {
+                            this.checkData(splitedField[2], object[key][splitedField[2]], rules);
+                        }
+                    } else {
+                        console.log('TODO not associative');
+                    }
+                }
             }
         });
     }

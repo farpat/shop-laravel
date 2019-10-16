@@ -1,4 +1,12 @@
+import Str from "../String/Str";
+
 class Arr {
+    /**
+     *
+     * @param {Object} object
+     * @param {Array} keys
+     * @returns {undefined|*}
+     */
     getNestedProperty(object, keys) {
         for (let i = 0; i < keys.length; i++) {
             let key = keys[i];
@@ -13,26 +21,56 @@ class Arr {
         return object;
     }
 
-    first(arr) {
-        const keys = Object.keys(arr);
+    /**
+     *
+     * @param {Object} obj
+     * @return {Boolean}
+     */
+    isAssociative(obj) {
+        const keys = Object.keys(obj);
+
+        if (keys.length === 0) {
+            return false;
+        }
+
+        return !!!keys.find(key => !Str.isNumeric(key));
+    }
+
+    /**
+     *
+     * @param {Object} obj
+     * @returns {undefined|*}
+     */
+    first(obj) {
+        const keys = Object.keys(obj);
 
         if (keys.length === 0) {
             return null;
         }
 
-        return arr[keys[0]];
+        return obj[keys[0]];
     }
 
-    last(arr) {
-        const keys = Object.keys(arr);
+    /**
+     *
+     * @param {Object} obj
+     * @returns {undefined|*}
+     */
+    last(obj) {
+        const keys = Object.keys(obj);
 
         if (keys.length === 0) {
             return null;
         }
 
-        return arr[keys[keys.length - 1]];
+        return obj[keys[keys.length - 1]];
     }
 
+    /**
+     *
+     * @param {Object|Array} arr
+     * @returns {boolean}
+     */
     isEmpty(arr) {
         if (arr.length !== undefined && arr.length === 0) {
             return true;
@@ -45,8 +83,14 @@ class Arr {
         return false;
     }
 
-    returnNestedObject(arr, string, value) {
-        let nestedObject = {...arr}; //To ensure don't reset arr's reference
+    /**
+     *
+     * @param {Object} object
+     * @param {String} string
+     * @param {*} value
+     */
+    returnNestedObject(object, string, value) {
+        let nestedObject = {...object}; //To ensure don't reset object's reference
         let nextObject = {};
 
         const matches = Array.from(string.matchAll(/\[?([\w_-]+)\]?/g));
