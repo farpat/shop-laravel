@@ -123,7 +123,7 @@ let configWebpack = {
 
         new MiniCssExtractPlugin({
             filename: '[name].[hash:4].css',
-            // disable:  isDebug,
+            disable:  isDebug,
         }),
     ],
 };
