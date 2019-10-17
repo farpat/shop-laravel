@@ -111,7 +111,12 @@ class Store {
 
                     if (Arr.isAssociative(object)) {
                         for (let key in object) {
-                            this.checkData(splitedField[2], object[key][splitedField[2]], rules);
+                            if (splitedField[2] !== undefined) {
+                                this.checkData(splitedField[2], object[key][splitedField[2]], rules);
+                            }
+                            else {
+                                this.checkData(splitedField[0], object[key], rules);
+                            }
                         }
                     } else {
                         console.log('TODO not associative');

@@ -63,6 +63,28 @@ class ModuleRepository
         $moduleParameter->value = $value;
     }
 
+    public function updateParameter (string $moduleLabel, string $parameterLabel, $value, string $description = null)
+    {
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+
+        $moduleParameter = ModuleParameter::query()
+            ->where('module_id', Module::where('label', $moduleLabel))
+            ->where('label', $parameterLabel);
+
+        $moduleParameter->value = $value;
+        if ($description !== null) {
+            $moduleParameter->description = $description;
+        }
+
+        $moduleParameter->save();
+
+        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
+
+        return $moduleParameter;
+    }
+
     public function createParameter (string $moduleLabel, string $parameterLabel, $value, string $description = null): ModuleParameter
     {
         if (is_array($value)) {
@@ -113,16 +135,5 @@ class ModuleRepository
     public function deactivate (string $moduleLabel)
     {
         $this->updateModule($moduleLabel, ['is_active' => false]);
-    }
-
-    private function transformValueToSave (ModuleParameter $moduleParameter)
-    {
-        $value = $moduleParameter->value;
-
-        if (is_array($value)) {
-            $value = json_encode($value);
-        }
-
-        $moduleParameter->value = $value;
     }
 }
