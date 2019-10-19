@@ -74,7 +74,7 @@ export default class Input {
         context.addEventListener('mouseleave', (e) => {
             var selectedItem = context.querySelector('.autocomplete-suggestion.selected');
 
-            if (selectedItem) {
+            if (selectedItem !== undefined) {
                 selectedItem.classList.remove('selected');
             }
         });
@@ -89,7 +89,7 @@ export default class Input {
             while (el && !(found = el.classList.contains('autocomplete-suggestion'))) el = el.parentElement;
             if (found) {
                 var selectedItem = context.querySelector('.autocomplete-suggestion.selected');
-                if (selectedItem) {
+                if (selectedItem !== undefined) {
                     selectedItem.classList.remove('selected');
                 }
                 el.classList.add('selected');
@@ -151,7 +151,7 @@ export default class Input {
                     sel.nextElementSibling :
                     sel.previousElementSibling;
 
-                if (next) {
+                if (next !== undefined) {
                     sel.className = sel.className.replace('selected', '');
                     next.classList.add('selected');
                     this.element.value = next.getAttribute('data-val');

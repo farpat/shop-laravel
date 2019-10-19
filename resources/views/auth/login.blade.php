@@ -26,10 +26,10 @@
 
                             <input type="hidden" name="purchase" value="{{ $wantPurchase }}">
 
-                            <input-component autofocus label="{{ __('E-Mail Address') }}" name="email" type="email"
+                            <input-component autofocus label="{{ __('E-Mail Address') }}" name="email" type="email" rules="required|email"
                             ></input-component>
 
-                            <input-component label="{{ __('Password') }}" name="password" required type="password"
+                            <input-component label="{{ __('Password') }}" name="password" required type="password" rules="required"
                             ></input-component>
 
 

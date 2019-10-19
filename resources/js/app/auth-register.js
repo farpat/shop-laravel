@@ -1,8 +1,5 @@
 import Vue from "vue";
-
 import {InputComponent, CheckboxComponent, NumberComponent, ModalComponent} from "../src/Bootstrap";
-import FormStore from "../src/Bootstrap/Store";
-import {RequiredRule, EmailRule, ConfirmedRule, MinRule} from "../src/Security";
 import FormMixin from "../src/Bootstrap/FormMixin";
 import Translation from "../src/Translation/Translation";
 

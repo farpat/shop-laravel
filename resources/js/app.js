@@ -5,6 +5,6 @@ import "./app/cart";
 
 const script = document.body.dataset.script;
 
-if (script) {
+if (script !== undefined) {
     import (`./app/${script}`);
 }

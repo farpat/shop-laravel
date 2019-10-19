@@ -1,9 +1,6 @@
 import Vue from "vue";
-
 import {CheckboxComponent, InputComponent} from "../src/Bootstrap";
-import FormStore from "../src/Bootstrap/Store";
 import FormMixin from "../src/Bootstrap/FormMixin";
-import {EmailRule, RequiredRule} from "../src/Security";
 
 new Vue({
     el:         '#login-form',

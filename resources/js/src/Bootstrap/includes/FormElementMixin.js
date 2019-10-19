@@ -72,7 +72,7 @@ export default {
         change:   function (value) {
             Store.setData(this.name, value);
 
-            if (this.$rules.length > 1) {
+            if (this.$rules.length > 0) {
                 Store.checkData(this.name, value, this.$rules);
             }
         },

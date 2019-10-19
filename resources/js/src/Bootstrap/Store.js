@@ -3,6 +3,12 @@ import Security from "../Security/Security";
 import Str from "../String/Str";
 import Arr from "../Array/Arr";
 
+/**
+ *
+ * @param {String} stateKey
+ * @param {String} field
+ * @param {String|Number} value
+ */
 const set = function (stateKey, field, value) {
     const keys = Str.parseKeysInString(field);
 
@@ -13,6 +19,12 @@ const set = function (stateKey, field, value) {
         Vue.set(this.state[stateKey], field, value);
     }
 };
+/**
+ *
+ * @param {String} stateKey
+ * @param {String} field
+ * @returns {*}
+ */
 const get = function (stateKey, field) {
     if (field === undefined) {
         return this.state[stateKey];
@@ -37,26 +49,56 @@ class Store {
         this.rules = {};
     }
 
+    /**
+     *
+     * @param {String} field
+     * @returns {*}
+     */
     getData(field) {
         return get.call(this, 'datas', field);
     }
 
+    /**
+     *
+     * @param {String} field
+     * @returns {*}
+     */
     getError(field) {
         return get.call(this, 'errors', field);
     }
 
+    /**
+     *
+     * @param {Object} object
+     * @param {String|Number} key
+     * @param {*} value
+     */
     set(object, key, value) {
         Vue.set(object, key, value);
     }
 
+    /**
+     *
+     * @param {String} field
+     * @param {*} value
+     */
     setData(field, value) {
         set.call(this, 'datas', field, value);
     }
 
+    /**
+     *
+     * @param {String} field
+     * @param {String} value
+     */
     setError(field, value) {
         set.call(this, 'errors', field, value);
     }
 
+    /**
+     *
+     * @param {String} field
+     */
     deleteData(field) {
         const keys = Str.parseKeysInString(field);
         if (Array.isArray(keys)) {
@@ -66,9 +108,24 @@ class Store {
         }
     }
 
+    /**
+     *
+     * @param {String} field
+     * @param {String|Number|Array} value
+     * @param {Array} rules
+     * @returns {string}
+     */
     checkData(field, value, rules) {
-        const error = Security.getError(rules, field, value);
+        const confirmationField = field.slice(-1) === ']' ?
+            `${field.slice(0, field.length - 1)}_confirmation]` :
+            `${field}_confirmation`;
 
+        const rulesConfirmation = this.getRules(confirmationField);
+        if (rulesConfirmation !== undefined) {
+            this.checkData(confirmationField, this.getData(confirmationField), rulesConfirmation);
+        }
+
+        const error = Security.getError(rules, field, value);
         this.setError(field, error);
 
         return error;
@@ -94,12 +151,12 @@ class Store {
         return false;
     }
 
-    checkStore(fields) {
-        if (fields === undefined) {
-            fields = this.getRuleKeys();
+    checkStore(ruleKeys) {
+        if (ruleKeys === undefined) {
+            ruleKeys = this.getRuleKeys();
         }
 
-        fields.forEach(field => {
+        ruleKeys.forEach(field => {
             const rules = this.getRules(field);
             if (rules.length > 0) {
                 const splitedField = field.split('.');
@@ -119,7 +176,7 @@ class Store {
                             }
                         }
                     } else {
-                        console.log('TODO not associative');
+                        console.error('TODO not associative');
                     }
                 }
             }
