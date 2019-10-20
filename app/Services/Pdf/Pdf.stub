@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Pdf;
+
+use App\Services\Pdf\Pdf;
+
+class DummyClass extends Pdf
+{
+    public function __construct ()
+    {
+        //
+    }
+
+    protected function getOptions (): array
+    {
+        return [
+            //
+        ];
+    }
+
+    protected function getFilePath (): ?string
+    {
+        return null;
+    }
+
+    protected function getPages (): array
+    {
+        return [
+            //
+        ];
+    }
+}

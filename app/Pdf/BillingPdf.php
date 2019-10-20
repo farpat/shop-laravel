@@ -17,7 +17,12 @@ class BillingPdf extends Pdf
         $this->billing = $billing;
     }
 
-    protected function getFilePath ()
+    protected function getOptions (): array
+    {
+        return [];
+    }
+
+    protected function getFilePath (): ?string
     {
         return $this->billing->billing_path;
     }

@@ -14,7 +14,7 @@ class BuildTranslations extends Command
      *
      * @var string
      */
-    protected $signature = 'app:build-translations';
+    protected $name = 'app:build-translations';
 
     /**
      * The console command description.
