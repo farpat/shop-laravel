@@ -4,6 +4,14 @@ class Arr {
     /**
      *
      * @param {Object} object
+     */
+    getFirstValue(object) {
+
+    }
+
+    /**
+     *
+     * @param {Object} object
      * @param {Array} keys
      * @returns {undefined|*}
      */

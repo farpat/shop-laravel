@@ -113,16 +113,19 @@ class Store {
      * @param {String} field
      * @param {String|Number|Array} value
      * @param {Array} rules
+     * @param {Boolean} isConfirmationField
      * @returns {string}
      */
-    checkData(field, value, rules) {
-        const confirmationField = field.slice(-1) === ']' ?
-            `${field.slice(0, field.length - 1)}_confirmation]` :
-            `${field}_confirmation`;
+    checkData(field, value, rules, isConfirmationField = false) {
+        if (!isConfirmationField) {
+            const confirmationField = field.slice(-1) === ']' ?
+                `${field.slice(0, field.length - 1)}_confirmation]` :
+                `${field}_confirmation`;
 
-        const rulesConfirmation = this.getRules(confirmationField);
-        if (rulesConfirmation !== undefined) {
-            this.checkData(confirmationField, this.getData(confirmationField), rulesConfirmation);
+            const rulesConfirmation = this.getRules(confirmationField);
+            if (rulesConfirmation !== undefined) {
+                this.checkData(confirmationField, this.getData(confirmationField), rulesConfirmation, true);
+            }
         }
 
         const error = Security.getError(rules, field, value);
@@ -131,48 +134,36 @@ class Store {
         return error;
     }
 
-    hasErrors(fields) {
-        fields = fields || this.state.errors;
-
-        const keys = Object.keys(fields);
-
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-
-            if (!Arr.isEmpty(fields[key])) {
-                if (this.hasErrors(fields[key])) {
-                    return true;
-                }
-            } else if (typeof fields[key] === 'string') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
+    /**
+     *
+     * @param {Object} ruleKeys
+     */
     checkStore(ruleKeys) {
         if (ruleKeys === undefined) {
             ruleKeys = this.getRuleKeys();
         }
 
-        ruleKeys.forEach(field => {
-            const rules = this.getRules(field);
+        let checkStore = true;
+
+        ruleKeys.forEach(ruleKey => {
+            const rules = this.getRules(ruleKey);
             if (rules.length > 0) {
-                const splitedField = field.split('.');
+                const splitedField = ruleKey.split('.');
 
                 if (splitedField.length === 1) {
-                    this.checkData(field, this.getData(field), rules);
+                    if (!this.checkData(ruleKey, this.getData(ruleKey), rules)) {
+                        checkStore = false;
+                    }
                 } else {
-                    const object = this.getData(splitedField[0]);
+                    const data = this.getData(splitedField[0]);
 
-                    if (Arr.isAssociative(object)) {
-                        for (let key in object) {
-                            if (splitedField[2] !== undefined) {
-                                this.checkData(splitedField[2], object[key][splitedField[2]], rules);
-                            }
-                            else {
-                                this.checkData(splitedField[0], object[key], rules);
+                    if (Arr.isAssociative(data)) {
+                        for (let dataKey in data) {
+                            const field = splitedField[2] || splitedField[0]; //addresses 1 text | quantity 2
+                            const value = splitedField[2] ? data[dataKey][splitedField[2]] : data[dataKey];
+
+                            if (!this.checkData(field, value, rules)) {
+                                checkStore = false;
                             }
                         }
                     } else {
@@ -181,16 +172,32 @@ class Store {
                 }
             }
         });
+
+        return checkStore;
     }
 
+    /**
+     *
+     * @param {String} field
+     * @param {Array} rules
+     */
     setRules(field, rules) {
         this.rules[field] = rules;
     }
 
+    /**
+     *
+     * @param {String} field
+     * @returns {*}
+     */
     getRules(field) {
         return this.rules[field];
     }
 
+    /**
+     *
+     * @returns {String[]}
+     */
     getRuleKeys() {
         return Object.keys(this.rules);
     }
