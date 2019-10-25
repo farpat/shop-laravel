@@ -2,21 +2,25 @@
 
 namespace App\Console\Commands;
 
+use App\Pdf\BillingPdf;
+use Composer\Autoload\ClassLoader;
+use Composer\Composer;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 
 class MakePdf extends Command
 {
+    const PDF_STUB = __DIR__ . '/../../Services/Pdf/Pdf.stub';
+
+    const NAMESPACE = 'App\Pdf';
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
     protected $name = 'make:pdf';
-
     /**
      * The console command description.
      *
@@ -31,22 +35,24 @@ class MakePdf extends Command
      */
     public function handle ()
     {
-        if (!File::exists(app_path('Pdf'))) {
-            File::makeDirectory(app_path('Pdf'));
+        $pdfDirectory = app_path(str_replace('App\\', '', self::NAMESPACE));
+
+        if (!File::exists($pdfDirectory)) {
+            File::makeDirectory($pdfDirectory);
         }
 
-        $className = $this->getClassNameWithoutNamespace($this->argument('name'));
+        $className = $this->getClassName($this->argument('name'));
 
-        $path = $this->getPath($className);
-        if (File::exists($path)) {
-            $this->error("The PDF class << App\Pdf\\$className >> exists!");
+        $classPath = $this->getClassPath($pdfDirectory, $className);
+        if (File::exists($classPath)) {
+            $this->error(sprintf('The PDF class << %s\\%s >> exists!', self::NAMESPACE, $className));
         } else {
-            $this->createPdfClass($className, $path);
-            $this->info("The PDF class << App\Pdf\\$className >> is created.");
+            $this->createPdfClass($className, $classPath);
+            $this->info(sprintf('The PDF class << %s\\%s >> is created.', self::NAMESPACE, $className));
         }
     }
 
-    protected function getClassNameWithoutNamespace (string $name)
+    protected function getClassName (string $name)
     {
         $name = Str::endsWith($name, 'pdf') ?
             substr($name, 0, -3) . '-pdf' :
@@ -57,16 +63,17 @@ class MakePdf extends Command
         return $name;
     }
 
-    protected function getPath (string $name)
+    protected function getClassPath (string $pdfDirectory, string $className)
     {
-        return app_path("Pdf/$name.php");
+        return $pdfDirectory . '/' . $className . '.php';
     }
 
-    protected function createPdfClass (string $className, string $path)
+    protected function createPdfClass (string $className, string $classPath)
     {
-        $fileContent = file_get_contents(app_path('Services/Pdf/Pdf.stub'));
+        $fileContent = file_get_contents(self::PDF_STUB);
         $fileContent = str_replace('DummyClass', $className, $fileContent);
-        file_put_contents($path, $fileContent);
+        $fileContent = str_replace('DummyNamespace', self::NAMESPACE, $fileContent);
+        file_put_contents($classPath, $fileContent);
     }
 
     /**
