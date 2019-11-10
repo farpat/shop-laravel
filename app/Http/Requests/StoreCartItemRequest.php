@@ -24,8 +24,8 @@ class StoreCartItemRequest extends FormRequest
     public function rules ()
     {
         return [
-            'quantity'             => 'required|int|min:1',
-            'product_reference_id' => 'required|int|min:1',
+            'quantity'             => ['required', 'int', 'min:1'],
+            'product_reference_id' => ['required', 'int', 'min:1'],
         ];
     }
 }

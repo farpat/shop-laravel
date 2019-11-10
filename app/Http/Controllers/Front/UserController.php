@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\Address;
 use App\Http\Requests\{UserInformationsRequest, UserPasswordRequest};
-use App\Models\User;
+use App\Models\{Address, User};
 use App\Notifications\UserPasswordNotification;
 use App\Repositories\{AddressRepository, CartRepository, UserRepository};
 use Illuminate\Contracts\Hashing\Hasher;
@@ -36,13 +35,14 @@ class UserController extends Controller
 
         $old = $request->old();
         if ($old) {
-            $form = array_merge($user->only(['name', 'email']), $old);
+            $form = $old;
         } else {
             $form = $user->only(['name', 'email']);
             $form['addresses'] = $user->addresses
                 ->map(function (Address $address, $index) {
                     return array_merge($address->toArray(), ['index' => $index]);
-                })->toArray();
+                })
+                ->toArray();
         }
 
         return view('users.informations', compact('form'));
@@ -67,14 +67,7 @@ class UserController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-        $oldPassword = $request->input('password');
         $newPassword = $request->input('new_password');
-
-        if (!$hasher->check($oldPassword, $user->password)) {
-            return redirect()
-                ->back()
-                ->withErrors(['password' => __('auth.failed')]);
-        }
 
         $this->userRepository->update($user, ['password' => $hasher->make($newPassword)]);
 

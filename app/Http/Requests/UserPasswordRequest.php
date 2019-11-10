@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\GoodPasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserPasswordRequest extends FormRequest
@@ -24,7 +25,7 @@ class UserPasswordRequest extends FormRequest
     public function rules ()
     {
         return [
-            'password'     => 'required|string',
+            'password'     => ['required', app(GoodPasswordRule::class)],
             'new_password' => 'required|string|min:6|confirmed',
         ];
     }

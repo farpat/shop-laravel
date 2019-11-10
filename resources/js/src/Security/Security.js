@@ -7,7 +7,7 @@ const getType = function (value) {
     if (typeof value === 'string') {
         type = 'string';
     } else if (isFinite(value)) {
-        type = 'numeric'
+        type = 'numeric';
     }
 
     return type;

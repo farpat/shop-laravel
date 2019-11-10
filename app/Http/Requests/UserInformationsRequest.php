@@ -24,26 +24,17 @@ class UserInformationsRequest extends FormRequest
     public function rules ()
     {
         return [
-            'name'             => 'required|string|max:255',
-            'email'            => 'required|string|email|max:255|unique:users,email,' . $this->input('id'),
+            'name'             => ['required', 'string', 'max:191'],
+            'email'            => [
+                'required', 'string', 'email', 'max:191', 'unique:users,email,' . $this->user()->id
+            ],
             'addresses.*.text' => function ($attribute, $value, $fail) {
-                $attribute = str_replace('.text', '.longitude', $attribute);
-                $value = $this->input($attribute);
+                $longitudeAttribute = str_replace('.text', '.longitude', $attribute);
 
-                if ($value === null) {
+                if ($this->input($longitudeAttribute) === null) {
                     $fail(trans('validation.not_regex', ['attribute' => 'text']));
                 }
             },
         ];
-    }
-
-    protected function getValidatorInstance ()
-    {
-        $data = $this->all();
-        $data['id'] = $this->user()->id;
-
-        $this->getInputSource()->replace($data);
-
-        return parent::getValidatorInstance();
     }
 }

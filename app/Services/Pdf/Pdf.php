@@ -2,7 +2,6 @@
 
 namespace App\Services\Pdf;
 
-use Exception;
 use mikehaertl\wkhtmlto\Pdf as WkPdf;
 
 abstract class Pdf

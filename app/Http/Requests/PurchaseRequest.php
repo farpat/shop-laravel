@@ -24,7 +24,7 @@ class PurchaseRequest extends FormRequest
     public function rules()
     {
         return [
-            'stripe_token' => 'required'
+            'stripe_token' => ['required']
         ];
     }
 }
