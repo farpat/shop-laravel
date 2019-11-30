@@ -7,16 +7,19 @@
                 <img :alt="image.alt" :src="image.url">
             </div>
         </div>
-        <a :href="getTarget" class="carousel-control-prev" data-slide="prev" role="button">
+
+        <a v-if="reference.images.length > 1" :href="getTarget" class="carousel-control-prev" data-slide="prev"
+           role="button">
             <span aria-hidden="true" class="carousel-control-prev-icon"></span>
             <span class="sr-only">{{ __('pagination.previous') }}</span>
         </a>
-        <a :href="getTarget" class="carousel-control-next" data-slide="next" role="button">
+        <a v-if="reference.images.length > 1" :href="getTarget" class="carousel-control-next" data-slide="next"
+           role="button">
             <span aria-hidden="true" class="carousel-control-next-icon"></span>
             <span class="sr-only">{{ __('pagination.next') }}</span>
         </a>
 
-        <ol class="carousel-indicators">
+        <ol v-if="reference.images.length > 1" class="carousel-indicators">
             <li :class="{'active':index === currentIndex}"
                 :data-slide-to="index"
                 :data-target="getTarget"
@@ -31,20 +34,22 @@
     import TranslationMixin from "../../src/Translation/TranslationMixin";
 
     export default {
-        mixins: [TranslationMixin],
-        data: function () {
+        mixins:   [TranslationMixin],
+        data:     function () {
             return {
-                currentIndex: 1
+                currentIndex: 0
             };
         },
-        mounted: function () {
-            $(this.getTarget).on('slid.bs.carousel', (e) => this.currentIndex = e.to);
+        mounted:  function () {
+            if (this.reference.images.length > 1) {
+                $(this.getTarget).on('slid.bs.carousel', (e) => this.currentIndex = e.to);
+            }
         },
-        props: {
+        props:    {
             reference: {type: Object, required: true}
         },
         computed: {
-            getId: function () {
+            getId:     function () {
                 return 'carousel-reference-' + this.reference.id;
             },
             getTarget: function () {
