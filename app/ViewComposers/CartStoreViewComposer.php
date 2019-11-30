@@ -34,10 +34,11 @@ class CartStoreViewComposer
     public function compose (View $view)
     {
         if (!$this->cartManager->isRefreshed()) {
-            $this->cartManager->refresh(Auth::getUser());
+            $this->cartManager->refresh(Auth::user());
         }
 
-        $view->with('cartItems', $this->cartManager->getItems());
-        $view->with('currency', $this->moduleRepository->getParameter('home', 'currency')->value);
+        $view
+            ->with('cartItems', $this->cartManager->getItems())
+            ->with('currency', $this->moduleRepository->getParameter('home', 'currency')->value);
     }
 }

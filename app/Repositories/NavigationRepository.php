@@ -33,7 +33,7 @@ class NavigationRepository implements Htmlable
         $this->currentUrl = $url->current();
     }
 
-    public function toHtml ()
+    public function toHtml (): string
     {
         if (!$navigation = $this->moduleRepository->getParameter('home', 'navigation')) {
             return '';
@@ -44,11 +44,9 @@ class NavigationRepository implements Htmlable
         $html = '';
 
         foreach ($links as $key => $link1) {
-            if (is_int($key)) {
-                $html .= $this->renderLink1($link1);
-            } else {
-                $html .= $this->renderLinks2($key, $link1);
-            }
+            $html = is_int($key) ?
+                $html . $this->renderLink1($link1) :
+                $html . $this->renderLinks2($key, $link1);
         }
 
         return $html;
@@ -75,18 +73,21 @@ class NavigationRepository implements Htmlable
 
         foreach ($resources as $model => $ids) {
             $ids = array_keys($ids);
-            if ($model === Product::class) {
-                $resources[$model] = Product::query()->with(['category:id,slug'])->whereIn('id', $ids)->get()->keyBy('id');
-            }
-            elseif ($model === Category::class) {
-                $resources[$model] = Category::query()->whereIn('id', $ids)->get()->keyBy('id');
+
+            switch ($model) {
+                case Product::class:
+                    $resources[$model] = Product::query()->with(['category:id,slug'])->whereIn('id', $ids)->get()->keyBy('id');
+                    break;
+                case Category::class:
+                    $resources[$model] = Category::query()->whereIn('id', $ids)->get()->keyBy('id');
+                    break;
             }
         }
 
         $this->resources = $resources;
     }
 
-    private function renderLink1 (string $link1)
+    private function renderLink1 (string $link1): string
     {
         $resource = $this->getResource($link1);
 
@@ -102,7 +103,7 @@ class NavigationRepository implements Htmlable
      * @return Product|Category
      * @throws Exception
      */
-    private function getResource (string $link1)
+    private function getResource (string $link1): Model
     {
         [$model, $id] = explode(':', $link1);
 
@@ -113,28 +114,36 @@ class NavigationRepository implements Htmlable
         return $resource;
     }
 
-    private function renderLinks2 (string $link, array $links)
+    private function renderLinks2 (string $link, array $links): string
     {
         $resource = $this->getResource($link);
-
-        $begin = "<li class=\"nav-item dropdown\"><button class=\"nav-link btn btn-link dropdown-toggle\" id=\"dropdown-{$resource->slug}\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">{$resource->label}</button><div class=\"dropdown-menu\" aria-labelledby=\"dropdown-{$resource->slug}\">";
 
         $itemsHtml = array_reduce($links, function ($acc, $link) {
             $acc .= $this->renderLink2($link);
             return $acc;
         });
 
-        $end = "</div></li>";
-
-        return $begin . $itemsHtml . $end;
+        return <<<HTML
+<li class="nav-item dropdown">
+    <button class="nav-link btn btn-link dropdown-toggle" id="dropdown-{$resource->slug}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {$resource->label}
+    </button>
+    
+    <div class="dropdown-menu" aria-labelledby="dropdown-{$resource->slug}">
+        {$itemsHtml}
+    </div>
+</li>
+HTML;
     }
 
-    private function renderLink2 (string $link)
+    private function renderLink2 (string $link): string
     {
         $resource = $this->getResource($link);
 
         $activeClass = $resource->url === $this->currentUrl ? ' active' : '';
 
-        return "<a class=\"dropdown-item{$activeClass}\" href=\"{$resource->url}\">{$resource->label}</a>";
+        return <<<HTML
+<a class="dropdown-item{$activeClass}" href="{$resource->url}">{$resource->label}</a>
+HTML;
     }
 }

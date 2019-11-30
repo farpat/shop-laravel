@@ -12,10 +12,15 @@ class CartRepository
      * @var ProductRepository
      */
     private $productRepository;
+    /**
+     * @var ModuleRepository
+     */
+    private $moduleRepository;
 
-    public function __construct (ProductRepository $productRepository)
+    public function __construct (ProductRepository $productRepository, ModuleRepository $moduleRepository)
     {
         $this->productRepository = $productRepository;
+        $this->moduleRepository = $moduleRepository;
     }
 
     public function getCart (User $user): Cart
@@ -149,17 +154,12 @@ class CartRepository
 
     public function updateCartOnOrderedStatus (Cart $cart)
     {
-        $cartNumber = DB::table('cart_numbers')->first();
+        $nextNumber = (int)$this->moduleRepository->getParameter('billing', 'next_number')->value;
+        $cart->update([
+            'status' => Cart::ORDERED_STATUS,
+            'number' => $cart->computeNextNumber($nextNumber)
+        ]);
 
-        if ($cartNumber === null) {
-            $number = 1;
-            DB::table('cart_numbers')->insert(compact('number'));
-        } else {
-            $number = $cartNumber->number + 1;
-            DB::table('cart_numbers')->update(compact('number'));
-        }
-
-        $cartNumber = $cart->updated_at->format('Y-m') . '-' . $number;
-        $cart->update(['status' => Cart::ORDERED_STATUS, 'number' => $cartNumber]);
+        $this->moduleRepository->updateParameter('billing', 'next_number', $nextNumber + 1);
     }
 }

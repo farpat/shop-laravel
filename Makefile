@@ -10,7 +10,7 @@ DANGER_COLOR    = \033[0;31m
 WARNING_COLOR   = \033[0;33m
 NO_COLOR        = \033[m
 
-#For test
+# For test
 filter      ?= tests
 dir         ?=
 

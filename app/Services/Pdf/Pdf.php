@@ -6,6 +6,10 @@ use mikehaertl\wkhtmlto\Pdf as WkPdf;
 
 abstract class Pdf
 {
+    protected function beforeMake() {
+        config(['app.webpack_port' => null]);
+    }
+
     public function send (string $filename = null): bool
     {
         $pdf = $this->makePdfObject();
@@ -17,7 +21,8 @@ abstract class Pdf
 
     private function makePdfObject ()
     {
-        config(['app.webpack_port' => null]);
+        $this->beforeMake();
+
         $pdf = new WkPdf();
         $options = $this->getOptions();
         if (!empty($options)) {

@@ -35,26 +35,29 @@ class CartController extends Controller
 
     public function storeItem (StoreCartItemRequest $request)
     {
-        $productReferenceId = $request->input('product_reference_id');
-        $quantity = $request->input('quantity');
-
-        $responseData = $this->cartManager->addItem($quantity, $this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->addItem(
+            $request->input('quantity'),
+            $this->productRepository->getReference($request->input('product_reference_id'))
+        );
 
         return new JsonResponse($responseData);
     }
 
     public function updateItem (UpdateCartItemRequest $request, int $productReferenceId)
     {
-        $quantity = $request->input('quantity');
-
-        $responseData = $this->cartManager->updateItem($quantity, $this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->updateItem(
+            $request->input('quantity'),
+            $this->productRepository->getReference($productReferenceId)
+        );
 
         return new JsonResponse($responseData);
     }
 
     public function destroyItem (int $productReferenceId)
     {
-        $responseData = $this->cartManager->deleteItem($this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->deleteItem(
+            $this->productRepository->getReference($productReferenceId)
+        );
 
         return new JsonResponse($responseData);
     }

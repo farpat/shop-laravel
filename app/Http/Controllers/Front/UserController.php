@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\Authenticate;
 use App\Http\Requests\{UserInformationsRequest, UserPasswordRequest};
 use App\Models\{Address, User};
 use App\Notifications\UserPasswordNotification;
@@ -19,7 +20,7 @@ class UserController extends Controller
 
     public function __construct (UserRepository $userRepository)
     {
-        $this->middleware('auth');
+        $this->middleware(Authenticate::class);
         $this->userRepository = $userRepository;
     }
 
@@ -34,15 +35,18 @@ class UserController extends Controller
         $user = $request->user();
 
         $old = $request->old();
-        if ($old) {
-            $form = $old;
+        if ($old === null) {
+            $form = [
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'addresses' => $user->addresses->map(function (Address $address, $index) {
+                    $toArray = $address->toArray();
+                    $toArray['index'] = $index;
+                    return $toArray;
+                })->toArray()
+            ];
         } else {
-            $form = $user->only(['name', 'email']);
-            $form['addresses'] = $user->addresses
-                ->map(function (Address $address, $index) {
-                    return array_merge($address->toArray(), ['index' => $index]);
-                })
-                ->toArray();
+            $form = $old;
         }
 
         return view('users.informations', compact('form'));

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductField;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Exception;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
@@ -52,7 +53,7 @@ class CategoryRepository
                         {$this->toHtml($children)}
                     </div>
                 </div>
-                HTML;
+HTML;
             }
         }
 
@@ -119,7 +120,7 @@ class CategoryRepository
             ->keyBy('id');
     }
 
-    public function getRootId(Category $category): int
+    public function getRootId (Category $category): int
     {
         if ($category->level === 1) {
             return $category->id;
@@ -165,14 +166,16 @@ class CategoryRepository
     {
         $domain = config('app.url');
 
-        return DB::query()
+        /** @var Builder $query */
+        $query = DB::query();
+
+        return $query
             ->selectRaw('
-            c.id, c.label, i.url_thumbnail as image, 
-            CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
-            ->fromRaw('categories c')
-            ->leftJoin(DB::raw('images i'), DB::raw('c.image_id'), '=', DB::raw('i.id'))
+            c.id, c.label, i.url_thumbnail as image, CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
+            ->from('categories', 'c')
+            ->leftJoin('images i', 'c.image_id', '=', 'i.id')
             ->whereRaw('c.label like :term', ['term' => "%$term%"])
-            ->groupBy(DB::raw('c.id'))
+            ->groupBy('c.id')
             ->limit(2)
             ->get();
     }

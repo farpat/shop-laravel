@@ -19,7 +19,7 @@ class BillingController extends Controller
     public function export (Cart $billing)
     {
         if (!File::exists($billing->billing_path)) {
-            $billing->load(['items.product_reference']);
+            $billing->load(['items.product_reference', 'user']);
 
             $billingPdf = new BillingPdf($billing);
             $billingPdf->save();
@@ -30,7 +30,7 @@ class BillingController extends Controller
 
     public function view (Cart $billing)
     {
-        $billing->load(['items.product_reference']);
+        $billing->load(['items.product_reference', 'user']);
         return view('cart.billing', compact('billing'));
     }
 }

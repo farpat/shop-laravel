@@ -7,7 +7,7 @@
                 <img src="https://mondrian.mashable.com/uploads%252Fcard%252Fimage%252F918220%252F316bce31-4c38-4f3b-b743-a17406175286.png%252F950x534__filters%253Aquality%252880%2529.png"
                      width="150" alt="logo">
                 <p>
-                    <strong>Patrick FARRUGIA</strong><br>
+                    <strong>{{ $billing->user->name }}</strong><br>
                     Résidence la Bienvenue<br>
                     4 boulevard Henri Barnier<br>
                     13015 Marseille<br>

@@ -49,14 +49,14 @@ class CartManager
     public function refresh (?User $user = null): void
     {
         $this->isRefreshed = true;
-        if ($user) {
+        if ($user) { //get cart and items from database
             $cart = $this->cartRepository->getCart($user);
 
             $items = $cart->items_count > 0 ?
                 $this->cartRepository->getItems($cart) :
                 [];
 
-        } else {
+        } else { //get cart and items from cookie
             $cart = null;
 
             $items = $this->getCookieItems();
@@ -190,17 +190,11 @@ class CartManager
         return $this->hydratedItems;
     }
 
-    /**
-     * @return Cart|null
-     */
     public function getCart (): ?Cart
     {
         return $this->cart;
     }
 
-    /**
-     * @return User|null
-     */
     public function getUser (): ?User
     {
         return $this->user;

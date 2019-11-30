@@ -14,6 +14,7 @@ class AddressRepository
 
         $deletedIds = [];
         foreach ($addressesArray as $addressArray) {
+            //fill $deletedIds
             if ($addressArray['is_deleted'] == 1 && is_numeric($addressArray['id'])) {
                 $deletedIds[] = $addressArray['id'];
                 continue;

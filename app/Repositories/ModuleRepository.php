@@ -70,8 +70,15 @@ class ModuleRepository
         }
 
         $moduleParameter = ModuleParameter::query()
-            ->where('module_id', Module::where('label', $moduleLabel))
-            ->where('label', $parameterLabel);
+            ->whereHas('module', function (Builder $query) use ($moduleLabel) {
+                $query->where('label', $moduleLabel);
+            })
+            ->where('label', $parameterLabel)
+            ->first();
+
+        if ($moduleParameter === null) {
+            throw new Exception("Module parameter << $moduleLabel@$parameterLabel >> doesn't not exists!");
+        }
 
         $moduleParameter->value = $value;
         if ($description !== null) {
@@ -110,30 +117,5 @@ class ModuleRepository
         }
 
         return $module;
-    }
-
-    public function isActive (string $moduleLabel): bool
-    {
-        $this->getModule($moduleLabel)->is_active;
-    }
-
-    public function destroyModule (string $label): void
-    {
-        $this->getModule($label)->delete();
-    }
-
-    public function activate (string $moduleLabel)
-    {
-        $this->updateModule($moduleLabel, ['is_active' => true]);
-    }
-
-    public function updateModule (string $moduleLabel, array $data)
-    {
-        $this->getModule($moduleLabel)->update($data);
-    }
-
-    public function deactivate (string $moduleLabel)
-    {
-        $this->updateModule($moduleLabel, ['is_active' => false]);
     }
 }

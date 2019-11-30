@@ -58,6 +58,18 @@ class DatabaseSeeder extends Seeder
         $this->cartManager = $cartManager;
     }
 
+    private function startTime (string $label): float
+    {
+        dump($label);
+        return microtime(true);
+    }
+
+    private function endTime (float $start): void
+    {
+        $end = microtime(true);
+        dump('==> ' . round($end - $start, 2) . ' seconds');
+    }
+
     /**
      * Seed the application's database.
      *
@@ -66,15 +78,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run ()
     {
+        $start = $this->startTime('Creation of modules');
+        $this->createHomeModule();
+        $this->createBillingModule();
+        $this->endTime($start);
+
+        $start = $this->startTime('Creation of products');
         $this->createTaxes();
-
-        dump('Creation of products');
-        $start = microtime(true);
-
         foreach (['Computers', 'Phones', 'Printers', 'Cameras', 'Screens'] as $categoryLabel) {
-            $category = factory(Category::class)->create(['label'        => $categoryLabel,
-                                                          'nomenclature' => strtoupper($categoryLabel),
-                                                          'slug'         => strtolower($categoryLabel)]);
+            $category = factory(Category::class)->create([
+                'label'        => $categoryLabel,
+                'nomenclature' => strtoupper($categoryLabel),
+                'slug'         => strtolower($categoryLabel)
+            ]);
 
             $productfields = $this->createProductfields($category);
 
@@ -89,20 +105,14 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->endTime($start);
 
-        $end = microtime(true);
-        dump('==> ' . round($end - $start, 2) . ' seconds');
-
-        dump('Creation of carts');
-        $start = microtime(true);
+        $start = $this->startTime('Creation of carts');
         foreach (factory(User::class, 10)->create() as $user) {
             $this->createOrderedCart($user, random_int(2, 5));
             $this->createOrderingCart($user);
         }
-        $end = microtime(true);
-        dump('==> ' . round($end - $start, 2) . ' seconds');
-
-        $this->createHomeModule();
+        $this->endTime($start);
     }
 
     private function createTaxes ()
@@ -147,7 +157,7 @@ class DatabaseSeeder extends Seeder
             return $this->categoryRepository->setProductFields($category, $productFieldsRequestData);
         }
 
-        return null;
+        return collect();
     }
 
     private function createSubCategory (Category $parentCategory): Category
@@ -199,15 +209,7 @@ class DatabaseSeeder extends Seeder
         return $taxes;
     }
 
-    /**
-     * @param Product $product
-     * @param Collection|null $productFields
-     * @param Collection $taxes
-     *
-     * @return ProductReference[]|Collection
-     * @throws Exception
-     */
-    private function createProductReferences (Product $product, ?Collection $productFields, Collection $taxes): Collection
+    private function computePricesOfProduct (Product $product, Collection $taxes)
     {
         $unitPriceExcludingTaxes = pow(10, random_int(1, 5));
         $totalTaxes = $taxes->reduce(function ($acc, Tax $tax) use ($unitPriceExcludingTaxes) {
@@ -221,13 +223,28 @@ class DatabaseSeeder extends Seeder
         }, 0);
         $unitPriceIncludingTaxes = $totalTaxes + $unitPriceExcludingTaxes;
 
+        return [$unitPriceExcludingTaxes, $unitPriceIncludingTaxes];
+    }
+
+    /**
+     * @param Product $product
+     * @param Collection $productFields
+     * @param Collection $taxes
+     *
+     * @return ProductReference[]|Collection
+     * @throws Exception
+     */
+    private function createProductReferences (Product $product, Collection $productFields, Collection $taxes): Collection
+    {
+        [$unitPriceExcludingTaxes, $unitPriceIncludingTaxes] = $this->computePricesOfProduct($product, $taxes);
+
         $productReferences = collect();
         $count = random_int(1, 3);
         for ($i = 0; $i < $count; $i++) {
             $filledProductfields = [];
-            $labelArray = [];
+            $labelsArray = [];
 
-            if ($productFields) {
+            if ($productFields->isNotEmpty()) {
                 foreach ($productFields as $productField) {
                     $values = $productField->type === 'string' ?
                         self::STRING_PRODUCT_FIELDS[$productField->label] :
@@ -236,13 +253,13 @@ class DatabaseSeeder extends Seeder
                     $value = $values[array_rand($values)];
 
                     $filledProductfields[$productField->id] = $value;
-                    $labelArray[] = $productField->label . ' - ' . $value;
+                    $labelsArray[] = $productField->label . ' - ' . $value;
                 }
             }
 
 
             $productReference = ProductReference::query()->create([
-                'label'                      => !empty($labelArray) ? implode(' | ', $labelArray) : $product->label,
+                'label'                      => $product->label . (!empty($labelsArray) ? ' => ' . implode(' | ', $labelsArray) : ''),
                 'product_id'                 => $product->id,
                 'unit_price_excluding_taxes' => $unitPriceExcludingTaxes,
                 'unit_price_including_taxes' => $unitPriceIncludingTaxes,
@@ -281,12 +298,11 @@ class DatabaseSeeder extends Seeder
         for ($j = 0; $j < $count; $j++) {
             $this->cartManager->refresh($user);
 
-            $limit = random_int(2, 5);
-            $productReferences = ProductReference::query()->inRandomOrder()->limit($limit)->get();
+            $productReferences = ProductReference::query()->inRandomOrder()->limit(random_int(2, 5))->get();
 
-            for ($i = 0; $i < $limit; $i++) {
-                $this->cartManager->addItem(random_int(1, 5), $productReferences[$i]);
-            }
+            $productReferences->map(function (ProductReference $productReference) {
+                $this->cartManager->addItem(random_int(1, 5), $productReference);
+            });
 
             $this->cartManager->updateCartOnOrderedStatus();
         }
@@ -308,7 +324,22 @@ class DatabaseSeeder extends Seeder
 
     private function createHomeModule ()
     {
-        $elements = [
+        $this->moduleRepository->createModule('home', true, 'Home module');
+        $this->moduleRepository->createParameter('home', 'products', [1, 2]);
+        $this->moduleRepository->createParameter('home', 'categories', [1, 2]);
+        $this->moduleRepository->createParameter('home', 'carousel', [
+            [
+                'title'       => 'Slide 1',
+                'description' => 'Slide 1',
+                'img'         => 'https://picsum.photos/id/1/1000/400/'
+            ],
+            [
+                'title'       => 'Slide 2',
+                'description' => 'Slide 2',
+                'img'         => 'https://picsum.photos/id/2/1000/400'
+            ]
+        ]);
+        $this->moduleRepository->createParameter('home', 'elements', [
             [
                 'icon'  => 'fas fa-book',
                 'title' => 'Book 1',
@@ -321,33 +352,18 @@ class DatabaseSeeder extends Seeder
                 'icon'  => 'fas fa-book',
                 'title' => 'Book 3',
             ]
-        ];
-
-        $slides = [
-            [
-                'title'       => 'Slide 1',
-                'description' => 'Slide 1',
-                'img'         => 'https://picsum.photos/id/1/1000/400/'
-            ],
-            [
-                'title'       => 'Slide 2',
-                'description' => 'Slide 2',
-                'img'         => 'https://picsum.photos/id/2/1000/400'
-            ]
-        ];
-
-        $navigation = [
+        ]);
+        $this->moduleRepository->createParameter('home', 'navigation', [
             Category::class . ':2' => [Product::class . ':1', Product::class . ':2', Product::class . ':3'],
             Category::class . ':1' => [Product::class . ':4', Product::class . ':6', Product::class . ':5'],
             Product::class . ':10'
-        ];
-
-        $this->moduleRepository->createModule('home', true, 'Home module');
-        $this->moduleRepository->createParameter('home', 'products', [1, 2]);
-        $this->moduleRepository->createParameter('home', 'categories', [1, 2]);
-        $this->moduleRepository->createParameter('home', 'carousel', $slides);
-        $this->moduleRepository->createParameter('home', 'elements', $elements);
-        $this->moduleRepository->createParameter('home', 'navigation', $navigation);
+        ]);
         $this->moduleRepository->createParameter('home', 'currency', 'EUR');
+    }
+
+    private function createBillingModule ()
+    {
+        $this->moduleRepository->createModule('billing', true, 'Billing module');
+        $this->moduleRepository->createParameter('billing', 'next_number', 1);
     }
 }

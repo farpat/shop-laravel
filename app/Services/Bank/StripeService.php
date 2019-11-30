@@ -4,7 +4,8 @@ namespace App\Services\Bank;
 
 
 use App\Models\User;
-use Stripe\{Customer, Exception\InvalidRequestException, PaymentIntent, Stripe};
+use Stripe\Exception\InvalidRequestException;
+use Stripe\{Customer, PaymentIntent, Stripe};
 
 class StripeService
 {
@@ -79,8 +80,7 @@ class StripeService
                 if ($e->getHttpStatus() === 404) {
                     $customer = $this->createCustomer($user->email);
                     $user->update(['stripe_id' => $customer->id]);
-                }
-                else {
+                } else {
                     throw $e;
                 }
             }

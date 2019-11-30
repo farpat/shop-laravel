@@ -30,8 +30,9 @@ class UserInformationsRequest extends FormRequest
             ],
             'addresses.*.text' => function ($attribute, $value, $fail) {
                 $longitudeAttribute = str_replace('.text', '.longitude', $attribute);
+                $longitudeValue = $this->input($longitudeAttribute);
 
-                if ($this->input($longitudeAttribute) === null) {
+                if ($longitudeValue === null) {
                     $fail(trans('validation.not_regex', ['attribute' => 'text']));
                 }
             },

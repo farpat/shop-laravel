@@ -63,7 +63,7 @@ class ProductRepository
     /**
      * @param array|null $productReferenceIds
      *
-     * @return ProductReference[]|\Illuminate\Database\Eloquent\Collection
+     * @return ProductReference[]|Collection
      */
     public function getReferences (?array $productReferenceIds = null)
     {

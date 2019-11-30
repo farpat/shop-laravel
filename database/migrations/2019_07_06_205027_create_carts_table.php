@@ -23,11 +23,22 @@ class CreateCartsTable extends Migration
             $table->enum('status', [Cart::ORDERING_STATUS, Cart::ORDERED_STATUS, Cart::DELIVRED_STATUS]);
             $table->text('comment')->nullable();
 
+            //user informations
             $table->unsignedBigInteger('user_id');
-            //Replicate user informations
+            $table->string('user_name');
+            $table->string('user_email');
 
+            //address informations
             $table->unsignedBigInteger('address_id')->nullable();
-            //Replicate address informations
+            $table->text('address_text')->nullable();
+            $table->text('address_line1')->nullable();
+            $table->text('address_line2')->nullable();
+            $table->string('address_postal_code')->nullable();
+            $table->string('address_city')->nullable();
+            $table->string('address_country')->nullable();
+            $table->unsignedDecimal('address_latitude', 9, 6)->nullable();
+            $table->unsignedDecimal('address_longitude', 9, 6)->nullable();
+            $table->unsignedBigInteger('address_user_id')->nullable();
 
             $table->timestamps();
 
