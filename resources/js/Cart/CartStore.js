@@ -2,15 +2,25 @@ import Vue from 'vue';
 import Requestor from "@farpat/api";
 import Store from "../src/Bootstrap/Store";
 
+/**
+ * @property {Object} state
+ * @property {Object} state.cartItems
+ * @property {Number} state.cartItemsLength
+ * @property {Object} state.isLoading
+ * @property {Object} data
+ * @property {String} data.currency
+ * @property {String} data.purchaseUrl
+ * @property {String} data.endPoint
+ */
 class CartStore {
     constructor() {
         this.state = {
-            ...window.CartStore.state,
+            ...window._CartStore.state,
             isLoading: {},
         };
 
         this.data = {
-            ...window.CartStore.data,
+            ...window._CartStore.data,
             endPoint: '/cart-items'
         };
 

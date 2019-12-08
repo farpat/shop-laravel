@@ -39,6 +39,6 @@ class CartStoreViewComposer
 
         $view
             ->with('cartItems', $this->cartManager->getItems())
-            ->with('currency', $this->moduleRepository->getParameter('home', 'currency')->value);
+            ->with('currency', $this->moduleRepository->getParameter('billing', 'currency')->value);
     }
 }

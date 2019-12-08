@@ -38,7 +38,6 @@ class CreateCartsTable extends Migration
             $table->string('address_country')->nullable();
             $table->unsignedDecimal('address_latitude', 9, 6)->nullable();
             $table->unsignedDecimal('address_longitude', 9, 6)->nullable();
-            $table->unsignedBigInteger('address_user_id')->nullable();
 
             $table->timestamps();
 

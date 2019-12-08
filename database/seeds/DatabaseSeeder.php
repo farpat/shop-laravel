@@ -5,6 +5,7 @@ use App\Repositories\{CategoryRepository, ModuleRepository};
 use App\Services\Bank\CartManager;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -78,7 +79,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run ()
     {
-        $start = $this->startTime('Creation of modules');
+        $start = $this->startTime('Reset and Creation of modules');
+        $this->emptyPrivateFiles();
         $this->createHomeModule();
         $this->createBillingModule();
         $this->endTime($start);
@@ -109,6 +111,7 @@ class DatabaseSeeder extends Seeder
 
         $start = $this->startTime('Creation of carts');
         foreach (factory(User::class, 10)->create() as $user) {
+            $this->createAddresses($user);
             $this->createOrderedCart($user, random_int(2, 5));
             $this->createOrderingCart($user);
         }
@@ -304,6 +307,20 @@ class DatabaseSeeder extends Seeder
                 $this->cartManager->addItem(random_int(1, 5), $productReference);
             });
 
+            $cart = $this->cartManager->getCart();
+            $firstUserAddress = $user->addresses->first();
+            $cart->fill([
+                'address_id'          => $firstUserAddress->id,
+                'address_text'        => $firstUserAddress->text,
+                'address_line1'       => $firstUserAddress->line1,
+                'address_line2'       => $firstUserAddress->line2,
+                'address_postal_code' => $firstUserAddress->postal_code,
+                'address_city'        => $firstUserAddress->city,
+                'address_country'     => $firstUserAddress->country,
+                'address_latitude'    => $firstUserAddress->latitude,
+                'address_longitude'   => $firstUserAddress->longitude,
+            ]);
+
             $this->cartManager->updateCartOnOrderedStatus();
         }
 
@@ -358,12 +375,26 @@ class DatabaseSeeder extends Seeder
             Category::class . ':1' => [Product::class . ':4', Product::class . ':6', Product::class . ':5'],
             Product::class . ':10'
         ]);
-        $this->moduleRepository->createParameter('home', 'currency', 'EUR');
     }
 
     private function createBillingModule ()
     {
         $this->moduleRepository->createModule('billing', true, 'Billing module');
         $this->moduleRepository->createParameter('billing', 'next_number', 1);
+        $this->moduleRepository->createParameter('billing', 'currency', 'EUR');
+        $this->moduleRepository->createParameter('billing', 'address', factory(\App\Models\Address::class)->make()->toArray());
+    }
+
+    private function createAddresses (User $user): Collection
+    {
+        return factory(\App\Models\Address::class, 2)->create(['user_id' => $user->id]);
+    }
+
+    private function emptyPrivateFiles ()
+    {
+        $privateFileSystem = Storage::disk('private');
+        foreach ($privateFileSystem->directories() as $directory) {
+            $privateFileSystem->deleteDirectory($directory);
+        }
     }
 }

@@ -47,6 +47,10 @@ class CategoryController extends Controller
     {
         $html = $this->categoryRepository->toHtml($this->categoryRepository->getRootCategories());
 
-        return view('categories.index', compact('html'));
+        $breadcrumb = [
+            ['label' => trans_choice('category', 2)]
+        ];
+
+        return view('categories.index', compact('html', 'breadcrumb'));
     }
 }

@@ -4,14 +4,6 @@ class Arr {
     /**
      *
      * @param {Object} object
-     */
-    getFirstValue(object) {
-
-    }
-
-    /**
-     *
-     * @param {Object} object
      * @param {Array} keys
      * @returns {undefined|*}
      */
@@ -46,17 +38,17 @@ class Arr {
 
     /**
      *
-     * @param {Object} obj
+     * @param {Object} object
      * @returns {undefined|*}
      */
-    first(obj) {
-        const keys = Object.keys(obj);
+    getFirstValue(object) {
+        const keys = Object.keys(object);
 
         if (keys.length === 0) {
-            return null;
+            return undefined;
         }
 
-        return obj[keys[0]];
+        return object[keys[0]];
     }
 
     /**

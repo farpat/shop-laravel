@@ -9,7 +9,7 @@
         <td>
             <img :alt="item.product_reference.label" :src="item.product_reference.main_image.url_thumbnail"
                  v-if="item.product_reference.main_image" width="85">
-            <a :href="item.product_reference.url">
+            <a :href="item.product_reference.url" @click.prevent="goToReference(item.product_reference.url)">
                 {{ item.product_reference.product.label }} | {{ item.product_reference.label }}
             </a>
         </td>
@@ -51,6 +51,16 @@
             }
         },
         methods:    {
+            goToReference(referenceUrl) {
+                const referenceUrlObject = new URL(referenceUrl);
+                const currentUrlObject = new URL(window.location.href);
+
+                if (referenceUrlObject.pathname === currentUrlObject.pathname) { //force the url loading if only hash is different
+                    window.location.href = referenceUrlObject.origin + referenceUrlObject.pathname + '?r=1' + referenceUrlObject.hash;
+                } else {
+                    window.location.href = referenceUrl;
+                }
+            },
             deleteItem: async function () {
                 if (!this.isLoading) {
                     await CartStore.deleteItem(this.item.product_reference_id);

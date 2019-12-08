@@ -19,7 +19,8 @@ class BillingPdf extends Pdf
 
     protected function getOptions (): array
     {
-        return [];
+        return [
+        ];
     }
 
     protected function getFilePath (): ?string

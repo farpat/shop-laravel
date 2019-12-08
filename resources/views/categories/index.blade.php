@@ -8,7 +8,7 @@
     <div class="container">
         <h1>{{ __('All categories') }}</h1>
 
-        {{ breadcrumb([['label' => trans_choice('category', 2)]]) }}
+        {{ breadcrumb($breadcrumb) }}
 
         <section id="category-index" class="category-index">
             {{ $html }}

@@ -4,14 +4,13 @@
     <div class="container my-5">
         <div class="row">
             <div class="col">
-                <img src="https://mondrian.mashable.com/uploads%252Fcard%252Fimage%252F918220%252F316bce31-4c38-4f3b-b743-a17406175286.png%252F950x534__filters%253Aquality%252880%2529.png"
-                     width="150" alt="logo">
                 <p>
-                    <strong>{{ $billing->user->name }}</strong><br>
-                    Résidence la Bienvenue<br>
-                    4 boulevard Henri Barnier<br>
-                    13015 Marseille<br>
-                    France
+                    <strong>{{ config('app.name') }}</strong><br>
+                    {{ parameter('billing', 'address')->line1 }}<br>
+                    @if(parameter('billing', 'address')->line2){{ parameter('billing', 'address')->line2 }}<br>@endif
+                    {{ parameter('billing', 'address')->postal_code }} {{ parameter('billing', 'address')->city }}
+                    {{ parameter('billing', 'address')->country }}<br>
+                    <br>
                 </p>
                 <p>
                     <i class="fas fa-phone"></i> 06 52 38 41 52
@@ -21,10 +20,11 @@
 
         <div class="row">
             <div class="offset-6 col">
-                <strong>Piscine et Jardin</strong><br>
-                25 Mail Haroun Tazieff<br>
-                44000 Nantes<br>
-                France
+                <strong>{{ $billing->user->name }}</strong><br>
+                {{ $billing->address_line1 }}<br>
+                @if($billing->address_line2){{ $billing->address_line2 }}<br>@endif
+                {{ $billing->address_postal_code }} {{ $billing->address_city }}<br>
+                {{ $billing->address_country }}
             </div>
         </div>
 

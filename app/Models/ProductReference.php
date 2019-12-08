@@ -76,6 +76,6 @@ class ProductReference extends Model
 
     public function getUrlAttribute ()
     {
-        return $this->product->url;
+        return $this->product->url . '#' . $this->id;
     }
 }

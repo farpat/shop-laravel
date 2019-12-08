@@ -33,15 +33,16 @@ class ModuleRepository
             return $this->cache[$moduleLabel][$parameterLabel];
         }
 
-        /** @var ModuleParameter $moduleParameter */
+        /** @var ModuleParameter|null $moduleParameter */
         $moduleParameter = ModuleParameter::query()
             ->whereHas('module', function (Builder $query) use ($moduleLabel) {
                 $query->where('label', $moduleLabel);
             })
             ->where('label', $parameterLabel)
             ->first();
+        
         if ($moduleParameter) {
-            $this->transformValueToGet($moduleParameter);
+            $this->transformValueField($moduleParameter);
         }
 
         $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
@@ -49,7 +50,7 @@ class ModuleRepository
         return $moduleParameter;
     }
 
-    private function transformValueToGet (ModuleParameter $moduleParameter)
+    private function transformValueField (ModuleParameter $moduleParameter)
     {
         $value = $moduleParameter->value;
 
@@ -77,7 +78,7 @@ class ModuleRepository
             ->first();
 
         if ($moduleParameter === null) {
-            throw new Exception("Module parameter << $moduleLabel@$parameterLabel >> doesn't not exists!");
+            throw new Exception("Module parameter << $moduleLabel.$parameterLabel >> doesn't not exists!");
         }
 
         $moduleParameter->value = $value;

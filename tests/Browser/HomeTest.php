@@ -61,6 +61,8 @@ class HomeTest extends DuskTestCase
 
         $this->moduleRepository = app(ModuleRepository::class);
         $this->moduleRepository->createModule('home', true, 'Home module');
-        $this->moduleRepository->createParameter('home', 'currency', 'EUR');
+
+        $this->moduleRepository->createModule('billing', true, 'Billing module');
+        $this->moduleRepository->createParameter('billing', 'currency', 'EUR');
     }
 }

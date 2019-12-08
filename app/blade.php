@@ -1,8 +1,19 @@
 <?php
 
+use App\Repositories\ModuleRepository;
 use App\Repositories\NavigationRepository;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\{Arr, HtmlString, MessageBag, ViewErrorBag};
+
+function parameter ($moduleLabel, $parameterLabel)
+{
+    $moduleParameter = app(ModuleRepository::class)->getParameter($moduleLabel, $parameterLabel);
+    if ($moduleParameter === null) {
+        throw new Exception("Module parameter << $moduleLabel.$parameterLabel >> doesn't not exists!");
+    }
+
+    return $moduleParameter->value;
+}
 
 function navigation (): Htmlable
 {

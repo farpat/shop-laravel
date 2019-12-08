@@ -67,7 +67,8 @@ class Product extends Model
         return $this->hasMany(ProductReference::class);
     }
 
-    public function main_image() {
+    public function main_image ()
+    {
         return $this->belongsTo(Image::class, 'main_image_id');
     }
 

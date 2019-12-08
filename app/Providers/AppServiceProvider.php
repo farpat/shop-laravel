@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
             ['key' => $key, 'secret' => $secret] = $app['config']['services']['stripe'];
             return new StripeService(
                 $key, $secret,
-                $app->make(ModuleRepository::class)->getParameter('home', 'currency')->value
+                $app->make(ModuleRepository::class)->getParameter('billing', 'currency')->value
             );
         });
     }

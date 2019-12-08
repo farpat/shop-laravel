@@ -68,6 +68,18 @@ const filterProduct = function (product) {
     return false;
 };
 
+
+/**
+ * @property {Object} state
+ * @property {Array} state.currentProducts
+ * @property {Object} state.filterValues
+ * @property {Number} state.perPage
+ * @property {Number} state.currentPage
+ * @property {Object} data
+ * @property {Array} data.allProducts
+ * @property {String} data.baseUrl
+ * @property {String} data.currentQueryString
+ */
 class CategoryStore {
     constructor() {
         this.state = {
@@ -95,10 +107,10 @@ class CategoryStore {
     /**
      *
      * @param {Number} filterId
-     * @returns {*|string}
+     * @returns {String}
      */
     getFilterValue(filterId) {
-        return this.state.filterValues[filterId] || '';
+        return this.state.filterValues[filterId];
     }
 
     /**

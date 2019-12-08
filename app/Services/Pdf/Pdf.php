@@ -6,7 +6,8 @@ use mikehaertl\wkhtmlto\Pdf as WkPdf;
 
 abstract class Pdf
 {
-    protected function beforeMake() {
+    protected function beforeMake ()
+    {
         config(['app.webpack_port' => null]);
     }
 
@@ -39,13 +40,19 @@ abstract class Pdf
 
     protected abstract function getPages (): array;
 
-    public function save (): bool
+    public function save ()
     {
         $pdf = $this->makePdfObject();
         $filePath = $this->getFilePath();
+
         if ($filePath === null) {
             $class = get_class($this);
             throw new PdfException("You must define getFilePath() method in << $class >>");
+        }
+
+        $directory = dirname($filePath);
+        if (!is_dir($directory) && !mkdir($directory, 0644, true)) {
+            throw new PdfException("Impossible to create folder << $directory >>");
         }
 
         if (!$pdf->saveAs($filePath)) {
