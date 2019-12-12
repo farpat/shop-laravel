@@ -92,6 +92,9 @@ class CartManager
         return $this->returnArrayForResponse($productReference, $quantity);
     }
 
+    /**
+     * @param Collection|null $items if null we delete "cart-items" cookie
+     */
     private function persistCookie (?Collection $items): void
     {
         $cookie = ($items === null) ?

@@ -165,7 +165,7 @@ class DatabaseSeeder extends Seeder
 
     private function createSubCategory (Category $parentCategory): Category
     {
-        $label = $parentCategory->label . ' ' . $this->faker->word;
+        $label = $parentCategory->label . ' ' . $this->faker->unique()->word;
         $slug = Str::slug($label);
         $nomenclature = $parentCategory->nomenclature . '.' . str_replace('-', '', Str::upper($slug));
 

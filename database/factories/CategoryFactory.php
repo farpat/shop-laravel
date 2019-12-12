@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
 
 $factory->define(Category::class, function (Faker $faker) {
-    $label = $faker->words(2, true);
+    $label = $faker->unique()->words(2, true);
     $slug = Str::slug($label);
     $nomenclature = str_replace('-', '', Str::upper($slug));
 

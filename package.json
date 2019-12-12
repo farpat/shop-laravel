@@ -2,7 +2,7 @@
     "name": "shop",
     "description": "shop",
     "repository": "git@github.com:farpat/shop.git",
-    "private": false,
+    "private": true,
     "license": "ISC",
     "scripts": {
         "clean": "rm -rf node_modules package-lock.json && npm i",
