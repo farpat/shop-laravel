@@ -9,7 +9,9 @@ export default class Input {
         this.setAutocompleteAttribute();
         this.cache = {};
         this.lastValue = '';
-        this.updateScreenOnResize = debounce((e) => {this.updateScreen(e, null)}, 500);
+        this.updateScreenOnResize = debounce((e) => {
+            this.updateScreen(e, null)
+        }, 500);
 
         window.addEventListener('resize', this.updateScreenOnResize.bind(this));
 
@@ -74,7 +76,7 @@ export default class Input {
         context.addEventListener('mouseleave', (e) => {
             var selectedItem = context.querySelector('.autocomplete-suggestion.selected');
 
-            if (selectedItem !== undefined) {
+            if (selectedItem !== null) {
                 selectedItem.classList.remove('selected');
             }
         });
@@ -89,7 +91,7 @@ export default class Input {
             while (el && !(found = el.classList.contains('autocomplete-suggestion'))) el = el.parentElement;
             if (found) {
                 var selectedItem = context.querySelector('.autocomplete-suggestion.selected');
-                if (selectedItem !== undefined) {
+                if (selectedItem !== null) {
                     selectedItem.classList.remove('selected');
                 }
                 el.classList.add('selected');
@@ -163,12 +165,10 @@ export default class Input {
             }
             this.updateScreen(null, next);
             return false;
-        }
-        else if (e.key === "Escape") {
+        } else if (e.key === "Escape") {
             this.element.value = this.lastValue;
             this.containerElement.style.display = 'none';
-        }
-        else if (e.key === "Enter") {
+        } else if (e.key === "Enter") {
             var sel = this.containerElement.querySelector('.autocomplete-suggestion.selected');
             if (sel && this.containerElement.style.display != 'none') {
                 this.options.onSelect(e, sel.getAttribute('data-val'), sel);

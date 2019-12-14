@@ -39,7 +39,7 @@ export default class Autocomplete {
     }
 
     destroy() {
-        this.inputs.forEach(function(input) {
+        this.inputs.forEach(function (input) {
             input.destroy();
         });
     }

@@ -10,6 +10,7 @@ use App\Repositories\ModuleRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Support\Facades\View;
 
 class BillingController extends Controller
 {
@@ -23,7 +24,6 @@ class BillingController extends Controller
     {
         if ($request->query('force') == 1 || !File::exists($billing->billing_path)) {
             $billing->load(['items.product_reference', 'user']);
-
             $billingPdf = new BillingPdf($billing);
             $billingPdf->save();
         }

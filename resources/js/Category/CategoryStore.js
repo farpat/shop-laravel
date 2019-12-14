@@ -1,15 +1,4 @@
-const refreshProducts = function () {
-    this.state.currentProducts = this.data.allProducts.filter((product) => filterProduct.call(this, product));
-
-    const lastPage = this.getLastPage();
-    if (lastPage === 0) {
-        //when not current products found
-        this.setCurrentPage(1);
-    } else if (lastPage < this.state.currentPage) {
-        //when the last current page is too big with new filters
-        this.setCurrentPage(lastPage);
-    }
-};
+import Arr from "../src/Array/Arr";
 
 /**
  *
@@ -24,8 +13,8 @@ const addQueryString = function (key, value) {
 const refreshUrl = function () {
     this.data.currentQueryString = '';
 
-    for (const filterId in this.state.filterValues) {
-        addQueryString.call(this, `f[${filterId}]`, this.getFilterValue(filterId));
+    for (const filterKey in this.state.filterValues) {
+        addQueryString.call(this, filterKey, this.getFilterValue(filterKey));
     }
 
     if (this.state.currentPage > 1) {
@@ -41,31 +30,33 @@ const refreshUrl = function () {
  * @returns {boolean}
  */
 const filterProduct = function (product) {
-    if (JSON.stringify(this.state.filterValues) === '{}') {
+    if (Arr.isEmpty(this.state.filterValues)) {
         return true;
     }
 
-    for (const filterId in this.state.filterValues) {
-        let value = this.state.filterValues[filterId];
+    for (const filterKey in this.state.filterValues) {
+        let value = this.state.filterValues[filterKey];
 
-        if (filterId.endsWith('-max')) {
-            let realFilterId = filterId.substring(0, filterId.length - 4);
-            if (product.references.find((reference) => reference.filled_product_fields[realFilterId] <= value)) {
-                return true;
+        let matches;
+        if ((matches = /max-(\d+)$/.exec(filterKey)) !== null) {
+            let filterId = matches[1];
+            if (product.references.find((reference) => reference.filled_product_fields[filterId] <= value) === undefined) {
+                return false;
             }
-        } else if (filterId.endsWith('-min')) {
-            let realFilterId = filterId.substring(0, filterId.length - 4);
-            if (product.references.find((reference) => reference.filled_product_fields[realFilterId] >= value)) {
-                return true;
+        } else if ((matches = /min-(\d+)$/.exec(filterKey)) !== null) {
+            let filterId = matches[1];
+            if (product.references.find((reference) => reference.filled_product_fields[filterId] >= value) === undefined) {
+                return false;
             }
-        } else {
-            if (product.references.find((reference) => reference.filled_product_fields[filterId].includes(value))) {
-                return true;
+        } else if ((matches = /-(\d+)$/.exec(filterKey)) !== null) {
+            let filterId = matches[1];
+            if (product.references.find((reference) => reference.filled_product_fields[filterId].includes(value)) === undefined) {
+                return false;
             }
         }
     }
 
-    return false;
+    return true;
 };
 
 
@@ -92,8 +83,25 @@ class CategoryStore {
             currentQueryString: ''
         };
 
-        refreshProducts.call(this);
+        this.refreshProducts();
+        this.refreshPages();
     }
+
+    refreshProducts() {
+        this.state.currentProducts = this.data.allProducts.filter((product) => filterProduct.call(this, product));
+    }
+
+    refreshPages() {
+        const lastPage = this.getLastPage();
+        if (lastPage === 0) {
+            //when not current products found
+            this.setCurrentPage(1);
+        } else if (lastPage < this.state.currentPage) {
+            //when the last current page is too big with new filters
+            this.setCurrentPage(lastPage);
+        }
+    }
+
 
     /**
      *
@@ -106,27 +114,27 @@ class CategoryStore {
 
     /**
      *
-     * @param {Number} filterId
+     * @param {String} filterKey
      * @returns {String}
      */
-    getFilterValue(filterId) {
-        return this.state.filterValues[filterId];
+    getFilterValue(filterKey) {
+        return this.state.filterValues[filterKey];
     }
 
     /**
      *
-     * @param {Number} filterId
+     * @param {Number} filterKey
      * @param {String} value
      */
-    setFilterValue(filterId, value) {
+    setFilterValue(filterKey, value) {
         if (value !== '') {
-            this.state.filterValues[filterId] = value;
+            this.state.filterValues[filterKey] = value;
         } else {
-            delete this.state.filterValues[filterId];
+            delete this.state.filterValues[filterKey];
         }
 
         refreshUrl.call(this);
-        refreshProducts.call(this);
+        this.refreshProducts();
     }
 
     /**

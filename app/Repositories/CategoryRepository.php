@@ -173,9 +173,8 @@ HTML;
             ->selectRaw('
             c.id, c.label, i.url_thumbnail as image, CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
             ->from('categories', 'c')
-            ->leftJoin('images i', 'c.image_id', '=', 'i.id')
-            ->whereRaw('c.label like :term', ['term' => "%$term%"])
-            ->groupBy('c.id')
+            ->leftJoin(DB::raw('images i'), 'c.image_id', '=', 'i.id')
+            ->where('c.label', 'like', "%$term%")
             ->limit(2)
             ->get();
     }

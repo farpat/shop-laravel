@@ -8,11 +8,11 @@ export default {
         filter: {type: Object, required: true},
     },
     methods: {
-        setFilterValue: throttle(function (filterId, value) {
-            CategoryStore.setFilterValue(filterId, value);
+        setFilterValue: throttle(function (filterKey, value) {
+            CategoryStore.setFilterValue(filterKey, value);
         }, wait),
-        getFilterValue: function (filterId) {
-            return CategoryStore.getFilterValue(filterId);
+        getFilterValue: function (filterKey) {
+            return CategoryStore.getFilterValue(filterKey);
         }
     }
 }

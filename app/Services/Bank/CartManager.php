@@ -165,11 +165,11 @@ class CartManager
         $this->cartRepository->mergeItemsOnDatabase($this->getCookieItems(), $this->getItems(false), $this->cart);
     }
 
-    public function getItems ($hydrate = true): array
+    public function getItems ($mustHydrateItems = true): array
     {
         $items = $this->items->all();
 
-        if (!$hydrate) {
+        if (!$mustHydrateItems) {
             return $items;
         }
 

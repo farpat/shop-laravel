@@ -16,7 +16,7 @@
             @endif
 
             <h1>
-                {{ $category->label }} - {{ $products->count() }} {{ trans_choice('product', $products->count()) }}
+                {{ $category->label }}
             </h1>
         </section>
 

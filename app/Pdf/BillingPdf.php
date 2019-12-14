@@ -28,7 +28,7 @@ class BillingPdf extends Pdf
         return $this->billing->billing_path;
     }
 
-    protected function getPages (): array
+    public function getPages (): array
     {
         return [
             view('cart.billing', ['billing' => $this->billing])->render()

@@ -24,7 +24,6 @@
     </div>
 </template>
 
-
 <script>
     import CategoryStore from './CategoryStore';
     import range from 'lodash/range';

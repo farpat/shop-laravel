@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\ProductField
@@ -26,7 +27,9 @@ use Illuminate\Database\Eloquent\Model;
 class ProductField extends Model
 {
     public $timestamps = false;
-    
+
+    protected $appends = ['snake_label'];
+
     protected $fillable = [
         'type', 'label', 'is_required', 'category_id'
     ];
@@ -34,5 +37,10 @@ class ProductField extends Model
     public function category ()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function getSnakeLabelAttribute ()
+    {
+        return Str::kebab($this->label);
     }
 }
