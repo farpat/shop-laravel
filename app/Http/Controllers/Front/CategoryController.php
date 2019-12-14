@@ -24,7 +24,7 @@ class CategoryController extends Controller
         $category->load(['image']);
 
         $currentPage = $request->get('page');
-        if ($slug !== $category->slug || $currentPage === 1 || (!is_null($currentPage) && !is_numeric($currentPage))) {
+        if ($slug !== $category->slug || $currentPage == 1 || (!is_null($currentPage) && !is_numeric($currentPage))) {
             return redirect($category->url);
         }
 
@@ -37,6 +37,7 @@ class CategoryController extends Controller
 
         $filters = $products->isNotEmpty() ? $this->categoryRepository->getProductFields($category) : collect();
         $filterValues = $request->query();
+        unset($filterValues['page']);
 
         $perPage = Category::PRODUCTS_PER_PAGE;
 

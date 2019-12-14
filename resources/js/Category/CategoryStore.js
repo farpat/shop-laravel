@@ -135,6 +135,7 @@ class CategoryStore {
 
         refreshUrl.call(this);
         this.refreshProducts();
+        this.refreshPages();
     }
 
     /**
