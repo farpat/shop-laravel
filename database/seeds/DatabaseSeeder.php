@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\{Cart, Category, Image, Product, ProductReference, Tax, User};
+use Bezhanov\Faker\Provider\Commerce;
+use App\Models\{Category, Image, Product, ProductReference, Tax, User};
 use App\Repositories\{CategoryRepository, ModuleRepository};
 use App\Services\Bank\CartManager;
 use Illuminate\Database\Seeder;
@@ -87,22 +88,20 @@ class DatabaseSeeder extends Seeder
 
         $start = $this->startTime('Creation of products');
         $this->createTaxes();
-        foreach (['Computers', 'Phones', 'Printers', 'Cameras', 'Screens'] as $categoryLabel) {
-            $category = factory(Category::class)->create([
-                'label'        => $categoryLabel,
-                'nomenclature' => strtoupper($categoryLabel),
-                'slug'         => strtolower($categoryLabel)
-            ]);
 
+        foreach (factory(Category::class, random_int(4, 8))->create() as $category) {
             $productfields = $this->createProductfields($category);
 
             for ($i = 0; $i < 2; $i++) {
                 $subCategory = $this->createSubCategory($category);
-                $products = $this->createProducts($subCategory, $categoryLabel);
 
-                foreach ($products as $product) {
-                    $taxes = $this->attachTaxes($product);
-                    $productReferences = $this->createProductReferences($product, $productfields, $taxes);
+                foreach ($this->createProducts($subCategory) as $product) {
+                    $productReferences = $this->createProductReferences(
+                        $product,
+                        $productfields,
+                        $this->attachTaxes($product)
+                    );
+
                     $this->createImages($product, $productReferences);
                 }
             }
@@ -143,13 +142,9 @@ class DatabaseSeeder extends Seeder
 
             for ($i = 0; $i < $count; $i++) {
                 $type = $this->faker->boolean ? 'string' : 'number';
-                if ($type === 'string') {
-                    $label = array_rand($strings);
-                    unset($strings[$label]);
-                } else {
-                    $label = array_rand($numbers);
-                    unset($numbers[$label]);
-                }
+                $arrayOfFields = $type . 's';
+                $label = array_rand(${$arrayOfFields});
+                unset(${$arrayOfFields}[$label]);
 
                 $productFieldsRequestData[] = [
                     'type'        => $type,
@@ -167,7 +162,7 @@ class DatabaseSeeder extends Seeder
     {
         $label = $parentCategory->label . ' ' . $this->faker->unique()->word;
         $slug = Str::slug($label);
-        $nomenclature = $parentCategory->nomenclature . '.' . str_replace('-', '', Str::upper($slug));
+        $nomenclature = $parentCategory->nomenclature . '.' . str_replace('-', ' ', Str::upper($slug));
 
         return factory(Category::class)->create([
             'label'        => $label,
@@ -180,19 +175,28 @@ class DatabaseSeeder extends Seeder
     /**
      * @param Category $category
      *
-     * @param string $rootCategoryLabel
      *
      * @return Collection|Product[]
      * @throws Exception
      */
-    private function createProducts (Category $category, string $rootCategoryLabel): Collection
+    private function createProducts (Category $category): Collection
     {
-        $count = random_int(1, 30);
+        $count = random_int(1, 20);
         $products = collect();
+        $productLabels = ['Chair', 'Car', 'Computer', 'Gloves', 'Pants', 'Shirt', 'Table', 'Shoes', 'Hat', 'Plate',
+            'Knife', 'Bottle',
+            'Coat', 'Lamp', 'Keyboard', 'Bag', 'Bench', 'Clock', 'Watch', 'Wallet'];
+
         for ($i = 0; $i < $count; $i++) {
+            $productKey = array_rand($productLabels);
+            $productLabel = $productLabels[$productKey];
+            unset($productLabels[$productKey]);
+
+            $label = substr($category->label, 0, -1) . ' ' . strtolower($productLabel);
             $products[] = factory(Product::class)->create([
-                'label'       => substr($rootCategoryLabel, 0, -1) . ' ' . $this->faker->words(2, true),
-                'category_id' => $category->id
+                'label'       => $label,
+                'category_id' => $category->id,
+                'slug'        => Str::slug($label)
             ]);
         }
 

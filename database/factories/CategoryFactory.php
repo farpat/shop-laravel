@@ -9,16 +9,21 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
 
 $factory->define(Category::class, function (Faker $faker) {
-    $label = $faker->unique()->words(2, true);
-    $slug = Str::slug($label);
-    $nomenclature = str_replace('-', '', Str::upper($slug));
+    static $labels = ["Books", "Movies", "Music", "Games", "Electronics", "Computers", "Home",
+        "Garden", "Tools",
+        "Grocery", "Health", "Beauty", "Toys", "Kids", "Baby", "Clothing", "Shoes", "Jewelry", "Sports", "Outdoors",
+        "Automotive", "Industrial"];
+
+    $labelKey = array_rand($labels);
+    $label = $labels[$labelKey];
+    unset($labels[$labelKey]);
 
     return [
         'label'        => $label,
-        'slug'         => $slug,
-        'nomenclature' => $nomenclature,
+        'slug'         => strtolower($label),
+        'nomenclature' => strtoupper($label),
         'description'  => $faker->sentence(7),
         'is_last'      => false,
-        'image_id'     => $faker->boolean(65) ? factory(Image::class)->create()->id : null
+        'image_id'     => $faker->boolean(75) ? factory(Image::class)->create()->id : null
     ];
 });

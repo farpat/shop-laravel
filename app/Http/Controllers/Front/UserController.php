@@ -35,7 +35,7 @@ class UserController extends Controller
         $user = $request->user();
 
         $old = $request->old();
-        if ($old === null) {
+        if ($old === []) {
             $form = [
                 'name'      => $user->name,
                 'email'     => $user->email,
