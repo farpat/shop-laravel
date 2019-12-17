@@ -1,7 +1,7 @@
 <template>
     <div class="form-group">
         <p class="mb-1">{{ filter.label }}</p>
-        <div class="row">
+        <div class="row no-gutters">
             <div class="col">
                 <input :value="getMinFilterValue" @input="(e) => setMinFilterValue(e.currentTarget.value)"
                        class="form-control"

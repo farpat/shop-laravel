@@ -1,10 +1,10 @@
 <template>
     <div class="filter-component">
         <component
-            v-for="filter in filters"
-            :filter="filter"
-            :key="filter.id"
-            :is="currentTabComponent(filter)"
+                v-for="filter in filters"
+                :filter="filter"
+                :key="filter.id"
+                :is="currentTabComponent(filter)"
         />
     </div>
 </template>
@@ -16,12 +16,12 @@
     import TranslationMixin from "../src/Translation/TranslationMixin";
 
     export default {
-        mixins: [TranslationMixin],
-        props: {
+        mixins:  [TranslationMixin],
+        props:   {
             filters: {type: Object, required: true}
         },
         methods: {
-            'currentTabComponent': function (filter) {
+            currentTabComponent: function (filter) {
                 switch (filter.type) {
                     case 'number':
                         return NumberComponent;

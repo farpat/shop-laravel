@@ -1,14 +1,14 @@
 import CategoryStore from "../CategoryStore";
-import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 
-const wait = 1000; //seconds
+const wait = 500; //seconds
 
 export default {
     props: {
         filter: {type: Object, required: true},
     },
     methods: {
-        setFilterValue: throttle(function (filterKey, value) {
+        setFilterValue: debounce(function (filterKey, value) {
             CategoryStore.setFilterValue(filterKey, value);
         }, wait),
         getFilterValue: function (filterKey) {
