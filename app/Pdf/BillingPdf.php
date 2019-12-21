@@ -20,6 +20,7 @@ class BillingPdf extends Pdf
     protected function getOptions (): array
     {
         return [
+            //
         ];
     }
 
@@ -31,7 +32,7 @@ class BillingPdf extends Pdf
     public function getPages (): array
     {
         return [
-            view('cart.billing', ['billing' => $this->billing])->render()
+            view('billing.show', ['billing' => $this->billing])->render()
         ];
     }
 }

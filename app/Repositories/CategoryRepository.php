@@ -39,9 +39,8 @@ class CategoryRepository
         if (!empty($parents)) {
             foreach ($parents as $parent) {
                 $children = $this->getChildren($parent)->all();
-                $img = $parent->image ?
-                    "<img src=\"{$parent->image->url_thumbnail}\" alt=\"{$parent->image->alt_thumbnail}\">" :
-                    "<img src=\"https://via.placeholder.com/80x32\">";
+                $source = $parent->image ? $parent->image->url_thumbnail : 'https://via.placeholder.com/80x32';
+                $img = '<img src="' . $source . '" alt="' . $parent->image->alt_thumbnail . '">';
 
                 $string .= <<<HTML
                 <div class="media">
@@ -76,25 +75,25 @@ HTML;
         }
 
         return Category::query()
-            ->where('nomenclature', 'LIKE', $category->nomenclature . '.%')
+            ->where('nomenclature', 'LIKE', $category->nomenclature . Category::BREAKING_POINT . '%')
             ->whereRaw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature, "' . Category::BREAKING_POINT . '", "")) + 1 = ?', [$category->level + 1]);
     }
 
     public function getRootCategories (): array
     {
         return Category::query()
-            ->where(DB::raw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature,".","")) + 1'), 1)
-            ->with(['image'])
+            ->where(DB::raw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature,"' . Category::BREAKING_POINT . '","")) + 1'), 1)
+            ->with('image')
             ->get()
             ->all();
     }
 
     public function getCategoriesInHome (): Collection
     {
-        if ($categoryIds = $this->moduleRepository->getParameter('home', 'categories')) {
+        if ($categoryIdsParameter = $this->moduleRepository->getParameter('home', 'categories')) {
             return Category::query()
                 ->with('image')
-                ->whereIn('id', $categoryIds->value)
+                ->whereIn('id', $categoryIdsParameter->value)
                 ->get();
         }
 
@@ -107,7 +106,7 @@ HTML;
             ->with(['category', 'main_image', 'references.product.category'])
             ->whereHas('category', function (Builder $query) use ($category) {
                 $query
-                    ->where('nomenclature', 'like', $category->nomenclature . '.%')
+                    ->where('nomenclature', 'like', $category->nomenclature . Category::BREAKING_POINT . '%')
                     ->orWhere('nomenclature', $category->nomenclature);
             });
     }
@@ -127,7 +126,7 @@ HTML;
         }
 
         return Category::query()
-            ->where('nomenclature', substr($category->nomenclature, 0, strpos($category->nomenclature, '.')))
+            ->where('nomenclature', substr($category->nomenclature, 0, strpos($category->nomenclature, Category::BREAKING_POINT)))
             ->firstOrFail()
             ->id;
     }
@@ -170,8 +169,7 @@ HTML;
         $query = DB::query();
 
         return $query
-            ->selectRaw('
-            c.id, c.label, i.url_thumbnail as image, CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
+            ->selectRaw('c.id, c.label, i.url_thumbnail as image, CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
             ->from('categories', 'c')
             ->leftJoin(DB::raw('images i'), 'c.image_id', '=', 'i.id')
             ->where('c.label', 'like', "%$term%")

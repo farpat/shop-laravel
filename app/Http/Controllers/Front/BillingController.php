@@ -7,10 +7,8 @@ use App\Http\Requests\ViewBillingRequest;
 use App\Models\Cart;
 use App\Pdf\BillingPdf;
 use App\Repositories\ModuleRepository;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Support\Facades\View;
 
 class BillingController extends Controller
 {
@@ -34,6 +32,6 @@ class BillingController extends Controller
     public function view (Cart $billing, ViewBillingRequest $request, ModuleRepository $moduleRepository)
     {
         $billing->load(['items.product_reference', 'user']);
-        return view('cart.billing', compact('billing'));
+        return view('billing.show', compact('billing'));
     }
 }

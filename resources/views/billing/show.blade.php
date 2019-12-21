@@ -1,5 +1,7 @@
 @extends('_layouts.pdf')
 
+@section('title', $billing->number)
+
 @section('content')
     <div class="container my-5">
         <div class="row">
