@@ -26,10 +26,10 @@ class CartController extends Controller
         $this->middleware(MustXmlHttpRequest::class)->only(['storeItem', 'updateItem', 'destroyItem']);
         $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm']);
         $this->middleware(function (Request $request, $next) {
-            $this->cartManager = app(CartManager::class);
-            $this->cartManager->refresh($request->user());
+            $this->cartManager = app(CartManager::class)->refresh($request->user());
             return $next($request);
         });
+
         $this->productRepository = $productRepository;
     }
 
@@ -83,7 +83,7 @@ class CartController extends Controller
             ->setToken($request->input('stripe_token'))
             ->charge($this->cartManager->getUser(), $totalToPay * 100);
 
-        $this->cartManager->updateCartOnOrderedStatus();
+        $this->cartManager->transformToBilling();
 
         return redirect()
             ->route('home.index')

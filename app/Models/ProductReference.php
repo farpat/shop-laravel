@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Services\Bank\StringUtility;
+use App\Support\StringUtility;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -47,7 +47,8 @@ class ProductReference extends Model
     protected $appends = ['url'];
 
     protected $fillable = [
-        'product_id', 'label', 'unit_price_excluding_taxes', 'unit_price_including_taxes', 'filled_product_fields', 'main_image_id'
+        'product_id', 'label', 'unit_price_excluding_taxes', 'unit_price_including_taxes', 'filled_product_fields',
+        'main_image_id'
     ];
 
     public function getFormattedUnitPriceExcludingTaxesAttribute ()
@@ -65,7 +66,8 @@ class ProductReference extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function images() {
+    public function images ()
+    {
         return $this->belongsToMany(Image::class, 'product_references_images');
     }
 

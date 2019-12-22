@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\{Cart, CartItem, ProductReference, User};
+use App\Models\{Cart, OrderItem, ProductReference, User};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -27,43 +27,31 @@ class CartRepository
     {
         return Cart::query()
             ->firstOrCreate([
-                'status'  => Cart::ORDERING_STATUS,
                 'user_id' => $user->id
             ], [
                 'items_count'                  => 0,
                 'total_amount_excluding_taxes' => 0,
                 'total_amount_including_taxes' => 0,
-                'user_id'                      => $user->id,
                 'address_id'                   => null
             ]);
     }
 
     public function getItems (Cart $cart): array
     {
-        return CartItem::query()
+        return $cart
+            ->items()
             ->select(['quantity', 'product_reference_id'])
-            ->where(['cart_id' => $cart->id])
             ->get()
             ->keyBy('product_reference_id')
             ->toArray();
     }
 
-    public function getBillings (User $user): Collection
-    {
-        return Cart::query()
-            ->where('status', '!=', Cart::ORDERING_STATUS)
-            ->where('user_id', $user->id)
-            ->orderBy('updated_at', 'DESC')
-            ->orderBy('id', 'DESC')
-            ->get();
-    }
-
     public function deleteItem (ProductReference $productReference, Cart $cart): void
     {
-        $cartItem = CartItem::query()
+        $cartItem = $cart
+            ->items()
             ->where([
                 'product_reference_id' => $productReference->id,
-                'cart_id'              => $cart->id
             ])
             ->firstOrFail();
 
@@ -116,11 +104,10 @@ class CartRepository
 
     public function updateItem (int $quantity, ProductReference $productReference, Cart $cart): void
     {
-        $cartItem = CartItem::query()
-            ->where([
-                'product_reference_id' => $productReference->id,
-                'cart_id'              => $cart->id
-            ])
+
+        $cartItem = $cart
+            ->items()
+            ->where(['product_reference_id' => $productReference->id])
             ->firstOrFail();
 
         $cartItem->amount_excluding_taxes = $quantity * $productReference->unit_price_excluding_taxes;
@@ -136,13 +123,14 @@ class CartRepository
 
     public function addItem (int $quantity, ProductReference $productReference, Cart $cart): void
     {
-        $cartItem = new CartItem([
-            'quantity'               => $quantity,
-            'product_reference_id'   => $productReference->id,
-            'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
-            'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
-            'cart_id'                => $cart->id
-        ]);
+        $cartItem = $cart->items()->save(
+            new OrderItem([
+                'quantity'               => $quantity,
+                'product_reference_id'   => $productReference->id,
+                'amount_including_taxes' => $quantity * $productReference->unit_price_including_taxes,
+                'amount_excluding_taxes' => $quantity * $productReference->unit_price_excluding_taxes,
+            ])
+        );
 
         $cart->total_amount_excluding_taxes += $cartItem->amount_excluding_taxes;
         $cart->total_amount_including_taxes += $cartItem->amount_including_taxes;
@@ -150,16 +138,5 @@ class CartRepository
 
         $cartItem->save();
         $cart->save();
-    }
-
-    public function updateCartOnOrderedStatus (Cart $cart)
-    {
-        $nextNumber = (int)$this->moduleRepository->getParameter('billing', 'next_number')->value;
-        $cart->update([
-            'status' => Cart::ORDERED_STATUS,
-            'number' => $cart->computeNextNumber($nextNumber)
-        ]);
-
-        $this->moduleRepository->updateParameter('billing', 'next_number', $nextNumber + 1);
     }
 }

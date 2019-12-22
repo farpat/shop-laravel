@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\StringUtility;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -66,13 +67,20 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Billing whereUserName($value)
  * @mixin \Eloquent
  */
-class Cart extends Model
+class Billing extends Model
 {
+    const ORDERED_STATUS = 'ORDERED';
+    const DELIVRED_STATUS = 'DELIVRED';
 
     protected $fillable = [
         'items_count', 'total_amount_excluding_taxes', 'total_amount_including_taxes', 'status', 'comment', 'number',
-        'user_id',
-        'address_id',
+
+        //user informations
+        'user_id', 'user_name', 'user_email',
+
+        //address informations
+        'address_id', 'address_text', 'address_line1', 'address_line2', 'address_postal_code', 'address_city',
+        'address_country', 'address_latitude', 'address_longitude'
     ];
 
     protected $casts = [
@@ -98,6 +106,26 @@ class Cart extends Model
     public function getFormattedIncludingTaxesAttribute ()
     {
         return StringUtility::getFormattedPrice($this->including_taxes);
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName ()
+    {
+        return 'number';
+    }
+
+    public function getBillingPathAttribute ()
+    {
+        return Storage::disk('private')->path("billings/{$this->user->id}/{$this->number}.pdf");
+    }
+
+    public static function computeNextNumber (string $prefix, string $nextNumber): string
+    {
+        return $prefix . '-' . $nextNumber;
     }
 
     public function address ()

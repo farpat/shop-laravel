@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ViewBillingRequest;
-use App\Models\Cart;
+use App\Models\Billing;
 use App\Pdf\BillingPdf;
 use App\Repositories\ModuleRepository;
 use Illuminate\Support\Facades\File;
@@ -18,7 +18,7 @@ class BillingController extends Controller
         $this->middleware(Authenticate::class);
     }
 
-    public function export (Cart $billing, ViewBillingRequest $request)
+    public function export (Billing $billing, ViewBillingRequest $request)
     {
         if ($request->query('force') == 1 || !File::exists($billing->billing_path)) {
             $billing->load(['items.product_reference', 'user']);
@@ -29,7 +29,7 @@ class BillingController extends Controller
         return response()->file($billing->billing_path);
     }
 
-    public function view (Cart $billing, ViewBillingRequest $request, ModuleRepository $moduleRepository)
+    public function view (Billing $billing, ViewBillingRequest $request, ModuleRepository $moduleRepository)
     {
         $billing->load(['items.product_reference', 'user']);
         return view('billing.show', compact('billing'));

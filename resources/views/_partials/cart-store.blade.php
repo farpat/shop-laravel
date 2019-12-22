@@ -5,7 +5,7 @@
             cartItemsLength: {{ count($cartItems) }},
         },
         data:  {
-            currency:    '{{ $currency }}',
+            currencyCode:    '{{ $currencyCode }}',
             purchaseUrl: '{{ route('cart.purchase') }}',
         }
     };

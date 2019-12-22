@@ -34,23 +34,19 @@ class HomeTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($products, $categories) {
             $browser->visit(new HomePage)
                 ->assertSeeIn('.navbar-brand', config('app.name'))
-
                 ->assertSeeIn('.nav-item:nth-child(1)', __('All categories'))
-
                 ->click('.nav-item:nth-child(2) .nav-link')
                 ->screenshot('Navigation is good - first button')
                 ->assertSeeIn('.nav-item:nth-child(2) .nav-link', $categories[1]->label)
                 ->assertSeeIn('.nav-item:nth-child(2) .dropdown-item:nth-child(1)', $products[0]->label)
                 ->assertSeeIn('.nav-item:nth-child(2) .dropdown-item:nth-child(2)', $products[1]->label)
                 ->assertSeeIn('.nav-item:nth-child(2) .dropdown-item:nth-child(3)', $products[2]->label)
-
                 ->click('.nav-item:nth-child(3) .nav-link')
                 ->screenshot('Navigation is good - second button')
                 ->assertSeeIn('.nav-item:nth-child(3) .nav-link', $categories[0]->label)
                 ->assertSeeIn('.nav-item:nth-child(3) .dropdown-item:nth-child(1)', $products[3]->label)
                 ->assertSeeIn('.nav-item:nth-child(3) .dropdown-item:nth-child(2)', $products[4]->label)
                 ->assertSeeIn('.nav-item:nth-child(3) .dropdown-item:nth-child(3)', $products[5]->label)
-
                 ->assertSeeIn('.nav-item:nth-child(4) .nav-link', $products[6]->label);
         });
     }
@@ -63,6 +59,10 @@ class HomeTest extends DuskTestCase
         $this->moduleRepository->createModule('home', true, 'Home module');
 
         $this->moduleRepository->createModule('billing', true, 'Billing module');
-        $this->moduleRepository->createParameter('billing', 'currency', 'EUR');
+        $this->moduleRepository->createParameter('billing', 'currency', [
+            'style'  => 'right',
+            'code'   => 'EUR',
+            'symbol' => '€'
+        ]);
     }
 }

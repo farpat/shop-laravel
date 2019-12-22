@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property string|null $created_at
  * @property string|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cart[] $carts
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Billing[] $carts
  * @property-read int|null $carts_count
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address newModelQuery()
@@ -59,6 +59,6 @@ class Address extends Model
 
     public function carts ()
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasMany(Billing::class);
     }
 }

@@ -18,7 +18,7 @@
             </tr>
             </thead>
             <tbody>
-            <?php /** @var App\Models\Cart $billing */ ?>
+            <?php /** @var App\Models\Billing $billing */ ?>
             @foreach($billings as $billing)
                 <tr>
                     <td>

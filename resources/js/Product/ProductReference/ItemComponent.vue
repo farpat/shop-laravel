@@ -25,14 +25,14 @@
     import Slider from "./SliderComponent";
 
     export default {
-        mixins: [TranslationMixin],
+        mixins:     [TranslationMixin],
         components: {QuantityComponent, Slider},
-        methods: {
+        methods:    {
             getUnitPriceIncludingTaxes: function (amount) {
-                return Str.toLocaleCurrency(amount, CartStore.data.currency);
+                return Str.toLocaleCurrency(amount, CartStore.data.currencyCode);
             },
         },
-        computed: {
+        computed:   {
             getCurrentReference: function () {
                 return ProductStore.state.currentProductReference;
             }

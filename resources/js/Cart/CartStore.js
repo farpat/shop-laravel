@@ -8,7 +8,7 @@ import Store from "../src/Bootstrap/Store";
  * @property {Number} state.cartItemsLength
  * @property {Object} state.isLoading
  * @property {Object} data
- * @property {String} data.currency
+ * @property {String} data.currencyCode
  * @property {String} data.purchaseUrl
  * @property {String} data.endPoint
  */

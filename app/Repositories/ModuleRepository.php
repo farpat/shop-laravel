@@ -3,13 +3,10 @@
 namespace App\Repositories;
 
 
-use App\Models\Module;
-use App\Models\ModuleParameter;
-use Exception;
+use App\Models\{Module, ModuleParameter};
+use App\Support\StringUtility;
 use Illuminate\Contracts\Support\Jsonable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\{Builder, ModelNotFoundException};
 
 class ModuleRepository
 {
@@ -53,7 +50,7 @@ class ModuleRepository
 
     private function transformValueField (ModuleParameter $moduleParameter)
     {
-        if ($jsonDecoded = Str::jsonDecode($moduleParameter->value)) {
+        if ($jsonDecoded = StringUtility::jsonDecode($moduleParameter->value)) {
             $moduleParameter->value = $jsonDecoded;
         }
     }

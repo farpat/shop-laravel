@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCartsTable extends Migration
+class CreateBillingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,18 +14,30 @@ class CreateCartsTable extends Migration
      */
     public function up ()
     {
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create('billings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('number')->nullable();
             $table->unsignedInteger('items_count')->default(0);
             $table->unsignedDecimal('total_amount_excluding_taxes', 10, 2)->default(0);
             $table->unsignedDecimal('total_amount_including_taxes', 10, 2)->default(0);
+            $table->enum('status', [Billing::ORDERED_STATUS, Billing::DELIVRED_STATUS]);
             $table->text('comment')->nullable();
 
-            //user informations duplicated in billing table
-            $table->unsignedBigInteger('user_id');
+            //user informations
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('user_name');
+            $table->string('user_email');
 
-            //address informations duplicated in billing table
+            //address informations
             $table->unsignedBigInteger('address_id')->nullable();
+            $table->text('address_text')->nullable();
+            $table->text('address_line1')->nullable();
+            $table->text('address_line2')->nullable();
+            $table->string('address_postal_code')->nullable();
+            $table->string('address_city')->nullable();
+            $table->string('address_country')->nullable();
+            $table->unsignedDecimal('address_latitude', 9, 6)->nullable();
+            $table->unsignedDecimal('address_longitude', 9, 6)->nullable();
 
             $table->timestamps();
 

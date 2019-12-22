@@ -4,17 +4,14 @@ namespace App\Services\Bank;
 
 
 use App\Models\{Cart, ProductReference, User};
-use App\Repositories\{CartRepository, ProductRepository};
+use App\Repositories\{BillingRepository, CartRepository, ProductRepository};
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cookie;
 
 class CartManager
 {
-    /**
-     * @bool
-     */
-    private $isRefreshed = false;
     /**
      * @var Collection
      */
@@ -39,17 +36,22 @@ class CartManager
      * @var ProductRepository
      */
     private $productRepository;
+    /**
+     * @var BillingRepository
+     */
+    private $billingRepository;
 
-    public function __construct (CartRepository $cartRepository, ProductRepository $productRepository)
+    public function __construct (CartRepository $cartRepository, ProductRepository $productRepository, BillingRepository $billingRepository, Request $request)
     {
         $this->cartRepository = $cartRepository;
         $this->productRepository = $productRepository;
+        $this->billingRepository = $billingRepository;
     }
 
-    public function refresh (?User $user = null): void
+    public function refresh (?User $user = null): self
     {
-        $this->isRefreshed = true;
-        if ($user) { //get cart and items from database
+        \Debugbar::info('CartManager refresh called!');
+        if ($user !== null) { //get cart and items from database
             $cart = $this->cartRepository->getCart($user);
 
             $items = $cart->items_count > 0 ?
@@ -65,6 +67,8 @@ class CartManager
         $this->cart = $cart;
         $this->items = collect($items);
         $this->user = $user;
+
+        return $this;
     }
 
     public function getCookieItems (): array
@@ -203,13 +207,8 @@ class CartManager
         return $this->user;
     }
 
-    public function updateCartOnOrderedStatus ()
+    public function transformToBilling ()
     {
-        $this->cartRepository->updateCartOnOrderedStatus($this->cart);
-    }
-
-    public function isRefreshed (): bool
-    {
-        return $this->isRefreshed;
+        $this->billingRepository->transformCartToBilling($this->cart);
     }
 }

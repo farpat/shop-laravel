@@ -44,7 +44,7 @@
         },
         computed:   {
             getAmountIncludingTaxes: function () {
-                return this.toLocaleCurrency(this.item.amount_including_taxes, CartStore.data.currency);
+                return this.toLocaleCurrency(this.item.amount_including_taxes, CartStore.data.currencyCode);
             },
             isLoading:               function () {
                 return CartStore.state.isLoading[this.item.product_reference_id];

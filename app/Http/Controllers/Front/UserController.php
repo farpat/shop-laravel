@@ -7,7 +7,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Requests\{UserInformationsRequest, UserPasswordRequest};
 use App\Models\{Address, User};
 use App\Notifications\UserPasswordNotification;
-use App\Repositories\{AddressRepository, CartRepository, UserRepository};
+use App\Repositories\{AddressRepository, BillingRepository, CartRepository, UserRepository};
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Http\Request;
 
@@ -35,7 +35,7 @@ class UserController extends Controller
         $user = $request->user();
 
         $old = $request->old();
-        if ($old === []) {
+        if ($old === [] || $old === null) {
             $form = [
                 'name'      => $user->name,
                 'email'     => $user->email,
@@ -82,9 +82,9 @@ class UserController extends Controller
             ->with('success', __('User password updated with success'));
     }
 
-    public function billings (Request $request, CartRepository $cartRepository)
+    public function billings (Request $request, BillingRepository $bill)
     {
-        $billings = $cartRepository->getBillings($request->user());
+        $billings = $bill->get($request->user());
 
         return view('users.billings', compact('billings'));
     }

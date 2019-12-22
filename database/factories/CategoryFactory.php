@@ -9,14 +9,7 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
 
 $factory->define(Category::class, function (Faker $faker) {
-    static $labels = ["Books", "Movies", "Music", "Games", "Electronics", "Computers", "Home",
-        "Garden", "Tools",
-        "Grocery", "Health", "Beauty", "Toys", "Kids", "Baby", "Clothing", "Shoes", "Jewelry", "Sports", "Outdoors",
-        "Automotive", "Industrial"];
-
-    $labelKey = array_rand($labels);
-    $label = $labels[$labelKey];
-    unset($labels[$labelKey]);
+    $label = $faker->unique()->words(2, true);
 
     return [
         'label'        => $label,

@@ -1,8 +1,8 @@
 <?php
 
 use Bezhanov\Faker\Provider\Commerce;
-use App\Models\{Category, Image, Product, ProductReference, Tax, User};
-use App\Repositories\{CategoryRepository, ModuleRepository};
+use App\Models\{Address, Category, Image, Product, ProductReference, Tax, User};
+use App\Repositories\{CartRepository, CategoryRepository, ModuleRepository};
 use App\Services\Bank\CartManager;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
-
     const STRING_PRODUCT_FIELDS = [
         'color'    => ['white', 'red', 'green', 'blue', 'yellow', 'orange'],
         'size'     => ['s', 'm', 'l', 'xs', 'xl', 'xxl'],
@@ -41,11 +40,11 @@ class DatabaseSeeder extends Seeder
     /**
      * @var Tax
      */
-    private $ecoTax5Cents;
+    private $ecoTax;
     /**
      * @var Tax
      */
-    private $tax20Percent;
+    private $VatTax;
     /**
      * @var CartManager
      */
@@ -58,6 +57,10 @@ class DatabaseSeeder extends Seeder
         $this->moduleRepository = $moduleRepository;
         $this->categoryRepository = $categoryRepository;
         $this->cartManager = $cartManager;
+
+        $this->categoryLabels = collect(["Books", "Movies", "Music", "Games", "Electronics", "Computers", "Home",
+            "Garden", "Tools", "Grocery", "Health", "Beauty", "Toys", "Kids", "Baby", "Clothing", "Shoes", "Jewelry",
+            "Sports", "Outdoors", "Automotive", "Industrial"]);
     }
 
     private function startTime (string $label): float
@@ -70,6 +73,21 @@ class DatabaseSeeder extends Seeder
     {
         $end = microtime(true);
         dump('==> ' . round($end - $start, 2) . ' seconds');
+    }
+
+    private function storeCategoryLevel1 (Category $category): Category
+    {
+        $this->categoryLabels = $this->categoryLabels->shuffle();
+        $categoryLabel = $this->categoryLabels->pop();
+        $category->fill([
+            'label'        => $categoryLabel,
+            'slug'         => strtolower($categoryLabel),
+            'nomenclature' => strtoupper($categoryLabel),
+        ]);
+
+        $category->save();
+
+        return $category;
     }
 
     /**
@@ -89,7 +107,9 @@ class DatabaseSeeder extends Seeder
         $start = $this->startTime('Creation of products');
         $this->createTaxes();
 
-        foreach (factory(Category::class, random_int(4, 8))->create() as $category) {
+        foreach (factory(Category::class, random_int(5, 10))->make() as $category) {
+            $category = $this->storeCategoryLevel1($category);
+
             $productfields = $this->createProductfields($category);
 
             for ($i = 0; $i < 2; $i++) {
@@ -110,22 +130,44 @@ class DatabaseSeeder extends Seeder
 
         $start = $this->startTime('Creation of carts');
         foreach (factory(User::class, 10)->create() as $user) {
-            $this->createAddresses($user);
-            $this->createOrderedCart($user, random_int(2, 5));
-            $this->createOrderingCart($user);
+            $addresses = $this->createAddresses($user);
+            $this->createBillings($user, $addresses, random_int(1, 4));
+            $this->createCart($user);
         }
         $this->endTime($start);
     }
 
+    private function createBillings (User $user, Collection $addresses, int $countOfBillings)
+    {
+        for ($i = 0; $i < $countOfBillings; $i++) {
+            $this->createCart($user);
+            $this->cartManager->getCart()->update(['address_id' => $addresses->random()->id]);
+            $this->cartManager->transformToBilling();
+        }
+    }
+
+    private function createCart (User $user)
+    {
+        $this->cartManager->refresh($user);
+
+        $productsReferences = ProductReference::query()
+            ->limit(random_int(2, 5))
+            ->get();
+
+        foreach ($productsReferences as $productReference) {
+            $this->cartManager->addItem(random_int(1, 10), $productReference);
+        }
+    }
+
     private function createTaxes ()
     {
-        $this->tax20Percent = Tax::query()->create([
+        $this->VatTax = Tax::query()->create([
             'label' => 'VAT 20%',
             'type'  => Tax::PERCENTAGE_TYPE,
             'value' => 20
         ]);
 
-        $this->ecoTax5Cents = Tax::query()->create([
+        $this->ecoTax = Tax::query()->create([
             'label' => 'Eco tax',
             'type'  => Tax::UNITY_TYPE,
             'value' => 0.05,
@@ -205,9 +247,9 @@ class DatabaseSeeder extends Seeder
 
     private function attachTaxes (Product $product): Collection
     {
-        $taxes = collect([$this->tax20Percent]);
+        $taxes = collect([$this->VatTax]);
         if ($this->faker->boolean(25)) {
-            $taxes->push($this->ecoTax5Cents);
+            $taxes->push($this->ecoTax);
         }
 
         $product->taxes()->attach($taxes->pluck('id'));
@@ -299,49 +341,6 @@ class DatabaseSeeder extends Seeder
         $product->update(['main_image_id' => $images[0]->id]);
     }
 
-    private function createOrderedCart (User $user, int $count)
-    {
-        for ($j = 0; $j < $count; $j++) {
-            $this->cartManager->refresh($user);
-
-            $productReferences = ProductReference::query()->inRandomOrder()->limit(random_int(2, 5))->get();
-
-            $productReferences->map(function (ProductReference $productReference) {
-                $this->cartManager->addItem(random_int(1, 5), $productReference);
-            });
-
-            $cart = $this->cartManager->getCart();
-            $firstUserAddress = $user->addresses->first();
-            $cart->fill([
-                'address_id'          => $firstUserAddress->id,
-                'address_text'        => $firstUserAddress->text,
-                'address_line1'       => $firstUserAddress->line1,
-                'address_line2'       => $firstUserAddress->line2,
-                'address_postal_code' => $firstUserAddress->postal_code,
-                'address_city'        => $firstUserAddress->city,
-                'address_country'     => $firstUserAddress->country,
-                'address_latitude'    => $firstUserAddress->latitude,
-                'address_longitude'   => $firstUserAddress->longitude,
-            ]);
-
-            $this->cartManager->updateCartOnOrderedStatus();
-        }
-
-        $this->cartManager->refresh($user);
-    }
-
-    private function createOrderingCart (User $user)
-    {
-        $this->cartManager->refresh($user);
-        $limit = random_int(2, 5);
-
-        $productReferences = ProductReference::query()->inRandomOrder()->limit($limit)->get();
-
-        for ($i = 0; $i < $limit; $i++) {
-            $this->cartManager->addItem(random_int(1, 5), $productReferences[$i]);
-        }
-    }
-
     private function createHomeModule ()
     {
         $this->moduleRepository->createModule('home', true, 'Home module');
@@ -375,7 +374,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $this->moduleRepository->createParameter('home', 'navigation', [
             Category::class . ':2' => [Product::class . ':1', Product::class . ':2', Product::class . ':3'],
-            Category::class . ':1' => [Product::class . ':4', Product::class . ':6', Product::class . ':5'],
+            Category::class . ':5' => [Product::class . ':4', Product::class . ':6', Product::class . ':5'],
             Product::class . ':10'
         ]);
     }
@@ -384,14 +383,18 @@ class DatabaseSeeder extends Seeder
     {
         $this->moduleRepository->createModule('billing', true, 'Billing module');
         $this->moduleRepository->createParameter('billing', 'next_number', 1);
-        $this->moduleRepository->createParameter('billing', 'currency', 'EUR');
-        $this->moduleRepository->createParameter('billing', 'address', factory(\App\Models\Address::class)->make()->toArray());
+        $this->moduleRepository->createParameter('billing', 'currency', [
+            'style' => 'right',
+            'code' => 'EUR',
+            'symbol' => '€'
+        ]);
+        $this->moduleRepository->createParameter('billing', 'address', factory(Address::class)->make()->toArray());
         $this->moduleRepository->createParameter('billing', 'phone_number', $this->faker->phoneNumber);
     }
 
     private function createAddresses (User $user): Collection
     {
-        return factory(\App\Models\Address::class, 2)->create(['user_id' => $user->id]);
+        return factory(Address::class, 2)->create(['user_id' => $user->id]);
     }
 
     private function emptyPrivateFiles ()

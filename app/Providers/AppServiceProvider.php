@@ -2,12 +2,17 @@
 
 namespace App\Providers;
 
+use App\Repositories\BillingRepository;
+use App\Repositories\CartRepository;
 use App\Repositories\ModuleRepository;
+use App\Repositories\ProductRepository;
 use App\Services\Bank\CartManager;
 use App\Services\Bank\StripeService;
 use App\ViewComposers\CartStoreViewComposer;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -37,7 +42,6 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
     public function register ()
     {
         $this->registerBankServices();
-        $this->registerMacros();
     }
 
     private function registerBankServices ()
@@ -48,9 +52,11 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
 
         $this->app->singleton(StripeService::class, function (Application $app) {
             ['key' => $key, 'secret' => $secret] = $app['config']['services']['stripe'];
+
             return new StripeService(
-                $key, $secret,
-                $app->make(ModuleRepository::class)->getParameter('billing', 'currency')->value
+                $key,
+                $secret,
+                $app->make(ModuleRepository::class)->getParameter('billing', 'currency')->value->code
             );
         });
     }
@@ -63,15 +69,5 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
     public function provides ()
     {
         return [CartManager::class, StripeService::class, ModuleRepository::class];
-    }
-
-    private function registerMacros ()
-    {
-        Str::macro('jsonDecode', function (string $string) {
-            if (BaseStr::startsWith($string, ['{', '['])) {
-                $newValue = json_decode($string);
-                return json_last_error() === JSON_ERROR_NONE ? $newValue : null;
-            }
-        });
     }
 }

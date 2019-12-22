@@ -16,7 +16,7 @@ const renderProduct = function (item, searchValue) {
 <div data-url="${item.url}" class="autocomplete-suggestion" data-val="${searchValue}">${autocompleteImgString}
     <div class="autocomplete-description">
         <p class="autocomplete-description-label">${text}</p>
-        <p class="autocomplete-description-price">${`${Translation.get('From')} ${Str.toLocaleCurrency(item.min_unit_price_including_taxes, CartStore.data.currency)}`}</p>
+        <p class="autocomplete-description-price">${`${Translation.get('From')} ${Str.toLocaleCurrency(item.min_unit_price_including_taxes, CartStore.data.currencyCode)}`}</p>
     </div>
 </div>
 `;

@@ -30,7 +30,7 @@
             items: {type: Object, required: true}
         },
         computed: {
-            getPurchaseUrl: function() {
+            getPurchaseUrl:                   function () {
                 return CartStore.data.purchaseUrl;
             },
             getAmountIncludingTaxes:          function () {
@@ -42,7 +42,7 @@
                 return totalPriceIncludingVat;
             },
             getFormattedAmountIncludingTaxes: function () {
-                return this.toLocaleCurrency(this.getAmountIncludingTaxes, CartStore.data.currency);
+                return this.toLocaleCurrency(this.getAmountIncludingTaxes, CartStore.data.currencyCode);
             },
             getAmountExcludingTaxes:          function () {
                 let totalPriceExcludingTaxes = 0;
@@ -56,7 +56,7 @@
                 return this.getAmountIncludingTaxes - this.getAmountExcludingTaxes;
             },
             getFormattedIncludingTaxes:       function () {
-                return this.toLocaleCurrency(this.getIncludingTaxes, CartStore.data.currency);
+                return this.toLocaleCurrency(this.getIncludingTaxes, CartStore.data.currencyCode);
             }
         }
     }

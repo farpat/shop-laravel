@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Services\Bank\StringUtility;
+use App\Support\StringUtility;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\CartItem
+ * App\Models\OrderItem
  *
  * @property int $id
  * @property int $cart_id
@@ -14,27 +14,28 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $product_reference_id
  * @property float $amount_excluding_taxes
  * @property float $amount_including_taxes
- * @property-read \App\Models\Cart $cart
+ * @property-read \App\Models\Billing $cart
  * @property-read mixed $formatted_amount_excluding_taxes
  * @property-read mixed $formatted_amount_including_taxes
  * @property-read \App\Models\ProductReference|null $product_reference
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereAmountExcludingTaxes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereAmountIncludingTaxes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereCartId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereProductReferenceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CartItem whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereAmountExcludingTaxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereAmountIncludingTaxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereCartId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereProductReferenceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereQuantity($value)
  * @mixin \Eloquent
  */
-class CartItem extends Model
+class OrderItem extends Model
 {
     public $timestamps = false;
 
     protected $fillable = [
-        'id', 'cart_id', 'quantity', 'product_reference_id', 'amount_excluding_taxes', 'amount_including_taxes'
+        'id', 'orderable_type', 'orderable_id', 'quantity', 'product_reference_id', 'amount_excluding_taxes',
+        'amount_including_taxes'
     ];
 
     public function __construct (array $attributes = [])
@@ -62,8 +63,8 @@ class CartItem extends Model
         return $this->belongsTo(ProductReference::class);
     }
 
-    public function cart ()
+    public function orderable ()
     {
-        return $this->belongsTo(Cart::class);
+        return $this->morphTo();
     }
 }

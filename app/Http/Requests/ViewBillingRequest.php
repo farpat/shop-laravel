@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Cart;
+use App\Models\Billing;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,7 +15,7 @@ class ViewBillingRequest extends FormRequest
      */
     public function authorize ()
     {
-        /** @var Cart $billing */
+        /** @var Billing $billing */
         $billing = $this->route('billing');
 
         /** @var User $currentUser */

@@ -2,17 +2,17 @@
 
 namespace App\Pdf;
 
-use App\Models\Cart;
+use App\Models\Billing;
 use App\Services\Pdf\Pdf;
 
 class BillingPdf extends Pdf
 {
     /**
-     * @var Cart
+     * @var Billing
      */
     private $billing;
 
-    public function __construct (Cart $billing)
+    public function __construct (Billing $billing)
     {
         $this->billing = $billing;
     }

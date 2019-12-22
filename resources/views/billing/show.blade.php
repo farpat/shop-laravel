@@ -43,7 +43,7 @@
             </tr>
             </thead>
             <tbody>
-            <?php /** @var App\Models\CartItem $item */ ?>
+            <?php /** @var App\Models\OrderItem $item */ ?>
             @foreach($billing->items as $item)
                 <tr>
                     <td>{{ $item->product_reference->label }}</td>
