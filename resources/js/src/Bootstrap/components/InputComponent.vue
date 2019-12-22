@@ -6,9 +6,10 @@
         <div :class="getContainerClass">
             <div class="input-group-prepend" v-if="before"><span class="input-group-text" v-html="before"></span></div>
 
-            <input :autofocus="autofocus" :class="getInputClass" :id="getId" :name="getName" :placeholder="placeholder"
-                   :maxlength="length" :readonly="readonly" :required="isRequired" :style="getStyleCSS" :type="type"
-                   :value="getValue" @change="change($event.target.value)">
+            <input :autofocus="autofocus" :class="getInputClass" :id="getId" :maxlength="length" :name="getName"
+                   :placeholder="placeholder" :readonly="readonly" :required="isRequired" :style="getStyleCSS"
+                   :type="type"
+                   :value="getValue" @change="change($event.target.value)" v-bind="getDataAttributes">
 
             <div class="input-group-append" v-if="after"><span class="input-group-text" v-html="after"></span></div>
 
@@ -25,23 +26,23 @@
 
     export default {
         components: {RequiredComponent, ErrorComponent},
-        mixins: [FormElementMixin],
-        props: {
-            before:       {type: String, default: ''},
-            after:        {type: String, default: ''},
-            type:         {type: String, default: 'text'},
-            readonly:     {type: Boolean, default: false},
-            plain:        {type: String, default: ''},
-            placeholder:  {type: String, default: ''},
-            autofocus:    {type: Boolean, default: false},
-            length:       {type: Number, required: false},
-            styleCSS:     {type: Object, required: false},
-            displayError: {type: Boolean, default: true},
+        mixins:     [FormElementMixin],
+        props:      {
+            before:         {type: String, default: ''},
+            after:          {type: String, default: ''},
+            type:           {type: String, default: 'text'},
+            readonly:       {type: Boolean, default: false},
+            plain:          {type: String, default: ''},
+            placeholder:    {type: String, default: ''},
+            autofocus:      {type: Boolean, default: false},
+            length:         {type: Number, required: false},
+            styleCSS:       {type: Object, required: false},
+            displayError:   {type: Boolean, default: true},
         },
-        computed: {
+        computed:   {
             getStyleCSS:       function () {
                 if (this.length) {
-                    return {width: ((this.length * 2) + 1) + 'rem', ...this.styleCSS};
+                    return {width: `${(this.length * 2) + 1}rem`, ...this.styleCSS};
                 }
 
                 return this.styleCSS;
@@ -53,7 +54,7 @@
 
                 return {
                     'form-control': true,
-                    'is-invalid': this.getError
+                    'is-invalid':   this.getError
                 };
             },
             getContainerClass: function () {

@@ -7,7 +7,7 @@
 
             <div id="card-element"></div>
 
-            <div id="card-errors" class="invalid-feedback d-block" role="alert"></div>
+            <div class="invalid-feedback d-block" id="card-errors" role="alert"></div>
         </div>
 
         <button class="btn btn-primary btn-block" id="submit-button" type="submit">
@@ -46,16 +46,16 @@
                 }
             };
 
-            // style = {};
-
             this.$card = elements.create('card', {style});
             this.$card.mount('#card-element');
 
             this.$errorElement = this.$el.querySelector('#card-errors');
 
-            this.$card.addEventListener('change', function (event) {
+            this.$card.addEventListener('change', (event) => {
                 this.$errorElement.textContent = event.error ? event.error.message : '';
             });
+
+            this.$submitButton = this.$el.querySelector('#submit-button');
         },
         computed: {
             getCsrfToken: function () {
@@ -70,7 +70,9 @@
                     if (result.error) {
                         this.$errorElement.textContent = result.error.message;
                     } else {
-                        this.$el.insertAdjacentHTML('beforeend', `<input type="hidden" name="token" value="${result.token.id}">`);
+                        this.$el.insertAdjacentHTML('beforeend', `<input type="hidden" name="stripe_token" value="${result.token.id}">`);
+                        this.$submitButton.disabled = true;
+                        this.$submitButton.innerText = this.__('Loading ...');
                         this.$el.submit();
                     }
                 });

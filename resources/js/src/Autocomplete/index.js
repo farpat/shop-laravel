@@ -22,7 +22,7 @@ export default class Autocomplete {
                     return '';
                 }
 
-                return '<div class="autocomplete-suggestion" data-val="' + item + '">' + Str.markValueIntoText(search, item.label) + '</div>';
+                return `<div class="autocomplete-suggestion" data-val="${item}">${Str.markValueIntoText(search, item.label)}</div>`;
             },
             onSelect:   function (e, term, item) {
             }
@@ -39,7 +39,7 @@ export default class Autocomplete {
     }
 
     destroy() {
-        this.inputs.forEach(function(input) {
+        this.inputs.forEach(function (input) {
             input.destroy();
         });
     }

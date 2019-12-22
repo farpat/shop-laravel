@@ -10,35 +10,45 @@
     </script>
 @endpush
 
+@section('script', 'user-informations')
+
 @section('content')
     <div class="container">
-        <section>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">{{ __('My informations') }}</div>
+        <h1 class="mb-5">{{ __('My informations') }}</h1>
+        <form id="informations-form" @change="onChange($event)"
+              method="post" action="{{ route('user.informations') }}">
+            @csrf
+            @method('PUT')
 
-                        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <input-component name="name" label="{{ __('Name') }}" autofocus
+                                     rules="required|min:4"></input-component>
+                </div>
 
-                            <form id="informations-form" @change="onChange($event)" @submit="onSubmit($event)" method="post"
-                                  action="{{ route('user.informations') }}">
-                                @csrf
-
-                                <input-component name="name" label="{{ __('Name') }}" autofocus></input-component>
-
-                                <input-component name="email" label="{{ __('E-Mail Address') }}"
-                                                 type="email"></input-component>
-
-                                <div class="form-group mt-5">
-                                    <button type="submit" id="submit" class="btn btn-primary">
-                                        {{ __('Change my informations') }}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                <div class="col-md-6">
+                    <input-component name="email" label="{{ __('E-Mail Address') }}"
+                                     type="email" rules="required|email"></input-component>
                 </div>
             </div>
-        </section>
+
+
+            <h2 class="mt-3">{{ __('Addresses') }}</h2>
+            <addresses-component
+                    lang="{{ app()->getLocale() }}"
+                    :initial-addresses='@json($form['addresses'])'
+                    api-key="{{ config('app.algolia_api_key') }}"
+                    app-id="{{ config('app.algolia_app_id') }}"></addresses-component>
+
+            <div class="form-group mt-5">
+                <a type="button" class="btn btn-link" href="{{ route('user.informations') }}">
+                    {{ __('Cancel') }}
+                </a>
+
+                <button type="submit" id="submit" class="btn btn-primary">
+                    {{ __('Change my informations') }}
+                </button>
+            </div>
+        </form>
     </div>
 @endsection

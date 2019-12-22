@@ -1,8 +1,19 @@
 <?php
 
+use App\Repositories\ModuleRepository;
 use App\Repositories\NavigationRepository;
-use Illuminate\Support\{HtmlString, MessageBag, ViewErrorBag};
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\{Arr, HtmlString, MessageBag, ViewErrorBag};
+
+function parameter ($moduleLabel, $parameterLabel)
+{
+    $moduleParameter = app(ModuleRepository::class)->getParameter($moduleLabel, $parameterLabel);
+    if ($moduleParameter === null) {
+        throw new Exception("Module parameter << $moduleLabel.$parameterLabel >> doesn't not exists!");
+    }
+
+    return $moduleParameter->value;
+}
 
 function navigation (): Htmlable
 {
@@ -42,17 +53,21 @@ function breadcrumb (array $links): HtmlString
  */
 function get_form_store ($errorBag, array $old): HtmlString
 {
-    $errors = json_encode(array_map(function ($errors) {
-        return $errors[0];
-    }, $errorBag->getMessages()), JSON_FORCE_OBJECT);
+    //errors
+    $errors = [];
+    foreach ($errorBag->getMessages() as $key => $message) {
+        Arr::set($errors, $key, $message[0]);
+    }
+    $errors = json_encode($errors, JSON_FORCE_OBJECT);
 
+    //datas
     unset($old['_token']);
-    $datas = json_encode($old, JSON_FORCE_OBJECT);
+    $datas = json_encode($old, JSON_FORCE_OBJECT | JSON_NUMERIC_CHECK);
 
-    return new HtmlString("window._FormStore = { errors : $errors, datas : $datas, rules : {}}");
+    return new HtmlString("window._Store = { errors : $errors, datas : $datas, rules : {}}");
 }
 
-function get_asset (string $asset): string
+function get_asset (string $asset, bool $absolute = false): string
 {
     static $json;
 
@@ -67,8 +82,13 @@ function get_asset (string $asset): string
         }
 
         $return = $json->{$asset};
-        return $return ?
-            asset($return, config('app.env') === 'production') :
-            '';
+
+        if (!$return) {
+            return '';
+        }
+
+        return $absolute ?
+            public_path($return) :
+            asset($return, config('app.env') === 'production');
     }
 }

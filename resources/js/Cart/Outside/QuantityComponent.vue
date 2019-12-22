@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-center" v-if="getItem === undefined">
         <div class="col-auto">
-            <NumberComponent :min="1" :name="'quantity-outside-' + this.reference.id"></NumberComponent>
+            <NumberComponent :min="1" :name="`quantity-outside[${this.reference.id}]`"></NumberComponent>
         </div>
         <div class="col-auto">
             <button @click="addInCart" class="btn btn-primary" type="button" v-show="!isLoading">
@@ -23,7 +23,7 @@
     import TranslationMixin from "../../src/Translation/TranslationMixin";
     import CartStore from "../CartStore";
     import NumberComponent from "../../src/Bootstrap/components/NumberComponent";
-    import FormStore from "../../src/Bootstrap/FormStore";
+    import Store from "../../src/Bootstrap/Store";
 
     export default {
         mixins:     [TranslationMixin],
@@ -34,7 +34,7 @@
         data:       function () {
             return {
                 cartState: CartStore.state,
-                formState: FormStore.state
+                formState: Store.state
             };
         },
         computed:   {
@@ -45,14 +45,16 @@
                 return this.cartState.isLoading[this.reference.id];
             },
             getQuantity: function () {
-                return this.formState.datas['quantity-outside-' + this.reference.id]
+                return Store.getData(`quantity-outside[${this.reference.id}]`);
             }
         },
         methods:    {
             addInCart: function () {
                 CartStore.addItem(this.reference.id, this.getQuantity);
-                FormStore.changeField('quantity-' + this.reference.id, this.getQuantity);
-                window.setTimeout(() => FormStore.changeField('quantity-outside-' + this.reference.id, 1), 500);
+                Store.setData(`quantity[${this.reference.id}]`, this.getQuantity);
+                window.setTimeout(() => {
+                    Store.setData(`quantity-outside[${this.reference.id}]`, 1);
+                }, 500);
             }
         }
     }

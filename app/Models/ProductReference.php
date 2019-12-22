@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\StringUtility;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $unit_price_excluding_taxes
  * @property float $unit_price_including_taxes
  * @property array $filled_product_fields
+ * @property-read mixed $formatted_unit_price_excluding_taxes
+ * @property-read mixed $formatted_unit_price_including_taxes
  * @property-read mixed $url
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Image[] $images
  * @property-read int|null $images_count
@@ -44,15 +47,27 @@ class ProductReference extends Model
     protected $appends = ['url'];
 
     protected $fillable = [
-        'product_id', 'label', 'unit_price_excluding_taxes', 'unit_price_including_taxes', 'filled_product_fields', 'main_image_id'
+        'product_id', 'label', 'unit_price_excluding_taxes', 'unit_price_including_taxes', 'filled_product_fields',
+        'main_image_id'
     ];
+
+    public function getFormattedUnitPriceExcludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->unit_price_excluding_taxes);
+    }
+
+    public function getFormattedUnitPriceIncludingTaxesAttribute ()
+    {
+        return StringUtility::getFormattedPrice($this->unit_price_including_taxes);
+    }
 
     public function product ()
     {
         return $this->belongsTo(Product::class);
     }
 
-    public function images() {
+    public function images ()
+    {
         return $this->belongsToMany(Image::class, 'product_references_images');
     }
 
@@ -63,6 +78,6 @@ class ProductReference extends Model
 
     public function getUrlAttribute ()
     {
-        return $this->product->url;
+        return $this->product->url . '#' . $this->id;
     }
 }

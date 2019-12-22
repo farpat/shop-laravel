@@ -1,0 +1,38 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Services\Pdf\Pdf;
+
+/**
+ * Class representing a PDF document
+ */
+class DummyClass extends Pdf
+{
+    public function __construct ()
+    {
+        //
+    }
+
+    protected function getOptions (): array
+    {
+        return [
+            // 'header-html' => '<url>', // Adds a html header
+            // etc.,
+        ];
+    }
+
+    protected function getFilePath (): ?string
+    {
+        return null; //or path to your pdf file
+    }
+
+    protected function getPages (): array
+    {
+        return [
+            // HTML string of page 1,
+            // HTML string of page 2,
+            // etc.,
+        ];
+    }
+}

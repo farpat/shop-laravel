@@ -9,16 +9,14 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
 
 $factory->define(Category::class, function (Faker $faker) {
-    $label = $faker->words(2, true);
-    $slug = Str::slug($label);
-    $nomenclature = str_replace('-', '', Str::upper($slug));
+    $label = $faker->unique()->words(2, true);
 
     return [
         'label'        => $label,
-        'slug'         => $slug,
-        'nomenclature' => $nomenclature,
+        'slug'         => strtolower($label),
+        'nomenclature' => strtoupper($label),
         'description'  => $faker->sentence(7),
         'is_last'      => false,
-        'image_id'     => $faker->boolean(65) ? factory(Image::class)->create()->id : null
+        'image_id'     => $faker->boolean(75) ? factory(Image::class)->create()->id : null
     ];
 });

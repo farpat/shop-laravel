@@ -4,9 +4,8 @@ namespace App\Services\Bank;
 
 
 use App\Models\User;
-use Stripe\{Customer, Exception\CardException, Exception\InvalidRequestException, PaymentIntent, Stripe};
-use Exception;
-use Illuminate\Session\Store as Session;
+use Stripe\Exception\InvalidRequestException;
+use Stripe\{Customer, PaymentIntent, Stripe};
 
 class StripeService
 {
@@ -40,59 +39,61 @@ class StripeService
         $this->currency = $currency;
     }
 
-    public function charge (User $user, int $amountInCents, string $stripeToken): PaymentIntent
+    public function charge (User $user, int $amountInCents): PaymentIntent
     {
-        $this->stripeToken = $stripeToken;
+        $customerId = $this->getCustomerId($user);
 
-        $stripeId = $this->getStripeId($user);
-
-        $paymentIntent = PaymentIntent::create([
-            'customer' => $stripeId,
-            'amount'   => $amountInCents,
-            'currency' => $this->currency,
-            'source'   => $this->stripeToken
+        $card = Customer::createSource($customerId, [
+            'source' => $this->stripeToken
         ]);
 
-        dd($paymentIntent);
+        $paymentIntent = PaymentIntent::create([
+            'customer' => $customerId,
+            'amount'   => $amountInCents,
+            'currency' => $this->currency,
+            'source'   => $card->id
+        ]);
 
         return $paymentIntent->confirm();
     }
 
-    private function getStripeId (User $user): string
+    /**
+     * @param string $stripeToken
+     *
+     * @return StripeService
+     */
+    public function setToken (string $stripeToken): StripeService
     {
-        if (!$this->hasGoodStripeId($user->stripe_id)) {
-            $this->generateStripeId($user);
+        $this->stripeToken = $stripeToken;
+        return $this;
+    }
+
+    private function getCustomerId (User $user): string
+    {
+        if (!$user->stripe_id) {
+            $customer = $this->createCustomer($user->email);
+            $user->update(['stripe_id' => $customer->id]);
+        } else {
+            try {
+                Customer::retrieve($user->stripe_id);
+            } catch (InvalidRequestException $e) {
+                if ($e->getHttpStatus() === 404) {
+                    $customer = $this->createCustomer($user->email);
+                    $user->update(['stripe_id' => $customer->id]);
+                } else {
+                    throw $e;
+                }
+            }
         }
 
         return $user->stripe_id;
     }
 
-    private function hasGoodStripeId (?string $stripeId): bool
+    public function createCustomer (string $email): Customer
     {
-        if ($stripeId === null) return false;
-
-        try {
-            Customer::retrieve($stripeId);
-        } catch (InvalidRequestException $e) {
-            if ($e->getHttpStatus() === 404) {
-                return false;
-            }
-            throw $e;
-        } catch (Exception $e) {
-            throw $e;
-        }
-
-        return true;
-    }
-
-    private function generateStripeId (User $user): void
-    {
-        $customer = Customer::create([
-            'email'       => $user->email,
-            'description' => 'Customer for ' . $user->email,
-            'source'      => $this->stripeToken
+        return Customer::create([
+            'email'       => $email,
+            'description' => 'Customer for ' . $email
         ]);
-
-        $user->update(['stripe_id' => $customer->id]);
     }
 }

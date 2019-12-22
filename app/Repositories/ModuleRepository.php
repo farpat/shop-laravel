@@ -3,12 +3,10 @@
 namespace App\Repositories;
 
 
-use App\Models\Module;
-use App\Models\ModuleParameter;
-use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
-use PhpParser\Node\Expr\AssignOp\Mod;
+use App\Models\{Module, ModuleParameter};
+use App\Support\StringUtility;
+use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Database\Eloquent\{Builder, ModelNotFoundException};
 
 class ModuleRepository
 {
@@ -33,15 +31,16 @@ class ModuleRepository
             return $this->cache[$moduleLabel][$parameterLabel];
         }
 
-        /** @var ModuleParameter $moduleParameter */
+        /** @var ModuleParameter|null $moduleParameter */
         $moduleParameter = ModuleParameter::query()
             ->whereHas('module', function (Builder $query) use ($moduleLabel) {
                 $query->where('label', $moduleLabel);
             })
             ->where('label', $parameterLabel)
             ->first();
+
         if ($moduleParameter) {
-            $this->transformValueToGet($moduleParameter);
+            $this->transformValueField($moduleParameter);
         }
 
         $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
@@ -49,18 +48,40 @@ class ModuleRepository
         return $moduleParameter;
     }
 
-    private function transformValueToGet (ModuleParameter $moduleParameter)
+    private function transformValueField (ModuleParameter $moduleParameter)
     {
-        $value = $moduleParameter->value;
+        if ($jsonDecoded = StringUtility::jsonDecode($moduleParameter->value)) {
+            $moduleParameter->value = $jsonDecoded;
+        }
+    }
 
-        if (Str::startsWith($value, ['{', '['])) {
-            $newValue = json_decode($value);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $value = $newValue;
-            }
+    public function updateParameter (string $moduleLabel, string $parameterLabel, $value, ?string $description = null)
+    {
+        $moduleParameter = ModuleParameter::query()
+            ->whereHas('module', function (Builder $query) use ($moduleLabel) {
+                $query->where('label', $moduleLabel);
+            })
+            ->where('label', $parameterLabel)
+            ->first();
+
+        if ($moduleParameter === null) {
+            throw new ModelNotFoundException("Module parameter << $moduleLabel.$parameterLabel >> doesn't not exists!");
         }
 
-        $moduleParameter->value = $value;
+        $moduleParameter->update([
+            'value'       => (is_array($value) || $value instanceof Jsonable) ? json_encode($value) : $value,
+            'description' => $description
+        ]);
+
+
+        $this->setCache($moduleLabel, $parameterLabel, $moduleParameter);
+
+        return $moduleParameter;
+    }
+
+    private function setCache (string $moduleLabel, string $parameterLabel, ModuleParameter $moduleParameter)
+    {
+        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
     }
 
     public function createParameter (string $moduleLabel, string $parameterLabel, $value, string $description = null): ModuleParameter
@@ -76,53 +97,18 @@ class ModuleRepository
             'module_id'   => $this->getModule($moduleLabel)->id
         ]);
 
-        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
+        $this->setCache($moduleLabel, $parameterLabel, $moduleParameter);
 
         return $moduleParameter;
     }
 
     public function getModule (string $moduleLabel): Module
     {
-        if (!$module = Module::where('label', $moduleLabel)->first()) {
-            throw new Exception("The module << $moduleLabel >> doesn't exist!");
+        $module = Module::where('label', $moduleLabel)->first();
+        if ($module === null) {
+            throw new ModelNotFoundException("The module << $moduleLabel >> doesn't exist!");
         }
 
         return $module;
-    }
-
-    public function isActive (string $moduleLabel): bool
-    {
-        $this->getModule($moduleLabel)->is_active;
-    }
-
-    public function destroyModule (string $label): void
-    {
-        $this->getModule($label)->delete();
-    }
-
-    public function activate (string $moduleLabel)
-    {
-        $this->updateModule($moduleLabel, ['is_active' => true]);
-    }
-
-    public function updateModule (string $moduleLabel, array $data)
-    {
-        $this->getModule($moduleLabel)->update($data);
-    }
-
-    public function deactivate (string $moduleLabel)
-    {
-        $this->updateModule($moduleLabel, ['is_active' => false]);
-    }
-
-    private function transformValueToSave (ModuleParameter $moduleParameter)
-    {
-        $value = $moduleParameter->value;
-
-        if (is_array($value)) {
-            $value = json_encode($value);
-        }
-
-        $moduleParameter->value = $value;
     }
 }

@@ -4,12 +4,14 @@ export default class RequiredRule {
     }
 
     check(value) {
-        if (typeof value === 'object') {
+        if (value === null || value === undefined || value === '') {
+            return false;
+        }
+
+        if (typeof value === 'object' || typeof value === 'string') {
             return value.length > 0;
         } else if (typeof value === 'boolean') {
             return value;
         }
-
-        return (value !== undefined && value !== '');
     }
 }

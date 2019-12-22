@@ -10,6 +10,8 @@
     </script>
 @endpush
 
+@section('script', 'auth-register')
+
 @section('content')
     <div class="container">
         <section>
@@ -20,20 +22,22 @@
 
                         <div class="card-body">
 
-                            <form id="register-form" @change="onChange($event)" @submit="onSubmit($event)" method="post"
-                                  action="{{ route('register') }}">
+                            <form id="register-form" method="post" action="{{ route('register') }}">
                                 @csrf
 
-                                <input-component name="name" label="{{ __('Name') }}" autofocus></input-component>
+                                <input-component name="name" label="{{ __('Name') }}" autofocus
+                                                 rules="required|min:4"></input-component>
 
-                                <input-component name="email" label="{{ __('E-Mail Address') }}"
+                                <input-component name="email" label="{{ __('E-Mail Address') }}" rules="required|email"
                                                  type="email"></input-component>
 
 
                                 <input-component name="password" label="{{ __('Password') }}" type="password"
+                                                 rules="required"
                                 ></input-component>
 
                                 <input-component name="password_confirmation" label="{{ __('Confirm Password') }}"
+                                                 rules="required|confirmed:#password"
                                                  type="password"
                                 ></input-component>
 

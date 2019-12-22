@@ -4,22 +4,22 @@ namespace App\Services\Bank;
 
 
 use App\Models\{Cart, ProductReference, User};
-use App\Repositories\{CartRepository, ProductRepository};
+use App\Repositories\{BillingRepository, CartRepository, ProductRepository};
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cookie;
 
 class CartManager
 {
     /**
-     * @bool
-     */
-    private $isRefreshed = false;
-
-    /**
      * @var Collection
      */
     private $items;
+    /**
+     * @var array
+     */
+    private $hydratedItems;
     /**
      * @var Cart|null
      */
@@ -36,24 +36,29 @@ class CartManager
      * @var ProductRepository
      */
     private $productRepository;
+    /**
+     * @var BillingRepository
+     */
+    private $billingRepository;
 
-    public function __construct (CartRepository $cartRepository, ProductRepository $productRepository)
+    public function __construct (CartRepository $cartRepository, ProductRepository $productRepository, BillingRepository $billingRepository, Request $request)
     {
         $this->cartRepository = $cartRepository;
         $this->productRepository = $productRepository;
+        $this->billingRepository = $billingRepository;
     }
 
-    public function refresh (?User $user = null): void
+    public function refresh (?User $user = null): self
     {
-        $this->isRefreshed = true;
-        if ($user) {
+        \Debugbar::info('CartManager refresh called!');
+        if ($user !== null) { //get cart and items from database
             $cart = $this->cartRepository->getCart($user);
 
             $items = $cart->items_count > 0 ?
                 $this->cartRepository->getItems($cart) :
                 [];
 
-        } else {
+        } else { //get cart and items from cookie
             $cart = null;
 
             $items = $this->getCookieItems();
@@ -62,6 +67,8 @@ class CartManager
         $this->cart = $cart;
         $this->items = collect($items);
         $this->user = $user;
+
+        return $this;
     }
 
     public function getCookieItems (): array
@@ -89,6 +96,9 @@ class CartManager
         return $this->returnArrayForResponse($productReference, $quantity);
     }
 
+    /**
+     * @param Collection|null $items if null we delete "cart-items" cookie
+     */
     private function persistCookie (?Collection $items): void
     {
         $cookie = ($items === null) ?
@@ -159,53 +169,46 @@ class CartManager
         $this->cartRepository->mergeItemsOnDatabase($this->getCookieItems(), $this->getItems(false), $this->cart);
     }
 
-    public function getItems ($hydrate = true): array
+    public function getItems ($mustHydrateItems = true): array
     {
         $items = $this->items->all();
 
-        if (!$hydrate) {
+        if (!$mustHydrateItems) {
             return $items;
         }
 
-        if (!empty($items)) {
-            $productReferences = $this->productRepository->getReferences(array_keys($items));
+        if ($this->hydratedItems === null) {
+            if (!empty($items)) {
+                $productReferences = $this->productRepository->getReferences(array_keys($items));
 
-            //obliged to re-compute the keys " product_reference and amounts " because the informations can change in the meantime
-            foreach ($items as $productReferenceId => $item) {
-                $productReference = $productReferences->get($productReferenceId);
+                //obliged to re-compute the keys " product_reference and amounts " because the informations can change in the meantime
+                foreach ($items as $productReferenceId => $item) {
+                    $productReference = $productReferences->get($productReferenceId);
 
-                $items[$productReferenceId]['product_reference'] = $productReference;
-                $items[$productReferenceId]['amount_excluding_taxes'] = $item['quantity'] * $productReference->unit_price_excluding_taxes;
-                $items[$productReferenceId]['amount_including_taxes'] = $item['quantity'] * $productReference->unit_price_including_taxes;
+                    $items[$productReferenceId]['product_reference'] = $productReference;
+                    $items[$productReferenceId]['amount_excluding_taxes'] = $item['quantity'] * $productReference->unit_price_excluding_taxes;
+                    $items[$productReferenceId]['amount_including_taxes'] = $item['quantity'] * $productReference->unit_price_including_taxes;
+                }
             }
+
+            $this->hydratedItems = $items;
         }
 
-        return $items;
+        return $this->hydratedItems;
     }
 
-    /**
-     * @return Cart|null
-     */
     public function getCart (): ?Cart
     {
         return $this->cart;
     }
 
-    /**
-     * @return User|null
-     */
     public function getUser (): ?User
     {
         return $this->user;
     }
 
-    public function updateCartOnOrderedStatus ()
+    public function transformToBilling ()
     {
-        $this->cartRepository->updateCartOnOrderedStatus($this->cart);
-    }
-
-    public function isRefreshed (): bool
-    {
-        return $this->isRefreshed;
+        $this->billingRepository->transformCartToBilling($this->cart);
     }
 }

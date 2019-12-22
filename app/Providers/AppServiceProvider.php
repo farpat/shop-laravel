@@ -2,15 +2,22 @@
 
 namespace App\Providers;
 
+use App\Repositories\BillingRepository;
+use App\Repositories\CartRepository;
 use App\Repositories\ModuleRepository;
+use App\Repositories\ProductRepository;
 use App\Services\Bank\CartManager;
 use App\Services\Bank\StripeService;
 use App\ViewComposers\CartStoreViewComposer;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Illuminate\Support\Str as BaseStr;
 
 class AppServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -45,9 +52,11 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
 
         $this->app->singleton(StripeService::class, function (Application $app) {
             ['key' => $key, 'secret' => $secret] = $app['config']['services']['stripe'];
+
             return new StripeService(
-                $key, $secret,
-                $app->make(ModuleRepository::class)->getParameter('home', 'currency')->value
+                $key,
+                $secret,
+                $app->make(ModuleRepository::class)->getParameter('billing', 'currency')->value->code
             );
         });
     }

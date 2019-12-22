@@ -23,38 +23,41 @@ class CartController extends Controller
 
     public function __construct (ProductRepository $productRepository)
     {
-        $this->middleware(MustXmlHttpRequest::class)->except(['purchase', 'showPurchaseForm']);
+        $this->middleware(MustXmlHttpRequest::class)->only(['storeItem', 'updateItem', 'destroyItem']);
         $this->middleware(Authenticate::class)->only(['purchase', 'showPurchaseForm']);
         $this->middleware(function (Request $request, $next) {
-            $this->cartManager = app(CartManager::class);
-            $this->cartManager->refresh($request->user());
+            $this->cartManager = app(CartManager::class)->refresh($request->user());
             return $next($request);
         });
+
         $this->productRepository = $productRepository;
     }
 
     public function storeItem (StoreCartItemRequest $request)
     {
-        $productReferenceId = $request->input('product_reference_id');
-        $quantity = $request->input('quantity');
-
-        $responseData = $this->cartManager->addItem($quantity, $this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->addItem(
+            $request->input('quantity'),
+            $this->productRepository->getReference($request->input('product_reference_id'))
+        );
 
         return new JsonResponse($responseData);
     }
 
     public function updateItem (UpdateCartItemRequest $request, int $productReferenceId)
     {
-        $quantity = $request->input('quantity');
-
-        $responseData = $this->cartManager->updateItem($quantity, $this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->updateItem(
+            $request->input('quantity'),
+            $this->productRepository->getReference($productReferenceId)
+        );
 
         return new JsonResponse($responseData);
     }
 
     public function destroyItem (int $productReferenceId)
     {
-        $responseData = $this->cartManager->deleteItem($this->productRepository->getReference($productReferenceId));
+        $responseData = $this->cartManager->deleteItem(
+            $this->productRepository->getReference($productReferenceId)
+        );
 
         return new JsonResponse($responseData);
     }
@@ -66,7 +69,7 @@ class CartController extends Controller
         if (empty($cartItems)) {
             return redirect()
                 ->route('home.index')
-                ->with('danger', __('Your cart is empty'));
+                ->with('error', __('Your cart is empty'));
         }
 
         return view('cart.purchase');
@@ -74,11 +77,16 @@ class CartController extends Controller
 
     public function purchase (PurchaseRequest $request, StripeService $stripeService)
     {
-        $cart = $this->cartManager->getCart();
-        $totalToPay = $cart->total_amount_including_taxes;
+        $totalToPay = $this->cartManager->getCart()->total_amount_including_taxes;
 
-        dd('720 360,05 €', $totalToPay);
+        $stripeService
+            ->setToken($request->input('stripe_token'))
+            ->charge($this->cartManager->getUser(), $totalToPay * 100);
 
-        $stripeService->charge($this->cartManager->getUser(), $totalToPay * 100, $request->input('token'));
+        $this->cartManager->transformToBilling();
+
+        return redirect()
+            ->route('home.index')
+            ->with('success', __('Your cart is purchased'));
     }
 }

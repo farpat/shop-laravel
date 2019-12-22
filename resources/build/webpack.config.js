@@ -50,7 +50,7 @@ let configWebpack = {
     output:       {
         path:       path.resolve('./public/assets'),
         filename:   isDebug ? '[name].js' : '[name].[chunkhash:4].js',
-        publicPath: (isDebug ? ('http://localhost:' + process.env.WEBPACK_DEV_SERVER_PORT) : '') + '/assets/',
+        publicPath: `${isDebug ? ('http://localhost:' + process.env.WEBPACK_DEV_SERVER_PORT) : ''}/assets/`,
     },
     resolve:      {
         extensions: ['.js', '.vue', '.json'],
@@ -88,7 +88,7 @@ let configWebpack = {
             //js
             {
                 test:    /\.js$/,
-                exclude: /node_modules/,
+                exclude: /^node_modules$/,
                 loader:  'babel-loader'
             },
             //fonts
@@ -123,7 +123,7 @@ let configWebpack = {
 
         new MiniCssExtractPlugin({
             filename: '[name].[hash:4].css',
-            // disable:  isDebug,
+            disable:  isDebug,
         }),
     ],
 };
@@ -144,6 +144,15 @@ if (!isDebug) {
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: ['**/*', '!static-files*'],
         })
+    );
+}
+else {
+    configWebpack.plugins.push(
+      new webpack.DefinePlugin({
+          'process.env': {
+              NODE_ENV: '"production"'
+          }
+      })
     );
 }
 

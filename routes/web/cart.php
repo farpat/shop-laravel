@@ -14,7 +14,5 @@ Route::delete('/cart-items/{productReferenceId}', 'Front\CartController@destroyI
 
 
 //Form
-Route::get('/purchase', 'Front\CartController@showPurchaseForm')
-    ->name('cart.purchase');
-
+Route::get('/purchase', 'Front\CartController@showPurchaseForm')->name('cart.purchase');
 Route::post('/purchase', 'Front\CartController@purchase');

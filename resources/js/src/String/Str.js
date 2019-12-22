@@ -1,6 +1,44 @@
+import Arr from "../Array/Arr";
+
 const units = ['o', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo'];
 
 class Str {
+    static parseKeysCache = {};
+
+    isNumeric(number) {
+        return !isNaN(number);
+    }
+
+    transformKeysToStar(str) {
+        const keys = this.parseKeysInString(str);
+
+        if (typeof keys === 'string') {
+            return str;
+        }
+
+        let transformedKey = keys[0];
+        for (let i = 1; i + 1 < keys.length; i++) {
+            transformedKey += '.*';
+        }
+
+        const lastKey = Arr.last(keys);
+        transformedKey += (this.isNumeric(lastKey)) ? '.*' : `.${lastKey}`;
+
+        return transformedKey;
+    }
+
+    parseKeysInString(str) {
+        if (!Str.parseKeysCache.hasOwnProperty(str)) {
+            const keys = Array.from(str.matchAll(/\[?([\w_-]+)\]?/g));
+
+            Str.parseKeysCache[str] = keys.length === 1 ?
+                keys[0][1] :
+                keys.map(key => key[1]);
+        }
+
+        return Str.parseKeysCache[str];
+    }
+
     formatCardNumber(text) {
         text = text.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
 
@@ -43,7 +81,7 @@ class Str {
             ++i;
         }
 
-        return bytes.toFixed(2) + ' ' + units[i];
+        return `${bytes.toFixed(2)} ${units[i]}`;
     }
 
     sizeToBytes(size) {
@@ -60,7 +98,7 @@ class Str {
 
     markValueIntoText(neddle, haystack) {
         neddle = neddle.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        let regex = new RegExp("(" + neddle.split(' ').join('|') + ")", "gi");
+        let regex = new RegExp(`(${neddle.split(' ').join('|')})`, "gi");
         return haystack.replace(regex, "<mark>$1</mark>");
     }
 }

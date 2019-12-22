@@ -1,3 +1,13 @@
+import Arr from "../src/Array/Arr";
+
+/**
+ * @property {Object}  state
+ * @property {Number}  state.currentProductReference
+ * @property {Object}  data
+ * @property {String}  data.baseUrl
+ * @property {Object}  data.productFields
+ * @property {Array}  data.productReferences
+ */
 class ProductStore {
     constructor() {
         this.state = {
@@ -7,34 +17,25 @@ class ProductStore {
 
         this.data = {
             ...window._ProductStore.data,
-            filledProductFields: {}
         };
 
-        this.setCurrentReference(this.getFirstReference());
+        this.setCurrentReference(this.guessCurrentReferenceWithHash());
     }
 
-    getFirstReference() {
-        const firstKey = Object.keys(this.data.productReferences)[0];
-        return this.data.productReferences[firstKey];
-    }
+    guessCurrentReferenceWithHash() {
+        const hash = window.location.hash;
 
-    getFilledProductValue(reference) {
-        if (this.data.filledProductFields[reference.id] === undefined) {
-            this.data.filledProductFields[reference.id] = {};
-
-            for (let productFieldId in this.data.productFields) {
-                this.data.filledProductFields[reference.id][productFieldId] = {
-                    ...this.data.productFields[productFieldId],
-                    value: reference.filled_product_fields[productFieldId]
-                };
-            }
+        if (hash === '') {
+            return this.data.productReferences[0];
         }
 
-        return this.data.filledProductFields[reference.id];
+        const productReferenceId = Number.parseInt(hash.substring(1));
+        return this.data.productReferences.find(productReference => productReference.id === productReferenceId) || this.data.productReferences[0];
     }
 
     setCurrentReference(reference) {
         this.state.currentProductReference = reference;
+        window.history.replaceState({}, '', this.data.baseUrl + '#' + reference.id);
     }
 }
 

@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\Bank\CartManager;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class LoginController extends Controller
 {
@@ -41,6 +42,7 @@ class LoginController extends Controller
     /**
      * Create a new controller instance.
      *
+     * @param CartManager $cartManager
      */
     public function __construct (CartManager $cartManager)
     {
@@ -53,7 +55,7 @@ class LoginController extends Controller
      *
      * @param Request $request
      *
-     * @return Response
+     * @return View
      */
     public function showLoginForm (Request $request, Session $session, UserRepository $userRepository)
     {
@@ -64,7 +66,7 @@ class LoginController extends Controller
 
     public function spy (User $user, Request $request)
     {
-        Auth::login($user);
+        Auth::login($user, true);
         return $this->sendLoginResponse($request);
     }
 
@@ -78,11 +80,7 @@ class LoginController extends Controller
      */
     protected function authenticated (Request $request, $user)
     {
-        if (!$this->cartManager->isRefreshed()) {
-            $this->cartManager->refresh($user);
-        }
-
-        $this->cartManager->mergeItemsOnDatabase();
+        $this->cartManager->refresh($user)->mergeItemsOnDatabase();
 
         $this->redirectTo = $request->input('purchase') ? route('cart.purchase') : route('home.index');
 

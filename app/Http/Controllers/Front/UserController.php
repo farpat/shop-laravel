@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserInformationsRequest;
-use App\Http\Requests\UserPasswordRequest;
-use App\Models\User;
+use App\Http\Middleware\Authenticate;
+use App\Http\Requests\{UserInformationsRequest, UserPasswordRequest};
+use App\Models\{Address, User};
 use App\Notifications\UserPasswordNotification;
-use App\Repositories\CartRepository;
-use App\Repositories\UserRepository;
+use App\Repositories\{AddressRepository, BillingRepository, CartRepository, UserRepository};
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Http\Request;
 
@@ -21,7 +20,7 @@ class UserController extends Controller
 
     public function __construct (UserRepository $userRepository)
     {
-        $this->middleware('auth');
+        $this->middleware(Authenticate::class);
         $this->userRepository = $userRepository;
     }
 
@@ -35,13 +34,30 @@ class UserController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $form = array_merge($user->only(['name', 'email']), $request->old());
+        $old = $request->old();
+        if ($old === [] || $old === null) {
+            $form = [
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'addresses' => $user->addresses->map(function (Address $address, $index) {
+                    $toArray = $address->toArray();
+                    $toArray['index'] = $index;
+                    return $toArray;
+                })->toArray()
+            ];
+        } else {
+            $form = $old;
+        }
+
         return view('users.informations', compact('form'));
     }
 
-    public function updateInformations (UserInformationsRequest $request)
+    public function updateInformations (UserInformationsRequest $request, AddressRepository $addressRepository)
     {
-        $this->userRepository->update($request->user(), $request->only('name', 'email'));
+        $user = $request->user();
+
+        $this->userRepository->update($user, $request->only('name', 'email'));
+        $addressRepository->setAddresses($user, $request->input('addresses', []));
 
         return redirect()->back()->with('success', __('User informations updated with success'));
     }
@@ -55,14 +71,7 @@ class UserController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-        $oldPassword = $request->input('password');
         $newPassword = $request->input('new_password');
-
-        if (!$hasher->check($oldPassword, $user->password)) {
-            return redirect()
-                ->back()
-                ->withErrors(['password' => __('auth.failed')]);
-        }
 
         $this->userRepository->update($user, ['password' => $hasher->make($newPassword)]);
 
@@ -73,9 +82,9 @@ class UserController extends Controller
             ->with('success', __('User password updated with success'));
     }
 
-    public function billings (Request $request, CartRepository $cartRepository)
+    public function billings (Request $request, BillingRepository $bill)
     {
-        $billings = $cartRepository->getBillings($request->user());
+        $billings = $bill->get($request->user());
 
         return view('users.billings', compact('billings'));
     }

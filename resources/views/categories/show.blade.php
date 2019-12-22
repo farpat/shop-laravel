@@ -4,6 +4,8 @@
 
 @section('description', $category->meta_description)
 
+@section('script', 'category-show')
+
 @section('content')
     <div class="container">
         {{ breadcrumb($breadcrumb) }}
@@ -14,7 +16,7 @@
             @endif
 
             <h1>
-                {{ $category->label }} - {{ $products->count() }} {{ trans_choice('product', $products->count()) }}
+                {{ $category->label }}
             </h1>
         </section>
 

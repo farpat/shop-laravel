@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class BuildTranslations extends Command
 {
@@ -14,7 +16,7 @@ class BuildTranslations extends Command
      *
      * @var string
      */
-    protected $signature = 'app:build-translations';
+    protected $name = 'app:build-translations';
 
     /**
      * The console command description.
@@ -59,43 +61,31 @@ class BuildTranslations extends Command
 
     private function deleteDirectoryIfExist (string $path)
     {
-        if (is_dir($path)) {
-            $this->recursiveRemoveDirectory($path);
+        if (File::isDirectory($path)) {
+            File::delete($path);
         }
-    }
-
-    private function recursiveRemoveDirectory ($directory)
-    {
-        foreach (glob("{$directory}/*") as $file) {
-            if (is_dir($file)) {
-                $this->recursiveRemoveDirectory($file);
-            } else {
-                unlink($file);
-            }
-        }
-        rmdir($directory);
     }
 
     private function getPathsInLangDirectory ()
     {
-        $files = [];
+        $scanDirFiles = array_slice(scandir(resource_path('lang')), 2);
 
-        foreach (array_slice(scandir(resource_path('lang')), 2) as $file) {
-            $files[] = resource_path('lang/' . $file);
-        }
-
-        return $files;
+        return array_map(function ($file) {
+            return resource_path('lang/' . $file);
+        }, $scanDirFiles);
     }
 
     private function getLangFiles (string $fileOrDirectory)
     {
-        if (is_file($fileOrDirectory)) {
+        if (File::isFile($fileOrDirectory)) {
             return [$fileOrDirectory];
         }
 
-        return array_slice(array_map(function (string $langFile) use ($fileOrDirectory) {
+        $scanDirFiles = array_slice(scandir($fileOrDirectory), 2);
+
+        return array_map(function (string $langFile) use ($fileOrDirectory) {
             return $fileOrDirectory . '/' . $langFile;
-        }, scandir($fileOrDirectory)), 2);
+        }, $scanDirFiles);
     }
 
     private function compileTranslation (string $file)
@@ -109,7 +99,7 @@ class BuildTranslations extends Command
             ob_start();
             require($file);
             $ob = ob_get_clean();
-            $data = json_encode(json_decode($ob));
+            $data = json_encode(json_decode($ob)); //to minify the file
         }
 
         file_put_contents($compilationPath, $data);
@@ -117,8 +107,8 @@ class BuildTranslations extends Command
 
     private function makeDirectoryIfNotExist (string $path)
     {
-        if (!is_dir($path)) {
-            mkdir($path);
+        if (!File::isDirectory($path)) {
+            File::makeDirectory($path);
         }
     }
 

@@ -1,22 +1,31 @@
 import Vue from 'vue';
 import Requestor from "@farpat/api";
-import FormStore from "../src/Bootstrap/FormStore";
+import Store from "../src/Bootstrap/Store";
 
+/**
+ * @property {Object} state
+ * @property {Object} state.cartItems
+ * @property {Number} state.cartItemsLength
+ * @property {Object} state.isLoading
+ * @property {Object} data
+ * @property {String} data.currencyCode
+ * @property {String} data.purchaseUrl
+ * @property {String} data.endPoint
+ */
 class CartStore {
     constructor() {
         this.state = {
-            ...window.CartStore.state,
+            ...window._CartStore.state,
             isLoading: {},
         };
 
         this.data = {
-            ...window.CartStore.data,
+            ...window._CartStore.data,
             endPoint: '/cart-items'
         };
 
         for (let productReferenceId in this.state.cartItems) {
-            let quantity = this.state.cartItems[productReferenceId].quantity;
-            FormStore.changeField('quantity-' + productReferenceId, quantity);
+            Store.setData(`quantity[${productReferenceId}]`, this.state.cartItems[productReferenceId].quantity);
         }
     }
 
@@ -25,13 +34,9 @@ class CartStore {
 
         const request = Requestor.newRequest();
         return request
-            .patch(this.data.endPoint + '/' + productReferenceId, {
-                quantity
-            })
-            .then(cartItem => {
-                Vue.set(this.state.cartItems, productReferenceId, cartItem);
-                Vue.set(this.state.isLoading, productReferenceId, false);
-            });
+            .patch(`${this.data.endPoint}/${productReferenceId}`, {quantity})
+            .then(cartItem => Vue.set(this.state.cartItems, productReferenceId, cartItem))
+            .finally(() => Vue.set(this.state.isLoading, productReferenceId, false));
     }
 
     deleteItem(productReferenceId) {
@@ -39,13 +44,13 @@ class CartStore {
 
         const request = Requestor.newRequest();
         return request
-            .delete(this.data.endPoint + '/' + productReferenceId)
+            .delete(`${this.data.endPoint}/${productReferenceId}`)
             .then(() => {
                 this.state.cartItemsLength--;
                 Vue.delete(this.state.cartItems, productReferenceId);
-                Vue.set(this.state.isLoading, productReferenceId, false);
-                FormStore.deleteField('quantity-' + productReferenceId);
-            });
+                Store.deleteData(`quantity[${productReferenceId}]`);
+            })
+            .finally(() => Vue.set(this.state.isLoading, productReferenceId, false));
     }
 
     addItem(productReferenceId, quantity) {
@@ -53,15 +58,12 @@ class CartStore {
 
         const request = Requestor.newRequest();
         return request
-            .post(this.data.endPoint, {
-                product_reference_id: productReferenceId,
-                quantity
-            })
+            .post(this.data.endPoint, {product_reference_id: productReferenceId, quantity})
             .then(cartItem => {
                 this.state.cartItemsLength++;
                 Vue.set(this.state.cartItems, productReferenceId, cartItem);
-                Vue.set(this.state.isLoading, productReferenceId, false);
-            });
+            })
+            .finally(() => Vue.set(this.state.isLoading, productReferenceId, false));
     }
 
     getItem(productReferenceId) {

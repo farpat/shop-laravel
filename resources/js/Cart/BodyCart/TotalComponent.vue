@@ -30,12 +30,12 @@
                 let totalPriceIncludingVat = 0;
 
                 for (let productReferenceId in this.items) {
-                    totalPriceIncludingVat += this.items[productReferenceId]['amount_including_taxes'];
+                    totalPriceIncludingVat += this.items[productReferenceId].amount_including_taxes;
                 }
                 return totalPriceIncludingVat;
             },
             getFormattedAmountIncludingTaxes: function () {
-                return this.toLocaleCurrency(this.getAmountIncludingTaxes, CartStore.data.currency);
+                return this.toLocaleCurrency(this.getAmountIncludingTaxes, CartStore.data.currencyCode);
             },
             getAmountExcludingTaxes:          function () {
                 let totalPriceExcludingTaxes = 0;
@@ -49,7 +49,7 @@
                 return this.getAmountIncludingTaxes - this.getAmountExcludingTaxes;
             },
             getFormattedIncludingTaxes:       function () {
-                return this.toLocaleCurrency(this.getIncludingTaxes, CartStore.data.currency);
+                return this.toLocaleCurrency(this.getIncludingTaxes, CartStore.data.currencyCode);
             }
         }
     }

@@ -15,6 +15,7 @@ class CreateAddressesTable extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->text('text');
             $table->text('line1');
             $table->text('line2')->nullable();
             $table->string('postal_code');

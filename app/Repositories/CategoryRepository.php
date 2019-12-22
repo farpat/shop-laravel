@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductField;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Exception;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,22 +38,22 @@ class CategoryRepository
         $string = '';
         if (!empty($parents)) {
             foreach ($parents as $parent) {
-                $children = $this->getChildren($parent)->all();
-                $img = $parent->image ?
-                    "<img src=\"{$parent->image->url_thumbnail}\" alt=\"{$parent->image->alt_thumbnail}\">" :
-                    "<img src=\"https://via.placeholder.com/80x32\">";
+                $sourceAttribute = $parent->image ? $parent->image->url_thumbnail : 'https://via.placeholder.com/80x32';
+                $altAttribute = $parent->image ? $parent->image->alt_thumbnail : $parent->label;
+                $imageElement = "<img src=\"$sourceAttribute\" alt=\"$altAttribute\">";
 
+                $children = $this->getChildren($parent)->all();
                 $string .= <<<HTML
                 <div class="media">
                     <a class="media-link" href="{$parent->url}">
-                        $img
+                        $imageElement
                     </a>
                     <div class="media-body">
                         <h2><a href="{$parent->url}">{$parent->label}</a></h2>
                         {$this->toHtml($children)}
                     </div>
                 </div>
-                HTML;
+HTML;
             }
         }
 
@@ -75,25 +76,25 @@ class CategoryRepository
         }
 
         return Category::query()
-            ->where('nomenclature', 'LIKE', $category->nomenclature . '.%')
+            ->where('nomenclature', 'LIKE', $category->nomenclature . Category::BREAKING_POINT . '%')
             ->whereRaw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature, "' . Category::BREAKING_POINT . '", "")) + 1 = ?', [$category->level + 1]);
     }
 
     public function getRootCategories (): array
     {
         return Category::query()
-            ->where(DB::raw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature,".","")) + 1'), 1)
-            ->with(['image'])
+            ->where(DB::raw('LENGTH(nomenclature) - LENGTH(REPLACE(nomenclature,"' . Category::BREAKING_POINT . '","")) + 1'), 1)
+            ->with('image')
             ->get()
             ->all();
     }
 
     public function getCategoriesInHome (): Collection
     {
-        if ($categoryIds = $this->moduleRepository->getParameter('home', 'categories')) {
+        if ($categoryIdsParameter = $this->moduleRepository->getParameter('home', 'categories')) {
             return Category::query()
                 ->with('image')
-                ->whereIn('id', $categoryIds->value)
+                ->whereIn('id', $categoryIdsParameter->value)
                 ->get();
         }
 
@@ -106,7 +107,7 @@ class CategoryRepository
             ->with(['category', 'main_image', 'references.product.category'])
             ->whereHas('category', function (Builder $query) use ($category) {
                 $query
-                    ->where('nomenclature', 'like', $category->nomenclature . '.%')
+                    ->where('nomenclature', 'like', $category->nomenclature . Category::BREAKING_POINT . '%')
                     ->orWhere('nomenclature', $category->nomenclature);
             });
     }
@@ -119,14 +120,14 @@ class CategoryRepository
             ->keyBy('id');
     }
 
-    public function getRootId(Category $category): int
+    public function getRootId (Category $category): int
     {
         if ($category->level === 1) {
             return $category->id;
         }
 
         return Category::query()
-            ->where('nomenclature', substr($category->nomenclature, 0, strpos($category->nomenclature, '.')))
+            ->where('nomenclature', substr($category->nomenclature, 0, strpos($category->nomenclature, Category::BREAKING_POINT)))
             ->firstOrFail()
             ->id;
     }
@@ -165,14 +166,14 @@ class CategoryRepository
     {
         $domain = config('app.url');
 
-        return DB::query()
-            ->selectRaw('
-            c.id, c.label, i.url_thumbnail as image, 
-            CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
-            ->fromRaw('categories c')
-            ->leftJoin(DB::raw('images i'), DB::raw('c.image_id'), '=', DB::raw('i.id'))
-            ->whereRaw('c.label like :term', ['term' => "%$term%"])
-            ->groupBy(DB::raw('c.id'))
+        /** @var Builder $query */
+        $query = DB::query();
+
+        return $query
+            ->selectRaw('c.id, c.label, i.url_thumbnail as image, CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id) as url')
+            ->from('categories', 'c')
+            ->leftJoin(DB::raw('images i'), 'c.image_id', '=', 'i.id')
+            ->where('c.label', 'like', "%$term%")
             ->limit(2)
             ->get();
     }

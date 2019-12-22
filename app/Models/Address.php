@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Address
  *
  * @property int $id
+ * @property string $text
  * @property string $line1
  * @property string|null $line2
  * @property string $postal_code
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property string|null $created_at
  * @property string|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Cart[] $carts
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Billing[] $carts
  * @property-read int|null $carts_count
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address newModelQuery()
@@ -33,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address whereLine2($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address whereLongitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address wherePostalCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address whereText($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Address whereUserId($value)
  * @mixin \Eloquent
@@ -42,7 +44,12 @@ class Address extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'line1', 'line2', 'postal_code', 'city', 'country', 'latitude', 'longitude', 'user_id'
+        'text', 'line1', 'line2', 'postal_code', 'city', 'country', 'latitude', 'longitude', 'user_id'
+    ];
+
+    protected $casts = [
+        'latitude'  => 'float',
+        'longitude' => 'float'
     ];
 
     public function user ()
@@ -52,6 +59,6 @@ class Address extends Model
 
     public function carts ()
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasMany(Billing::class);
     }
 }

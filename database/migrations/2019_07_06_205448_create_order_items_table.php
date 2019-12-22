@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCartItemsTable extends Migration
+class CreateOrderItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateCartItemsTable extends Migration
      */
     public function up ()
     {
-        Schema::create('cart_items', function (Blueprint $table) {
+        Schema::create('order_items', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('cart_id');
+            $table->morphs('orderable');
             $table->unsignedInteger('quantity');
 
             $table->unsignedBigInteger('product_reference_id')->nullable();
@@ -26,7 +26,6 @@ class CreateCartItemsTable extends Migration
             $table->unsignedDecimal('amount_excluding_taxes', 10, 2);
             $table->unsignedDecimal('amount_including_taxes', 10, 2);
 
-            $table->foreign('cart_id')->references('id')->on('carts');
             $table->foreign('product_reference_id')->references('id')->on('product_references');
         });
     }

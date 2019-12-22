@@ -17,5 +17,6 @@ laravel-echo-server.json
 Vagrantfile
 .phpstorm.meta.php
 _ide_helper.php
+_ide_helper_models.php
 package-lock.json
 .phpunit.result.cache

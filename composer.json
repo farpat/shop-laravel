@@ -8,7 +8,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.3",
+        "php": "^7.2",
         "ext-curl": "*",
         "ext-intl": "*",
         "ext-json": "*",
@@ -18,6 +18,7 @@
         "laravel/framework": "^6.0",
         "laravel/passport": "^7.3",
         "laravel/tinker": "^1.0",
+        "mikehaertl/phpwkhtmltopdf": "^2.4",
         "predis/predis": "^1.1",
         "stripe/stripe-php": "^7.2"
     },

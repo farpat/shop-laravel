@@ -71,11 +71,11 @@
   right: 0;
   width: 20px;
   height: 25px;
-  background: url('./img/multiple-select.png') left top no-repeat;
+  background: url('../../img/multiple-select.png') left top no-repeat;
 }
 
 .ms-choice > div.open {
-  background: url('./img/multiple-select.png') right top no-repeat;
+  background: url('../../img/multiple-select.png') right top no-repeat;
 }
 
 .ms-drop {
@@ -125,7 +125,7 @@
   border: 1px solid #aaa;
   border-radius: 0;
   box-shadow: none;
-  background: #fff url('./img/multiple-select.png') no-repeat 100% -22px;
+  background: #fff url('../../img/multiple-select.png') no-repeat 100% -22px;
 }
 
 .ms-search, .ms-search input {

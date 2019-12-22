@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $module_id
  * @property string $label
- * @property string $value
+ * @property string|array $value
  * @property string|null $description
  * @property-read \App\Models\Module $module
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ModuleParameter newModelQuery()

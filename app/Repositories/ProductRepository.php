@@ -63,7 +63,7 @@ class ProductRepository
     /**
      * @param array|null $productReferenceIds
      *
-     * @return ProductReference[]|\Illuminate\Database\Eloquent\Collection
+     * @return ProductReference[]|Collection
      */
     public function getReferences (?array $productReferenceIds = null)
     {
@@ -85,13 +85,13 @@ class ProductRepository
             p.id, p.label, i.url_thumbnail as image, 
             CONCAT("' . $domain . '", "/categories/", c.slug, "-", c.id, "/", p.slug, "-", p.id) as url,
             MIN(pr.unit_price_including_taxes) as min_unit_price_including_taxes')
-            ->fromRaw('products p')
-            ->leftJoin(DB::raw('images i'), DB::raw('p.main_image_id'), '=', DB::raw('i.id'))
-            ->leftJoin(DB::raw('categories c'), DB::raw('p.category_id'), '=', DB::raw('c.id'))
-            ->leftJoin(DB::raw('product_references pr'), DB::raw('p.id'), '=', DB::raw('pr.product_id'))
-            ->whereRaw('p.label like :term', ['term' => "%$term%"])
+            ->from('products', 'p')
+            ->leftJoin(DB::raw('images i'), 'p.main_image_id', '=', 'i.id')
+            ->leftJoin(DB::raw('categories c'), 'p.category_id', '=', 'c.id')
+            ->leftJoin(DB::raw('product_references pr'), 'p.id', '=', 'pr.product_id')
+            ->where('p.label', 'like', "%$term%")
             ->limit(5)
-            ->groupBy(DB::raw('p.id'))
+            ->groupBy('p.id')
             ->get();
     }
 }
