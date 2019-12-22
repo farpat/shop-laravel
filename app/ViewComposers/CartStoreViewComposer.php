@@ -37,6 +37,7 @@ class CartStoreViewComposer
             $this->cartManager->refresh(Auth::user());
         }
 
+        $currency = $this->moduleRepository->getParameter('billing', 'currency')->value;
         $view
             ->with('cartItems', $this->cartManager->getItems())
             ->with('currency', $this->moduleRepository->getParameter('billing', 'currency')->value);

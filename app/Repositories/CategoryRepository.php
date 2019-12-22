@@ -38,14 +38,15 @@ class CategoryRepository
         $string = '';
         if (!empty($parents)) {
             foreach ($parents as $parent) {
-                $children = $this->getChildren($parent)->all();
-                $source = $parent->image ? $parent->image->url_thumbnail : 'https://via.placeholder.com/80x32';
-                $img = '<img src="' . $source . '" alt="' . $parent->image->alt_thumbnail . '">';
+                $sourceAttribute = $parent->image ? $parent->image->url_thumbnail : 'https://via.placeholder.com/80x32';
+                $altAttribute = $parent->image ? $parent->image->alt_thumbnail : $parent->label;
+                $imageElement = "<img src=\"$sourceAttribute\" alt=\"$altAttribute\">";
 
+                $children = $this->getChildren($parent)->all();
                 $string .= <<<HTML
                 <div class="media">
                     <a class="media-link" href="{$parent->url}">
-                        $img
+                        $imageElement
                     </a>
                     <div class="media-body">
                         <h2><a href="{$parent->url}">{$parent->label}</a></h2>

@@ -11,6 +11,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Illuminate\Support\Str as BaseStr;
 
 class AppServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
     public function register ()
     {
         $this->registerBankServices();
+        $this->registerMacros();
     }
 
     private function registerBankServices ()
@@ -60,5 +63,15 @@ class AppServiceProvider extends ServiceProvider implements DeferrableProvider
     public function provides ()
     {
         return [CartManager::class, StripeService::class, ModuleRepository::class];
+    }
+
+    private function registerMacros ()
+    {
+        Str::macro('jsonDecode', function (string $string) {
+            if (BaseStr::startsWith($string, ['{', '['])) {
+                $newValue = json_decode($string);
+                return json_last_error() === JSON_ERROR_NONE ? $newValue : null;
+            }
+        });
     }
 }

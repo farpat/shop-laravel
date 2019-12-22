@@ -264,7 +264,6 @@ class DatabaseSeeder extends Seeder
                 }
             }
 
-
             $productReference = ProductReference::query()->create([
                 'label'                      => $product->label . (!empty($labelsArray) ? ' => ' . implode(' | ', $labelsArray) : ''),
                 'product_id'                 => $product->id,
@@ -387,6 +386,7 @@ class DatabaseSeeder extends Seeder
         $this->moduleRepository->createParameter('billing', 'next_number', 1);
         $this->moduleRepository->createParameter('billing', 'currency', 'EUR');
         $this->moduleRepository->createParameter('billing', 'address', factory(\App\Models\Address::class)->make()->toArray());
+        $this->moduleRepository->createParameter('billing', 'phone_number', $this->faker->phoneNumber);
     }
 
     private function createAddresses (User $user): Collection

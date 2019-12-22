@@ -6,9 +6,10 @@ namespace App\Repositories;
 use App\Models\Module;
 use App\Models\ModuleParameter;
 use Exception;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
-use PhpParser\Node\Expr\AssignOp\Mod;
 
 class ModuleRepository
 {
@@ -40,7 +41,7 @@ class ModuleRepository
             })
             ->where('label', $parameterLabel)
             ->first();
-        
+
         if ($moduleParameter) {
             $this->transformValueField($moduleParameter);
         }
@@ -52,24 +53,13 @@ class ModuleRepository
 
     private function transformValueField (ModuleParameter $moduleParameter)
     {
-        $value = $moduleParameter->value;
-
-        if (Str::startsWith($value, ['{', '['])) {
-            $newValue = json_decode($value);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $value = $newValue;
-            }
+        if ($jsonDecoded = Str::jsonDecode($moduleParameter->value)) {
+            $moduleParameter->value = $jsonDecoded;
         }
-
-        $moduleParameter->value = $value;
     }
 
-    public function updateParameter (string $moduleLabel, string $parameterLabel, $value, string $description = null)
+    public function updateParameter (string $moduleLabel, string $parameterLabel, $value, ?string $description = null)
     {
-        if (is_array($value)) {
-            $value = json_encode($value);
-        }
-
         $moduleParameter = ModuleParameter::query()
             ->whereHas('module', function (Builder $query) use ($moduleLabel) {
                 $query->where('label', $moduleLabel);
@@ -78,19 +68,23 @@ class ModuleRepository
             ->first();
 
         if ($moduleParameter === null) {
-            throw new Exception("Module parameter << $moduleLabel.$parameterLabel >> doesn't not exists!");
+            throw new ModelNotFoundException("Module parameter << $moduleLabel.$parameterLabel >> doesn't not exists!");
         }
 
-        $moduleParameter->value = $value;
-        if ($description !== null) {
-            $moduleParameter->description = $description;
-        }
+        $moduleParameter->update([
+            'value'       => (is_array($value) || $value instanceof Jsonable) ? json_encode($value) : $value,
+            'description' => $description
+        ]);
 
-        $moduleParameter->save();
 
-        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
+        $this->setCache($moduleLabel, $parameterLabel, $moduleParameter);
 
         return $moduleParameter;
+    }
+
+    private function setCache (string $moduleLabel, string $parameterLabel, ModuleParameter $moduleParameter)
+    {
+        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
     }
 
     public function createParameter (string $moduleLabel, string $parameterLabel, $value, string $description = null): ModuleParameter
@@ -106,15 +100,16 @@ class ModuleRepository
             'module_id'   => $this->getModule($moduleLabel)->id
         ]);
 
-        $this->cache[$moduleLabel][$parameterLabel] = $moduleParameter;
+        $this->setCache($moduleLabel, $parameterLabel, $moduleParameter);
 
         return $moduleParameter;
     }
 
     public function getModule (string $moduleLabel): Module
     {
-        if (!$module = Module::where('label', $moduleLabel)->first()) {
-            throw new Exception("The module << $moduleLabel >> doesn't exist!");
+        $module = Module::where('label', $moduleLabel)->first();
+        if ($module === null) {
+            throw new ModelNotFoundException("The module << $moduleLabel >> doesn't exist!");
         }
 
         return $module;

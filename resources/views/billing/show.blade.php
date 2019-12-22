@@ -15,7 +15,7 @@
                     <br>
                 </p>
                 <p>
-                    <i class="fas fa-phone"></i> 06 52 38 41 52
+                    <i class="fas fa-phone"></i> {{  @parameter('billing', 'phone_number') }}
                 </p>
             </div>
         </div>
