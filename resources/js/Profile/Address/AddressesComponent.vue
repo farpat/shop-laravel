@@ -1,10 +1,8 @@
 <template>
     <section>
         <ul class="list-group">
-            <AddressComponent :api-key="apiKey" :app-id="appId" :index="address.index"
-                              :key="address.index"
-                              :lang="lang"
-                              v-for="address in getAddresses"></AddressComponent>
+            <AddressComponent :api-key="apiKey" :app-id="appId" :key="address.index" :lang="lang" :address="address"
+                              v-for="address in getAddresses"/>
         </ul>
 
         <button @click="addAddress" class="btn btn-link text-success" type="button">{{ __('Add address')}}</button>

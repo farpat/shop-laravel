@@ -7,11 +7,12 @@ use Illuminate\Support\Collection;
 
 class UserRepository
 {
+    /**
+     * @return Collection|User[]
+     */
     public function getAll (): Collection
     {
-        return User::query()
-            ->orderBy('id')
-            ->pluck('email', 'id');
+        return User::query()->orderBy('id')->get();
     }
 
     public function update (User $user, array $data)

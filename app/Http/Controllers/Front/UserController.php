@@ -24,9 +24,10 @@ class UserController extends Controller
         $this->userRepository = $userRepository;
     }
 
-    public function profile ()
+    public function profile (Request $request)
     {
-        return view('users.profile');
+        $user = $request->user();
+        return view('users.profile', compact('user'));
     }
 
     public function showInformationsForm (Request $request)

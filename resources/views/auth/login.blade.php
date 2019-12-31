@@ -26,10 +26,12 @@
 
                             <input type="hidden" name="purchase" value="{{ $wantPurchase }}">
 
-                            <input-component autofocus label="{{ __('E-Mail Address') }}" name="email" type="email" rules="required|email"
+                            <input-component autofocus label="{{ __('E-Mail Address') }}" name="email" type="email"
+                                             rules="required|email"
                             ></input-component>
 
-                            <input-component label="{{ __('Password') }}" name="password" required type="password" rules="required"
+                            <input-component label="{{ __('Password') }}" name="password" required type="password"
+                                             rules="required"
                             ></input-component>
 
 
@@ -54,8 +56,11 @@
                             <div class="card">
                                 <div class="card-body">
                                     <ul class="list-unstyled">
-                                        @foreach($chunkedUsers as $id => $email)
-                                            <li><a href="{{ route('spy', ['user' => $id]) }}">{{ $email }}</a></li>
+                                        @foreach($chunkedUsers as $user)
+                                            <li>
+                                                <a href="{{ route('spy', compact('user')) }}">{{ $user->email }}</a>
+                                                @if($user->is_admin)({{ __('Administrator') }})@endif
+                                            </li>
                                         @endforeach
                                     </ul>
                                 </div>
