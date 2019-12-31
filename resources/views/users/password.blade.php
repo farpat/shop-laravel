@@ -14,7 +14,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-5">{{ __('Change my password') }}</h1>
+        <h1>{{ __('Change my password') }}</h1>
 
         <form id="password-form" method="post"
               action="{{ route('user.password') }}">
@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <h2 class="mt-5 h5">{{ __('Change of password') }}</h2>
+            <h2>{{ __('Choose a new password') }}</h2>
             <div class="row">
                 <div class="col-md-6">
                     <input-component name="new_password" type="password" label="{{ __('New password') }}"

@@ -60,7 +60,7 @@ class UserController extends Controller
         $this->userRepository->update($user, $request->only('name', 'email'));
         $addressRepository->setAddresses($user, $request->input('addresses', []));
 
-        return redirect()->back()->with('success', __('User informations updated with success'));
+        return redirect()->back()->with('success', __('The user informations updated with success'));
     }
 
     public function showPasswordForm (Request $request)

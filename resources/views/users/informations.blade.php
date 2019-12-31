@@ -14,12 +14,13 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-5">{{ __('My informations') }}</h1>
+        <h1>{{ __('My informations') }}</h1>
         <form id="informations-form" @change="onChange($event)"
               method="post" action="{{ route('user.informations') }}">
             @csrf
             @method('PUT')
 
+            <h2>{{ __('Primary informations') }}</h2>
             <div class="row">
                 <div class="col-md-6">
                     <input-component name="name" label="{{ __('Name') }}" autofocus
