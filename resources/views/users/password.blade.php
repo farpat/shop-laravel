@@ -14,7 +14,7 @@
 
 @section('content')
     <div class="container">
-        <h1>{{ __('Change my password') }}</h1>
+        {{ breadcrumb($breadcrumb) }}
 
         <form id="password-form" method="post"
               action="{{ route('user.password') }}">

@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductField whereLabel($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProductField whereType($value)
  * @mixin \Eloquent
+ * @property-read mixed $snake_label
  */
 class ProductField extends Model
 {

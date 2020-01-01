@@ -1,12 +1,12 @@
 @extends('_layouts.app')
 
-@section('title', __('Your profile'))
+@section('title', __('Profile management'))
 
-@section('description', __('Your profile'))
+@section('description', __('Profile management'))
 
 @section('content')
     <div class="container">
-        <h1>{{ __('Your profile') }}</h1>
+        <h1>{{ __('Profile management') }}</h1>
 
         <ul class="list-group">
             <li class="list-group-item">

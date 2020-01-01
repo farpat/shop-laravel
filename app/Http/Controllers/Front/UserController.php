@@ -50,7 +50,12 @@ class UserController extends Controller
             $form = $old;
         }
 
-        return view('users.informations', compact('form'));
+        $breadcrumb = [
+            ['label' => __('Profile management'), 'url' => route('user.profile')],
+            ['label' => __('My informations')]
+        ];
+
+        return view('users.informations', compact('form', 'breadcrumb'));
     }
 
     public function updateInformations (UserInformationsRequest $request, AddressRepository $addressRepository)
@@ -65,7 +70,12 @@ class UserController extends Controller
 
     public function showPasswordForm (Request $request)
     {
-        return view('users.password');
+        $breadcrumb = [
+            ['label' => __('Profile management'), 'url' => route('user.profile')],
+            ['label' => __('Change my password')]
+        ];
+
+        return view('users.password', compact('breadcrumb'));
     }
 
     public function updatePassword (UserPasswordRequest $request, Hasher $hasher)
@@ -83,10 +93,15 @@ class UserController extends Controller
             ->with('success', __('User password updated with success'));
     }
 
-    public function billings (Request $request, BillingRepository $bill)
+    public function billings (Request $request, BillingRepository $billingRepository)
     {
-        $billings = $bill->get($request->user());
+        $billings = $billingRepository->get($request->user());
 
-        return view('users.billings', compact('billings'));
+        $breadcrumb = [
+            ['label' => __('Profile management'), 'url' => route('user.profile')],
+            ['label' => __('See your :count billings', ['count' => count($billings)])]
+        ];
+
+        return view('users.billings', compact('billings', 'breadcrumb'));
     }
 }

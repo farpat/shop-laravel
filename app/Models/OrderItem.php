@@ -28,6 +28,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereProductReferenceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereQuantity($value)
  * @mixin \Eloquent
+ * @property string $orderable_type
+ * @property int $orderable_id
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $orderable
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereOrderableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\OrderItem whereOrderableType($value)
  */
 class OrderItem extends Model
 {

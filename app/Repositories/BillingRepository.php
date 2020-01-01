@@ -81,12 +81,21 @@ class BillingRepository
         return $billing;
     }
 
-    public function get (User $user): Collection
+    /**
+     * @param User|null $user
+     *
+     * @return Collection If user is null, it returns all billings. Else it returns the billing of informed user
+     */
+    public function get (?User $user): Collection
     {
-        return Billing::query()
-            ->where('user_id', $user->id)
+        $query = Billing::query()
             ->orderBy('updated_at', 'DESC')
-            ->orderBy('id', 'DESC')
-            ->get();
+            ->orderBy('id', 'DESC');
+
+        if ($user !== null) {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query->get();
     }
 }

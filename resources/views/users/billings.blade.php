@@ -6,12 +6,12 @@
 
 @section('content')
     <div class="container">
-        <h1>{{ __('Your :count billings', ['count' => count($billings)]) }}</h1>
+        {{ breadcrumb($breadcrumb) }}
 
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
-                <th>#</th>
+                <th>{{ __('Number') }}</th>
                 <th>{{ __('Purchase date') }}</th>
                 <th>{{ __('Total amount including taxes') }}</th>
                 <th>{{ __('Number of items') }}</th>

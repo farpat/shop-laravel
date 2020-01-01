@@ -14,7 +14,8 @@
 
 @section('content')
     <div class="container">
-        <h1>{{ __('My informations') }}</h1>
+        {{ breadcrumb($breadcrumb) }}
+
         <form id="informations-form" @change="onChange($event)"
               method="post" action="{{ route('user.informations') }}">
             @csrf

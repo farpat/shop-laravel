@@ -36,9 +36,13 @@ function breadcrumb (array $links): HtmlString
     $liHtml = '';
     for ($i = 0; $i < $linksCount; $i++) {
         if ($i + 1 < $linksCount) {
-            $liHtml .= "<li class=\"breadcrumb-item\"><a href=\"{$links[$i]['url']}\">{$links[$i]['label']}</a></li>";
+            $liHtml .= <<<HTML
+<li class="breadcrumb-item"><a href="{$links[$i]['url']}">{$links[$i]['label']}</a></li>
+HTML;
         } else {
-            $liHtml .= "<li class=\"breadcrumb-item active\" aria-current=\"page\">{$links[$i]['label']}</li>";
+            $liHtml .= <<<HTML
+<li class="breadcrumb-item active" aria-current="page">{$links[$i]['label']}</li>
+HTML;
         }
     }
 

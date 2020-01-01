@@ -74,7 +74,7 @@ class LoginController extends Controller
      * The user has been authenticated.
      *
      * @param Request $request
-     * @param mixed $user
+     * @param User $user
      *
      * @return mixed
      */
@@ -82,7 +82,14 @@ class LoginController extends Controller
     {
         $this->cartManager->refresh($user)->mergeItemsOnDatabase();
 
-        $this->redirectTo = $request->input('purchase') ? route('cart.purchase') : route('home.index');
+        if ($user->is_admin) {
+            $this->redirectTo = route('user.profile');
+        } else {
+            $this->redirectTo = $request->input('purchase') ?
+                route('cart.purchase') :
+                route('home.index');
+        }
+
 
         return redirect()
             ->intended($this->redirectPath())
