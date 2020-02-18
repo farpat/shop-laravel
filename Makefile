@@ -52,6 +52,7 @@ ifdef build
 	@make build
 endif
 	@docker-compose -f docker-compose-dusk.yml up -d
+	@echo "Creation of database : $(PRIMARY_COLOR)shop_test$(NO_COLOR)"
 	@$(mariadb_dusk) "drop database if exists shop_test; create database shop_test;"
 	@$(php_dusk) artisan dusk
 	@docker-compose -f docker-compose-dusk.yml down --remove-orphans
