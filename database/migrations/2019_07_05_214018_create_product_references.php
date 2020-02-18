@@ -23,8 +23,8 @@ class CreateProductReferences extends Migration
             $table->unsignedDecimal('unit_price_including_taxes', 10, 2);
             $table->json('filled_product_fields');
 
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->foreign('main_image_id')->references('id')->on('images')->onDelete('set null');
+            $table->foreign('product_id', 'product')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('main_image_id', 'main_image')->references('id')->on('images')->onDelete('set null');
         });
     }
 
@@ -35,6 +35,8 @@ class CreateProductReferences extends Migration
      */
     public function down ()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('product_references');
+        Schema::enableForeignKeyConstraints();
     }
 }
