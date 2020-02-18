@@ -39,15 +39,6 @@ services:
     image: djfarrelly/maildev
     ports:
       - "1080:80"
-  node:
-    build: ${DOCKER_PATH}/node
-    ports:
-      - "${WEBPACK_DEV_SERVER_PORT}:${WEBPACK_DEV_SERVER_PORT}"
-    volumes:
-      - .:${PROJECT_PATH}
-      - ~/.cache/npm:/root/.npm
-    working_dir: ${PROJECT_PATH}
-    command: "npm run dev"
   laravel_echo_server:
     build: ${DOCKER_PATH}/node
     ports:

@@ -20,7 +20,7 @@ php := docker-compose run --rm php php
 mariadb := docker-compose exec mariadb mysql -uroot -proot -e
 bash := docker-compose run --rm php bash
 composer := docker-compose run --rm php composer
-npm := docker-compose run --rm node npm
+npm := npm
 
 node_modules: package.json
 	@$(npm) install
@@ -44,6 +44,7 @@ help:
 	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 
 test: install ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
+	@echo "Creation of database : $(PRIMARY_COLOR)shop_test$(NO_COLOR)"
 	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
 	@$(php) vendor/bin/phpunit $(dir) --filter $(filter) --stop-on-failure
 

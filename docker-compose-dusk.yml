@@ -36,7 +36,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
   maildev:
     image: djfarrelly/maildev
-  localhost: # Hack for broadcast.js (it's in reality laravel-echo-server service)
+  laravel_echo_server:
     build: ${DOCKER_PATH}/node
     volumes:
       - .:${PROJECT_PATH}
