@@ -23,9 +23,11 @@
         @if($user->is_admin)
             <hr>
 
+            <h2>Administrator action</h2>
+
             <ul>
                 <li>
-                    Administrator action
+                    First item
                 </li>
             </ul>
         @endif
