@@ -43,8 +43,7 @@ clean: ## Remove composer dependencies (vendor folder) and npm dependencies (nod
 help:
 	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 
-test: install ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
-	@echo "Creation of database : $(PRIMARY_COLOR)shop_test$(NO_COLOR)"
+test: dev ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
 	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
 	@$(php) vendor/bin/phpunit $(dir) --filter $(filter) --stop-on-failure
 
