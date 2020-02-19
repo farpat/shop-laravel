@@ -39,7 +39,7 @@ clean: ## Remove composer dependencies (vendor folder) and npm dependencies (nod
 	@echo "$(DANGER_COLOR) ### Delete the composer and npm files/directories$(NO_COLOR)"
 	rm -rf vendor node_modules package-lock.json composer.lock
 
-help:
+help: ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 
 test: dev ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
