@@ -14,13 +14,12 @@ NO_COLOR        = \033[m
 filter      ?= tests
 dir         ?=
 
-php_dusk := docker-compose -f docker-compose-dusk.yml run --rm php php
-mariadb_dusk := docker-compose -f docker-compose-dusk.yml exec mariadb mysql -uroot -proot -e
-php := docker-compose run --rm php php
+php := docker-compose run --rm php_dev php
+php_dusk := docker-compose run --rm php_dusk php
+bash_php := docker-compose run --rm php_dev bash
 mariadb := docker-compose exec mariadb mysql -uroot -proot -e
-bash := docker-compose run --rm php bash
-composer := docker-compose run --rm php composer
 npm := npm
+composer := docker-compose run --rm php_dev composer
 
 node_modules: package.json
 	@$(npm) install
@@ -49,22 +48,27 @@ test: dev ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || fil
 
 dusk: install ## Run dusk tests (parameters : build=1 to build assets before run dusk tests)
 ifdef build
-	@make build
+	make build
 endif
-	@docker-compose -f docker-compose-dusk.yml up -d
-	@$(mariadb_dusk) "drop database if exists shop_test; create database shop_test;"
-	@$(php_dusk) artisan dusk
-	@docker-compose -f docker-compose-dusk.yml down --remove-orphans
+	@docker-compose up -d nginx_dusk chrome
+	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
+	@$(php) artisan dusk
+	@docker-compose stop nginx_dusk php_dusk chrome
 	@echo "$(PRIMARY_COLOR)End of browser tests$(NO_COLOR)"
 
 dev: install ## Run development servers
-	@docker-compose up -d
+	@docker-compose up -d nginx_dev webpack_dev_server #laravel_echo_server
 	@echo "Dev server launched on $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
 	@echo "Mail server launched on $(PRIMARY_COLOR)http://localhost:1080$(NO_COLOR)"
+	@echo "Webpack dev server launched on $(PRIMARY_COLOR)http://localhost:$(WEBPACK_DEV_SERVER_PORT)$(NO_COLOR)"
+	@echo "Laravel echo server launched on $(PRIMARY_COLOR)http://localhost:$(LARAVEL_ECHO_SERVER_PORT)$(NO_COLOR)"
 
 stop-dev: ## Stop development servers
-	@docker-compose stop
-	@echo "Dev server stopped : $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
+	@docker-compose down
+	@echo "Dev server stopped: $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
+	@echo "Mail server stopped: $(PRIMARY_COLOR)http://localhost:1080$(NO_COLOR)"
+	@echo "Webpack dev server stopped: $(PRIMARY_COLOR)http://localhost:$(WEBPACK_DEV_SERVER_PORT)$(NO_COLOR)"
+	@echo "Laravel echo server stopped: $(PRIMARY_COLOR)http://localhost:$(LARAVEL_ECHO_SERVER_PORT)$(NO_COLOR)"
 
 build: install ## Build assets projects for production
 	@$(npm) run build
@@ -74,5 +78,5 @@ migrate: install ## Refresh database by running new migrations
 	@$(php) artisan migrate:fresh --seed
 
 bash: install ## Run bash in PHP container
-	@$(bash)
+	@$(bash_php)
 

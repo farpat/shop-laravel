@@ -20,7 +20,7 @@ server {
     error_page 404 /index.php;
 
     location ~ \.php${DOLLAR} {
-        fastcgi_pass php:9000;
+        fastcgi_pass ${PHP_SERVICE}:9000;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME ${DOLLAR}realpath_root${DOLLAR}fastcgi_script_name;
         include fastcgi_params;
