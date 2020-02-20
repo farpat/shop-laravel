@@ -32,8 +32,7 @@ class CartStore {
     updateItem(productReferenceId, quantity) {
         Vue.set(this.state.isLoading, productReferenceId, true);
 
-        const request = Requestor.newRequest();
-        return request
+        return Requestor.newRequest()
             .patch(`${this.data.endPoint}/${productReferenceId}`, {quantity})
             .then(cartItem => Vue.set(this.state.cartItems, productReferenceId, cartItem))
             .finally(() => Vue.set(this.state.isLoading, productReferenceId, false));
@@ -42,8 +41,7 @@ class CartStore {
     deleteItem(productReferenceId) {
         Vue.set(this.state.isLoading, productReferenceId, true);
 
-        const request = Requestor.newRequest();
-        return request
+        return Requestor.newRequest()
             .delete(`${this.data.endPoint}/${productReferenceId}`)
             .then(() => {
                 this.state.cartItemsLength--;
@@ -56,8 +54,7 @@ class CartStore {
     addItem(productReferenceId, quantity) {
         Vue.set(this.state.isLoading, productReferenceId, true);
 
-        const request = Requestor.newRequest();
-        return request
+        return Requestor.newRequest()
             .post(this.data.endPoint, {product_reference_id: productReferenceId, quantity})
             .then(cartItem => {
                 this.state.cartItemsLength++;
