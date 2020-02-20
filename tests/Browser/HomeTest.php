@@ -2,16 +2,19 @@
 
 namespace Tests\Browser;
 
-use App\Models\{Category, Product};
+use App\Models\{Category, Module, ModuleParameter, Product};
 use App\Repositories\ModuleRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Dusk\Browser;
 use Tests\Browser\Pages\HomePage;
 use Tests\DuskTestCase;
 
 class HomeTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    //DatabaseMigration handle migration between tests
+    //RefreshDatabase execute SQL request into transaction
+    use DatabaseMigrations, RefreshDatabase;
     /**
      * @var ModuleRepository
      */
