@@ -54,7 +54,7 @@ endif
 	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
 	@$(php) artisan dusk
 	@docker-compose stop nginx_dusk php_dusk chrome
-	@echo "$(PRIMARY_COLOR)End of browser tests$(NO_COLOR)"
+	@echo "End of browser tests"
 
 dev: install ## Run development servers
 	@docker-compose up -d nginx_dev webpack_dev_server #laravel_echo_server
@@ -79,4 +79,3 @@ migrate: install ## Refresh database by running new migrations
 
 bash: install ## Run bash in PHP container
 	@$(bash)
-
