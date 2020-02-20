@@ -16,10 +16,10 @@ dir         ?=
 
 php := docker-compose run --rm php_dev php
 php_dusk := docker-compose run --rm php_dusk php
-bash_php := docker-compose run --rm php_dev bash
+bash := docker-compose run --rm php_dev bash
+composer := docker-compose run --rm php_dev composer
 mariadb := docker-compose exec mariadb mysql -uroot -proot -e
 npm := npm
-composer := docker-compose run --rm php_dev composer
 
 node_modules: package.json
 	@$(npm) install
@@ -78,5 +78,5 @@ migrate: install ## Refresh database by running new migrations
 	@$(php) artisan migrate:fresh --seed
 
 bash: install ## Run bash in PHP container
-	@$(bash_php)
+	@$(bash)
 
