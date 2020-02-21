@@ -71,6 +71,7 @@ stop-dev: ## Stop development servers
 	@echo "Laravel echo server stopped: $(PRIMARY_COLOR)http://localhost:$(LARAVEL_ECHO_SERVER_PORT)$(NO_COLOR)"
 
 build: install ## Build assets projects for production
+	@rm -rf ./public/assets/*
 	@$(npm) run build
 	@$(php) artisan app:build-translations
 

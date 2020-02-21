@@ -10,7 +10,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const WebpackBundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const ManifestPlugin = require('webpack-manifest-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const Chokidar = require('chokidar');
 
 let configWebpack = {
@@ -135,24 +134,13 @@ if (!isDebug) {
             openAnalyzer: false,
         }),
 
-        new ManifestPlugin({
-            filter: (file) => {
-                return !file.name.startsWith('img');
-            }
-        }),
+        new ManifestPlugin(),
 
-        new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['**/*', '!static-files*'],
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: '"production"'
+            }
         })
-    );
-}
-else {
-    configWebpack.plugins.push(
-      new webpack.DefinePlugin({
-          'process.env': {
-              NODE_ENV: '"production"'
-          }
-      })
     );
 }
 
