@@ -85,10 +85,10 @@ function get_asset (string $asset, bool $absolute = false): string
             $json = json_decode(file_get_contents(public_path('assets/manifest.json')));
         }
 
-        $return = $json->{$asset};
+        $return = $json->{$asset} ?? null;
 
-        if (!$return) {
-            return '';
+        if ($return === null) {
+            throw new \Exception("Impossible to retrieve the asset << $asset >>");
         }
 
         return $absolute ?
