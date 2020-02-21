@@ -1,5 +1,6 @@
 import Store from "../Store";
 import Str from "../../String/Str";
+import Arr from "../../Array/Arr";
 
 export default {
     props:    {
@@ -19,7 +20,7 @@ export default {
     computed: {
         getDataAttributes: function () {
             let dataAttributes = {};
-            if (JSON.stringify(this.dataAttributes) !== '{}') {
+            if (!Arr.isEmpty(this.dataAttributes)) {
                 for (let key in this.dataAttributes) {
                     const realKey = key.startsWith('data-') ? key : 'data-' + key;
                     dataAttributes[realKey] = this.dataAttributes[key];
