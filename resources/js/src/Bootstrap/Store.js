@@ -6,7 +6,7 @@ import Arr from "../Array/Arr";
 /**
  *
  * @param {String} stateKey
- * @param {String} field
+ * @param {String} field Field is as "field" or "field[key1]" or "field[key1][key2]" etc.
  * @param {String|Number} value
  */
 const set = function (stateKey, field, value) {
