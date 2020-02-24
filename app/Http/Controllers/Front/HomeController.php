@@ -30,17 +30,9 @@ class HomeController extends Controller
 
     public function index ()
     {
-        $products = $this->productRepository->getProductsInHome();
+        $elementsToDisplayInHomepage = $this->moduleRepository->getParameter('home', 'display')->value;
 
-        $categories = $this->categoryRepository->getCategoriesInHome();
-
-        $carouselParameter = $this->moduleRepository->getParameter('home', 'carousel');
-        $slides = collect($carouselParameter->value ?? []);
-
-        $elementsParameter = $this->moduleRepository->getParameter('home', 'elements');
-        $elements = collect($elementsParameter->value ?? []);
-
-        return view('home.index', compact('products', 'categories', 'elements', 'slides'));
+        return view('home.index', compact('elementsToDisplayInHomepage'));
     }
 
     public function search (Request $request)

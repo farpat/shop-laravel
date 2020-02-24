@@ -10,6 +10,11 @@ use Illuminate\Database\Eloquent\{Builder, ModelNotFoundException};
 
 class ModuleRepository
 {
+    public function __construct ()
+    {
+        \Debugbar::info('ModuleRepository construct called!');
+    }
+
     private $cache = [];
 
     public function createModule (string $moduleLabel, bool $isActive = false, string $description = null): Module

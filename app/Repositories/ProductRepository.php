@@ -21,6 +21,9 @@ class ProductRepository
         $this->moduleRepository = $moduleRepository;
     }
 
+    /**
+     * @return Collection|Product[]
+     */
     public function getProductsInHome (): Collection
     {
         if ($productIds = $this->moduleRepository->getParameter('home', 'products')) {

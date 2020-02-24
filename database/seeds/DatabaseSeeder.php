@@ -341,7 +341,7 @@ class DatabaseSeeder extends Seeder
             Product::class . ':10'
         ]);
 
-        $this->moduleRepository->createParameter('home', 'display', ['products', 'categories', 'elements', 'carousel']);
+        $this->moduleRepository->createParameter('home', 'display', ['carousel', 'categories', 'products', 'elements']);
         $this->moduleRepository->createParameter('home', 'products', [1, 2]);
         $this->moduleRepository->createParameter('home', 'categories', [1, 2]);
         $this->moduleRepository->createParameter('home', 'elements', [
