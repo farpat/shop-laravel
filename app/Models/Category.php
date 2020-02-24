@@ -46,6 +46,10 @@ class Category extends Model
         'label', 'nomenclature', 'slug', 'description', 'is_last', 'image_id'
     ];
 
+    public function product_fields() {
+        return $this->hasMany(ProductField::class);
+    }
+
     public function products ()
     {
         return $this->hasMany(Product::class);

@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Str;
 
 $factory->define(Category::class, function (Faker $faker) {
-    $label = $faker->unique()->words(2, true);
+    $label = ucfirst($faker->unique()->words(2, true));
 
     return [
-        'label'        => $label,
+        'label'        => '[CAT] ' . $label,
         'slug'         => strtolower($label),
         'nomenclature' => strtoupper($label),
         'description'  => $faker->sentence(7),

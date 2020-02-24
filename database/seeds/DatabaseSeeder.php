@@ -38,14 +38,6 @@ class DatabaseSeeder extends Seeder
      */
     private $faker;
     /**
-     * @var Tax
-     */
-    private $ecoTax;
-    /**
-     * @var Tax
-     */
-    private $VatTax;
-    /**
      * @var CartManager
      */
     private $cartManager;
@@ -65,29 +57,52 @@ class DatabaseSeeder extends Seeder
 
     private function startTime (string $label): float
     {
-        dump($label);
+        $this->command->comment(PHP_EOL . "Start: $label");
         return microtime(true);
     }
 
     private function endTime (float $start): void
     {
         $end = microtime(true);
-        dump('==> ' . round($end - $start, 2) . ' seconds');
+        $this->command->info(sprintf("=> Finish: %s seconds", round($end - $start, 2)));
     }
 
-    private function storeCategoryLevel1 (Category $category): Category
+    private function resetAndCreationOfModules ()
     {
-        $this->categoryLabels = $this->categoryLabels->shuffle();
-        $categoryLabel = $this->categoryLabels->pop();
-        $category->fill([
-            'label'        => $categoryLabel,
-            'slug'         => strtolower($categoryLabel),
-            'nomenclature' => strtoupper($categoryLabel),
-        ]);
+        $start = $this->startTime('Reset and Creation of modules');
+        $this->emptyPrivateFiles();
+        $this->createHomeModule();
+        $this->createBillingModule();
+        $this->endTime($start);
+    }
 
-        $category->save();
+    private function creationOfCategories ()
+    {
+        $start = $this->startTime('Creation of categories');
+        $categoriesCount = random_int(10, 15);
+        $categoryProgress = $this->command->getOutput()->createProgressBar($categoriesCount);
 
-        return $category;
+        [$vatTax, $ecoTax] = $this->createTaxes();
+
+        foreach (factory(Category::class, $categoriesCount)->create() as $category) {
+            $productfields = $this->createProductfields($category);
+
+            foreach ($this->createSubCategories($category) as $subCategory) {
+                $products = $this->createProducts($subCategory);
+                foreach ($products as $product) {
+                    $productReferences = $this->createProductReferences(
+                        $product,
+                        $productfields,
+                        $this->attachTaxes($product, $vatTax, $ecoTax)
+                    );
+
+                    $this->createImages($product, $productReferences);
+                }
+            }
+            $categoryProgress->advance();
+        }
+        echo PHP_EOL;
+        $this->endTime($start);
     }
 
     /**
@@ -98,51 +113,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run ()
     {
-        $start = $this->startTime('Reset and Creation of modules');
-        $this->emptyPrivateFiles();
-        $this->createHomeModule();
-        $this->createBillingModule();
-        $this->endTime($start);
+        $this->resetAndCreationOfModules();
 
-        $start = $this->startTime('Creation of products');
-        $this->createTaxes();
+        $this->creationOfCategories();
 
-        foreach (factory(Category::class, random_int(5, 10))->make() as $category) {
-            $category = $this->storeCategoryLevel1($category);
+        $this->creationOfUsers();
 
-            $productfields = $this->createProductfields($category);
-
-            for ($i = 0; $i < 2; $i++) {
-                $subCategory = $this->createSubCategory($category);
-
-                foreach ($this->createProducts($subCategory) as $product) {
-                    $productReferences = $this->createProductReferences(
-                        $product,
-                        $productfields,
-                        $this->attachTaxes($product)
-                    );
-
-                    $this->createImages($product, $productReferences);
-                }
-            }
-        }
-        $this->endTime($start);
-
-        $start = $this->startTime('Creation of carts');
-        foreach (factory(User::class, 10)->create() as $user) {
-            $addresses = $this->createAddresses($user);
-            $this->createBillings($user, $addresses, random_int(1, 4));
-            $this->createCart($user);
-        }
-        $this->endTime($start);
+        $this->command->line(PHP_EOL);
     }
 
-    private function createBillings (User $user, Collection $addresses, int $countOfBillings)
+    private function createBillings (User $user, Collection $addresses)
     {
+        $countOfBillings = random_int(1, 4);
+
         for ($i = 0; $i < $countOfBillings; $i++) {
             $this->createCart($user);
             $this->cartManager->getCart()->update(['address_id' => $addresses->random()->id]);
-            $this->cartManager->transformToBilling();
+            $this->cartManager->transformToBilling(); //The $user cart becomes empty
         }
     }
 
@@ -152,6 +139,7 @@ class DatabaseSeeder extends Seeder
 
         $productsReferences = ProductReference::query()
             ->limit(random_int(2, 5))
+            ->inRandomOrder()
             ->get();
 
         foreach ($productsReferences as $productReference) {
@@ -159,19 +147,24 @@ class DatabaseSeeder extends Seeder
         }
     }
 
+    /**
+     * @return Tax[]
+     */
     private function createTaxes ()
     {
-        $this->VatTax = Tax::query()->create([
+        $vatTax = Tax::query()->create([
             'label' => 'VAT 20%',
             'type'  => Tax::PERCENTAGE_TYPE,
             'value' => 20
         ]);
 
-        $this->ecoTax = Tax::query()->create([
+        $ecoTax = Tax::query()->create([
             'label' => 'Eco tax',
             'type'  => Tax::UNITY_TYPE,
             'value' => 0.05,
         ]);
+
+        return [$vatTax, $ecoTax];
     }
 
     private function createProductfields (Category $category)
@@ -179,39 +172,51 @@ class DatabaseSeeder extends Seeder
         $numbers = self::NUMBER_PRODUCT_FIELDS;
         $strings = self::STRING_PRODUCT_FIELDS;
 
-        if (($count = random_int(0, 4)) > 0) {
-            $productFieldsRequestData = [];
+        $count = random_int(0, 4);
 
-            for ($i = 0; $i < $count; $i++) {
-                $type = $this->faker->boolean ? 'string' : 'number';
-                $arrayOfFields = $type . 's';
-                $label = array_rand(${$arrayOfFields});
-                unset(${$arrayOfFields}[$label]);
-
-                $productFieldsRequestData[] = [
-                    'type'        => $type,
-                    'label'       => $label,
-                    'is_required' => true,
-                ];
-            }
-            return $this->categoryRepository->setProductFields($category, $productFieldsRequestData);
+        if ($count === 0) {
+            return collect();
         }
 
-        return collect();
+        $productFieldsRequestData = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $type = $this->faker->boolean ? 'string' : 'number';
+            $label = array_rand(${$type . 's'});
+            unset(${$type . 's'}[$label]);
+
+            $productFieldsRequestData[] = [
+                'type'        => $type,
+                'label'       => $label,
+                'is_required' => true,
+            ];
+        }
+
+        return $category->product_fields()->createMany($productFieldsRequestData);
     }
 
-    private function createSubCategory (Category $parentCategory): Category
+    private function createSubCategories (Category $parentCategory): Collection
     {
-        $label = $parentCategory->label . ' ' . $this->faker->unique()->word;
-        $slug = Str::slug($label);
-        $nomenclature = $parentCategory->nomenclature . '.' . str_replace('-', ' ', Str::upper($slug));
+        $subCategoriesInArray = [];
+        $slugs = [];
 
-        return factory(Category::class)->create([
-            'label'        => $label,
-            'slug'         => $slug,
-            'nomenclature' => $nomenclature,
-            'is_last'      => true,
-        ]);
+        for ($i = 0; $i < 2; $i++) {
+            $label = $parentCategory->label . ' ' . $this->faker->unique()->word;
+            $slug = Str::slug($label);
+            $slugs[] = $slug;
+            $nomenclature = $parentCategory->nomenclature . '.' . str_replace('-', ' ', Str::upper($slug));
+
+            $subCategoriesInArray[] = factory(Category::class)->raw([
+                'label'        => $label,
+                'slug'         => $slug,
+                'nomenclature' => $nomenclature,
+                'is_last'      => true,
+            ]);
+        }
+
+        Category::insert($subCategoriesInArray);
+
+        return Category::where('slug', $slugs)->get();
     }
 
     /**
@@ -223,33 +228,18 @@ class DatabaseSeeder extends Seeder
      */
     private function createProducts (Category $category): Collection
     {
-        $count = random_int(1, 20);
-        $products = collect();
-        $productLabels = ['Chair', 'Car', 'Computer', 'Gloves', 'Pants', 'Shirt', 'Table', 'Shoes', 'Hat', 'Plate',
-            'Knife', 'Bottle',
-            'Coat', 'Lamp', 'Keyboard', 'Bag', 'Bench', 'Clock', 'Watch', 'Wallet'];
+        $productsInArray = factory(Product::class, random_int(10, 20))->raw(['category_id' => $category->id]);
 
-        for ($i = 0; $i < $count; $i++) {
-            $productKey = array_rand($productLabels);
-            $productLabel = $productLabels[$productKey];
-            unset($productLabels[$productKey]);
+        Product::insert($productsInArray);
 
-            $label = substr($category->label, 0, -1) . ' ' . strtolower($productLabel);
-            $products[] = factory(Product::class)->create([
-                'label'       => $label,
-                'category_id' => $category->id,
-                'slug'        => Str::slug($label)
-            ]);
-        }
-
-        return $products;
+        return Product::where('category_id', $category->id)->get();
     }
 
-    private function attachTaxes (Product $product): Collection
+    private function attachTaxes (Product $product, Tax $vatTax, Tax $ecoTax): Collection
     {
-        $taxes = collect([$this->VatTax]);
+        $taxes = collect([$vatTax]);
         if ($this->faker->boolean(25)) {
-            $taxes->push($this->ecoTax);
+            $taxes->push($ecoTax);
         }
 
         $product->taxes()->attach($taxes->pluck('id'));
@@ -280,14 +270,14 @@ class DatabaseSeeder extends Seeder
      * @param Collection $productFields
      * @param Collection $taxes
      *
-     * @return ProductReference[]|Collection
+     * @return Collection|ProductReference[]
      * @throws Exception
      */
     private function createProductReferences (Product $product, Collection $productFields, Collection $taxes): Collection
     {
         [$unitPriceExcludingTaxes, $unitPriceIncludingTaxes] = $this->computePricesOfProduct($product, $taxes);
 
-        $productReferences = collect();
+        $productReferences = [];
         $count = random_int(1, 3);
         for ($i = 0; $i < $count; $i++) {
             $filledProductfields = [];
@@ -306,18 +296,18 @@ class DatabaseSeeder extends Seeder
                 }
             }
 
-            $productReference = ProductReference::query()->create([
+            $productReferences[] = [
                 'label'                      => $product->label . (!empty($labelsArray) ? ' => ' . implode(' | ', $labelsArray) : ''),
                 'product_id'                 => $product->id,
                 'unit_price_excluding_taxes' => $unitPriceExcludingTaxes,
                 'unit_price_including_taxes' => $unitPriceIncludingTaxes,
-                'filled_product_fields'      => $filledProductfields
-            ]);
-
-            $productReferences->push($productReference);
+                'filled_product_fields'      => json_encode($filledProductfields)
+            ];
         }
 
-        return $productReferences;
+        ProductReference::insert($productReferences);
+
+        return ProductReference::query()->where('product_id', $product->id)->get();
     }
 
     /**
@@ -344,20 +334,16 @@ class DatabaseSeeder extends Seeder
     private function createHomeModule ()
     {
         $this->moduleRepository->createModule('home', true, 'Home module');
+
+        $this->moduleRepository->createParameter('home', 'navigation', [
+            Category::class . ':2' => [Product::class . ':1', Product::class . ':2', Product::class . ':3'],
+            Category::class . ':5' => [Product::class . ':4', Product::class . ':6', Product::class . ':5'],
+            Product::class . ':10'
+        ]);
+
+        $this->moduleRepository->createParameter('home', 'display', ['products', 'categories', 'elements', 'carousel']);
         $this->moduleRepository->createParameter('home', 'products', [1, 2]);
         $this->moduleRepository->createParameter('home', 'categories', [1, 2]);
-        $this->moduleRepository->createParameter('home', 'carousel', [
-            [
-                'title'       => 'Slide 1',
-                'description' => 'Slide 1',
-                'img'         => 'https://picsum.photos/id/1/1000/400/'
-            ],
-            [
-                'title'       => 'Slide 2',
-                'description' => 'Slide 2',
-                'img'         => 'https://picsum.photos/id/2/1000/400'
-            ]
-        ]);
         $this->moduleRepository->createParameter('home', 'elements', [
             [
                 'icon'  => 'fas fa-book',
@@ -372,10 +358,17 @@ class DatabaseSeeder extends Seeder
                 'title' => 'Book 3',
             ]
         ]);
-        $this->moduleRepository->createParameter('home', 'navigation', [
-            Category::class . ':2' => [Product::class . ':1', Product::class . ':2', Product::class . ':3'],
-            Category::class . ':5' => [Product::class . ':4', Product::class . ':6', Product::class . ':5'],
-            Product::class . ':10'
+        $this->moduleRepository->createParameter('home', 'carousel', [
+            [
+                'title'       => 'Slide 1',
+                'description' => 'Slide 1',
+                'img'         => 'https://picsum.photos/id/1/1000/400/'
+            ],
+            [
+                'title'       => 'Slide 2',
+                'description' => 'Slide 2',
+                'img'         => 'https://picsum.photos/id/2/1000/400'
+            ]
         ]);
     }
 
@@ -384,8 +377,8 @@ class DatabaseSeeder extends Seeder
         $this->moduleRepository->createModule('billing', true, 'Billing module');
         $this->moduleRepository->createParameter('billing', 'next_number', 1);
         $this->moduleRepository->createParameter('billing', 'currency', [
-            'style' => 'right',
-            'code' => 'EUR',
+            'style'  => 'right',
+            'code'   => 'EUR',
             'symbol' => '€'
         ]);
         $this->moduleRepository->createParameter('billing', 'address', factory(Address::class)->make()->toArray());
@@ -403,5 +396,22 @@ class DatabaseSeeder extends Seeder
         foreach ($privateFileSystem->directories() as $directory) {
             $privateFileSystem->deleteDirectory($directory);
         }
+    }
+
+    private function creationOfUsers ()
+    {
+        $start = $this->startTime('Creation of users');
+        $usersCount = 10;
+        $userProgress = $this->command->getOutput()->createProgressBar($usersCount);
+
+        foreach (factory(User::class, $usersCount)->create() as $user) {
+            $addresses = $this->createAddresses($user);
+            $this->createBillings($user, $addresses);
+            $this->createCart($user);
+
+            $userProgress->advance();
+        }
+        echo PHP_EOL;
+        $this->endTime($start);
     }
 }
