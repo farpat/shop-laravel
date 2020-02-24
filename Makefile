@@ -3,12 +3,19 @@
 
 include .env
 
-COM_COLOR       = \033[0;34m
-PRIMARY_COLOR   = \033[0;36m
-SUCCESS_COLOR   = \033[0;32m
-DANGER_COLOR    = \033[0;31m
-WARNING_COLOR   = \033[0;33m
-NO_COLOR        = \033[m
+PRIMARY_COLOR   		= \033[0;34m
+PRIMARY_COLOR_BOLD   	= \033[1;34m
+
+SUCCESS_COLOR   		= \033[0;32m
+SUCCESS_COLOR_BOLD   	= \033[1;32m
+
+DANGER_COLOR    		= \033[0;31m
+DANGER_COLOR_BOLD    	= \033[1;31m
+
+WARNING_COLOR   		= \033[0;33m
+WARNING_COLOR_BOLD   	= \033[1;33m
+
+NO_COLOR      			= \033[m
 
 # For test
 filter      ?= tests
@@ -36,18 +43,20 @@ update: ## Update the composer dependencies and npm dependencies
 	@$(php) artisan app:build-translations
 
 clean: ## Remove composer dependencies (vendor folder) and npm dependencies (node_modules folder)
-	@echo "$(DANGER_COLOR) ### Delete the composer and npm files/directories$(NO_COLOR)"
+	@echo "$(DANGER_COLOR_BOLD) Deleting composer and npm files/directories$(NO_COLOR)"
 	rm -rf vendor node_modules package-lock.json composer.lock
 
 help: ## Display this help
-	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
+	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR_BOLD)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 
 test: dev ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
+	@echo "Creating database: $(PRIMARY_COLOR_BOLD)shop_test$(NO_COLOR) ..."
 	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
 	@$(php) vendor/bin/phpunit $(dir) --filter $(filter) --stop-on-failure
 
 dusk: install ## Run dusk tests (parameters : build=1 to build assets before run dusk tests)
 ifdef build
+	@echo "$(PRIMARY_COLOR)Building assets...$(NO_COLOR)"
 	make build
 endif
 	@docker-compose up -d nginx_dusk chrome
@@ -58,17 +67,17 @@ endif
 
 dev: install ## Run development servers
 	@docker-compose up -d nginx_dev webpack_dev_server #laravel_echo_server
-	@echo "Dev server launched on $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
-	@echo "Mail server launched on $(PRIMARY_COLOR)http://localhost:1080$(NO_COLOR)"
-	@echo "Webpack dev server launched on $(PRIMARY_COLOR)http://localhost:$(WEBPACK_DEV_SERVER_PORT)$(NO_COLOR)"
-	@echo "Laravel echo server launched on $(PRIMARY_COLOR)http://localhost:$(LARAVEL_ECHO_SERVER_PORT)$(NO_COLOR)"
+	@echo "Dev server launched on http://localhost:$(APP_PORT)"
+	@echo "Mail server launched on http://localhost:1080"
+	@echo "Webpack dev server launched on http://localhost:$(WEBPACK_DEV_SERVER_PORT)"
+	@echo "Laravel echo server launched on http://localhost:$(LARAVEL_ECHO_SERVER_PORT)"
 
 stop-dev: ## Stop development servers
 	@docker-compose down
-	@echo "Dev server stopped: $(PRIMARY_COLOR)http://localhost:$(APP_PORT)$(NO_COLOR)"
-	@echo "Mail server stopped: $(PRIMARY_COLOR)http://localhost:1080$(NO_COLOR)"
-	@echo "Webpack dev server stopped: $(PRIMARY_COLOR)http://localhost:$(WEBPACK_DEV_SERVER_PORT)$(NO_COLOR)"
-	@echo "Laravel echo server stopped: $(PRIMARY_COLOR)http://localhost:$(LARAVEL_ECHO_SERVER_PORT)$(NO_COLOR)"
+	@echo "Dev server stopped: http://localhost:$(APP_PORT)"
+	@echo "Mail server stopped: http://localhost:1080"
+	@echo "Webpack dev server stopped: http://localhost:$(WEBPACK_DEV_SERVER_PORT)"
+	@echo "Laravel echo server stopped: http://localhost:$(LARAVEL_ECHO_SERVER_PORT)"
 
 build: install ## Build assets projects for production
 	@rm -rf ./public/assets/*
