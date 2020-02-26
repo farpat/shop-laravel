@@ -84,12 +84,6 @@ let configWebpack = {
                 exclude: /node_modules/,
                 loader:  'vue-loader'
             },
-            //js
-            {
-                test:    /\.js$/,
-                exclude: /^node_modules$/,
-                loader:  'babel-loader'
-            },
             //fonts
             {
                 test:    /\.(woff2?|eot|ttf|otf)(\?.*)?$/,

@@ -2,8 +2,13 @@ import Arr from "../Array/Arr";
 
 const units = ['o', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo'];
 
+/**
+ * @static {Object} parseKeysCache
+ */
 class Str {
-    static parseKeysCache = {};
+    constructor() {
+        Str.parseKeysCache = {};
+    }
 
     isNumeric(number) {
         return !isNaN(number);
