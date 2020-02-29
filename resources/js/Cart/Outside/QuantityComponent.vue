@@ -15,7 +15,7 @@
     </div>
 
     <p v-else>
-        {{ __('Ordering') }} : {{ getItem.quantity }}
+        {{ __('In cart') }} : {{ getItem.quantity }}
     </p>
 </template>
 
