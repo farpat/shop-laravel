@@ -13,7 +13,7 @@ $factory->define(Category::class, function (Faker $faker) {
 
     return [
         'label'        => '[CAT] ' . $label,
-        'slug'         => strtolower($label),
+        'slug'         => Str::slug($label),
         'nomenclature' => strtoupper($label),
         'description'  => $faker->sentence(7),
         'is_last'      => false,
