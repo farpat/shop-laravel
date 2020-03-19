@@ -50,8 +50,8 @@ help: ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; } /^[a-zA-Z_-]+:.*?##/ { printf "$(PRIMARY_COLOR_BOLD)%-10s$(NO_COLOR) %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 
 test: dev ## Run unit tests (parameters : dir=tests/Feature/LoginTest.php || filter=get)
-	@echo "Creating database: $(PRIMARY_COLOR_BOLD)shop_test$(NO_COLOR) ..."
-	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
+	@echo "Creating database: $(PRIMARY_COLOR_BOLD)$(APP_NAME)_test$(NO_COLOR) ..."
+	@$(mariadb) "drop database if exists $(APP_NAME)_test; create database $(APP_NAME)_test;"
 	@$(php) vendor/bin/phpunit $(dir) --filter $(filter) --stop-on-failure
 
 dusk: install ## Run dusk tests (parameters : build=1 to build assets before run dusk tests)
@@ -60,7 +60,7 @@ ifdef build
 	make build
 endif
 	@docker-compose up -d nginx_dusk chrome
-	@$(mariadb) "drop database if exists shop_test; create database shop_test;"
+	@$(mariadb) "drop database if exists $(APP_NAME)_test; create database $(APP_NAME)_test;"
 	@$(php) artisan dusk
 	@docker-compose stop nginx_dusk php_dusk chrome
 	@echo "End of browser tests"
