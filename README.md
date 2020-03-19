@@ -1,6 +1,6 @@
 # Installation
 
-- `git clone git@gitlab.com:farpat/shop.git`
+- `git clone git@gitlab.com:farpat/shop-laravel.git`
 - `make install`
 - And enjoy!
 - (To display help run `make help` or `make`)
